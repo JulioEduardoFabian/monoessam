@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,6 +17,8 @@ Route::get('/migrate', function () {
     Artisan::call('migrate');
     dd('migrated!');
 });
+
+Route::get('/users', [UsersController::class, 'index']);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
