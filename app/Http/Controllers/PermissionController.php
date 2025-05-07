@@ -33,6 +33,9 @@ class PermissionController extends Controller
         $permission = Permission::create([
             'name' => $request->name,
             'guard_name' => 'web',
+            'sidebar_name' => $request->sidebar_name,
+            'route_name' => $request->route_name,
+            'icon_class' => $request->icon_class
         ]);
 
         return to_route('users');
@@ -67,7 +70,11 @@ class PermissionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $permission = Permission::find($id);
+
+        $permission->delete();
+
+        return to_route('users');
     }
 
     public function rolePermissions(Request $request)

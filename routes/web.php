@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    return Inertia::render('auth/Login');
 })->name('home');
 
 Route::get('dashboard', function () {
@@ -23,6 +23,8 @@ Route::get('/migrate', function () {
 Route::post('users', [UsersController::class, 'store'])->name('users');
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('permissions', [PermissionController::class, 'store'])->name('permissions');
+Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+
 Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
 Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');
 

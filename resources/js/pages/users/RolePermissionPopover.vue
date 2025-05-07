@@ -51,21 +51,30 @@ const sendPermissions = () => {
 
 <template>
     <Popover v-model:open="popoverOpen">
-        <PopoverTrigger> Ver permisos </PopoverTrigger>
-        <PopoverContent>
-            <div class="form-check flex items-center p-1" v-for="permission in permissions" :key="permission.id">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    :id="`permission-${permission.id}`"
-                    :checked="selectedPermissions[permission.id] || false"
-                    @change="onPermissionChange(permission.id, $event.target.checked)"
-                />
-                <label class="ps-2 text-sm leading-none font-medium" :for="`permission-${permission.id}`">
-                    {{ permission.name }}
-                </label>
+        <PopoverTrigger asChild>
+            <Button variant="outline" class="flex items-center gap-2"> Ver permisos </Button>
+        </PopoverTrigger>
+        <PopoverContent class="w-64 space-y-3 p-4">
+            <div class="max-h-64 space-y-2 overflow-y-auto">
+                <div
+                    v-for="permission in permissions"
+                    :key="permission.id"
+                    class="flex items-center space-x-2 rounded p-2 transition-colors hover:bg-gray-50"
+                >
+                    <input
+                        class="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
+                        type="checkbox"
+                        :id="`permission-${permission.id}`"
+                        :checked="selectedPermissions[permission.id] || false"
+                        @change="onPermissionChange(permission.id, $event.target.checked)"
+                    />
+                    <label class="cursor-pointer text-sm font-medium text-gray-700" :for="`permission-${permission.id}`">
+                        {{ permission.name }}
+                    </label>
+                </div>
             </div>
-            <Button @click="sendPermissions">Sincronizar</Button>
+
+            <Button @click="sendPermissions" class="mt-2 w-full" :disabled="!hasPermissionsChanged"> Sincronizar </Button>
         </PopoverContent>
     </Popover>
 </template>

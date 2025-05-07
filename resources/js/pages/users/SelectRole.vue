@@ -30,9 +30,6 @@ if (props.user.roles.length > 0) {
 const updateRoleUser = (roleId: number) => {
     form.userId = props.user.id;
     form.roleId = roleId;
-
-    console.log(form);
-
     form.post(route('role-user'));
 };
 </script>

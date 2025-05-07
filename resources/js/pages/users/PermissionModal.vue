@@ -8,8 +8,9 @@ const open = ref(false);
 
 const form = useForm({
     name: '',
-    email: '',
-    password: '',
+    sidebar_name: '',
+    route_name: '',
+    icon_class: '',
 });
 
 const submit = () => {
@@ -29,6 +30,9 @@ const submit = () => {
             <DialogHeader>
                 <DialogTitle>Nuevo Permiso</DialogTitle>
                 <Input v-model="form.name" type="text" placeholder="Nombre" />
+                <Input v-model="form.sidebar_name" type="text" placeholder="Nombre de Sidebar" />
+                <Input v-model="form.route_name" type="text" placeholder="URL" />
+                <Input v-model="form.icon_class" type="text" placeholder="Icono" />
             </DialogHeader>
             <DialogFooter @click="submit"> Agregar </DialogFooter>
         </DialogContent>

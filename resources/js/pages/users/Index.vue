@@ -3,6 +3,8 @@ import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Permission, Role, User } from '@/types';
+import { router } from '@inertiajs/vue3';
+import { Trash } from 'lucide-vue-next';
 import Modal from './Modal.vue';
 import PermissionModal from './PermissionModal.vue';
 import RoleModal from './RoleModal.vue';
@@ -16,6 +18,12 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const deletePermission = (permissionId: any) => {
+    if (confirm('Estas seguro de eliminar el permiso?')) {
+        router.delete(route('permissions.destroy', permissionId));
+    }
+};
 </script>
 <template>
     <AppLayout>
@@ -64,7 +72,9 @@ defineProps<Props>();
                                 <TableRow v-for="permission in permissions" :key="permission.id">
                                     <TableCell class="font-medium">{{ permission.name }}</TableCell>
                                     <TableCell>{{ permission.guard_name }}</TableCell>
-                                    <TableCell><Button>Eliminar</Button></TableCell>
+                                    <TableCell
+                                        ><Button @click="deletePermission(permission.id)"><Trash /></Button
+                                    ></TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
