@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -13,23 +16,30 @@ class UsersController extends Controller
      */
     public function index()
     {
-        return Inertia::render('users/Index', ['users' => User::all()]);
+        return Inertia::render('users/Index', [
+            'users' => User::with('roles')->get(),
+            'roles' => Role::with('permissions')->get(),
+            'permissions' => Permission::all()
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return to_route('users');
     }
 
     /**

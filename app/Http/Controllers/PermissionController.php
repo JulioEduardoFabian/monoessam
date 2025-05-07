@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-class RoleController extends Controller
+class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Inertia::render('roles/Index', ['roles' => Role::all()]);
+        //
     }
 
     /**
@@ -29,7 +30,7 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Role::create([
+        $permission = Permission::create([
             'name' => $request->name,
             'guard_name' => 'web',
         ]);
@@ -67,5 +68,28 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function rolePermissions(Request $request)
+    {
+        $role = Role::find($request->roleId);
+
+        $selectedIds = array_map('intval', array_keys(array_filter($request->permissions)));
+
+        $role->syncPermissions($selectedIds);
+
+        return to_route('users');
+    }
+
+    public function roleUser(Request $request)
+    {
+
+        $role = Role::find($request->roleId);
+
+        $user = User::find($request->userId);
+
+        $user->syncRoles([$role->name]);
+
+        return to_route('users');
     }
 }
