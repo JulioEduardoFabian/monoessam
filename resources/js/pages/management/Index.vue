@@ -4,6 +4,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Mine, Unit } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import { Pencil } from 'lucide-vue-next';
 import ManagementModal from './ManagementModal.vue';
 
 interface Props {
@@ -31,7 +32,9 @@ defineProps<Props>();
                         <TableBody>
                             <TableRow v-for="mine in mines" :key="mine.id">
                                 <TableCell class="font-medium">{{ mine.name }}</TableCell>
-                                <TableCell class="text-right"> <Button>Editar</Button> </TableCell>
+                                <TableCell class="text-right">
+                                    <Button><Pencil /></Button>
+                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -42,13 +45,17 @@ defineProps<Props>();
                         <TableHeader>
                             <TableRow>
                                 <TableHead class="w-[100px]">Nombre</TableHead>
+                                <TableHead class="w-[100px]">Mina</TableHead>
                                 <TableHead class="text-right">Opciones</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             <TableRow v-for="unit in units" :key="unit.id">
                                 <TableCell class="font-medium">{{ unit.name }}</TableCell>
-                                <TableCell class="text-right"> <Button>Editar</Button> </TableCell>
+                                <TableCell class="font-medium">{{ unit.mine.name }}</TableCell>
+                                <TableCell class="text-right">
+                                    <Button><Pencil /></Button>
+                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>

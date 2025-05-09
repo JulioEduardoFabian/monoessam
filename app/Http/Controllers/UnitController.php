@@ -28,7 +28,12 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $unit = Unit::create([
+            'name' => $request->name,
+            'mine_id' => $request->mine_id
+        ]);
+
+        return to_route('management');
     }
 
     /**
@@ -61,5 +66,12 @@ class UnitController extends Controller
     public function destroy(Unit $unit)
     {
         //
+    }
+
+    public function search($word)
+    {
+        $units = Unit::where('name', 'like', '%' . $word . '%')->with('cafes')->get();
+
+        return response()->json($units);
     }
 }

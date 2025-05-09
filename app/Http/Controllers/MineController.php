@@ -71,7 +71,7 @@ class MineController extends Controller
 
     public function search($word)
     {
-        $mines = Mine::where('name', 'like', '%' . $word . '%')->get();
+        $mines = Mine::where('name', 'like', '%' . $word . '%')->with('units')->get();
 
         return response()->json($mines);
     }

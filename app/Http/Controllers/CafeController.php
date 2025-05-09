@@ -28,7 +28,12 @@ class CafeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $cafe = Cafe::create([
+            'name' => $request->name,
+            'unit_id' => $request->unit_id
+        ]);
+
+        return to_route('management');
     }
 
     /**
