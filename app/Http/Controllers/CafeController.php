@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Area;
-use App\Http\Requests\StoreAreaRequest;
-use App\Http\Requests\UpdateAreaRequest;
+use App\Models\Cafe;
 use Illuminate\Http\Request;
 
-class AreaController extends Controller
+class CafeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -30,17 +28,13 @@ class AreaController extends Controller
      */
     public function store(Request $request)
     {
-        $area = Area::create([
-            'name' => $request->name
-        ]);
-
-        return to_route('users');
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Area $area)
+    public function show(Cafe $cafe)
     {
         //
     }
@@ -48,7 +42,7 @@ class AreaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Area $area)
+    public function edit(Cafe $cafe)
     {
         //
     }
@@ -56,7 +50,7 @@ class AreaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAreaRequest $request, Area $area)
+    public function update(Request $request, Cafe $cafe)
     {
         //
     }
@@ -64,12 +58,8 @@ class AreaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Cafe $cafe)
     {
-        $area = Area::find($id);
-
-        $area->delete();
-
-        return to_route('users');
+        //
     }
 }

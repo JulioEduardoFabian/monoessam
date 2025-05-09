@@ -2,9 +2,11 @@
 import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Permission, Role, User } from '@/types';
-import { router } from '@inertiajs/vue3';
+import { Area, Permission, Role, User } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
 import { Trash } from 'lucide-vue-next';
+import AreaModal from './AreaModal.vue';
+import AreaTable from './AreaTable.vue';
 import Modal from './Modal.vue';
 import PermissionModal from './PermissionModal.vue';
 import RoleModal from './RoleModal.vue';
@@ -15,6 +17,7 @@ interface Props {
     users: User[];
     roles: Role[];
     permissions: Permission[];
+    areas: Area[];
 }
 
 defineProps<Props>();
@@ -26,6 +29,7 @@ const deletePermission = (permissionId: any) => {
 };
 </script>
 <template>
+    <Head title="Usuarios" />
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
@@ -80,10 +84,14 @@ const deletePermission = (permissionId: any) => {
                         </Table>
                     </Card>
                 </div>
+                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
+                    <AreaTable :areas="areas" />
+                </div>
             </div>
         </div>
         <PermissionModal />
         <Modal />
         <RoleModal />
+        <AreaModal />
     </AppLayout>
 </template>

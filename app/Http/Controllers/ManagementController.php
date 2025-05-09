@@ -2,46 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Area;
-use App\Models\User;
+use App\Models\Cafe;
+use App\Models\Mine;
+use App\Models\Unit;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
-class UsersController extends Controller
+class ManagementController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Inertia::render('users/Index', [
-            'users' => User::with('roles')->get(),
-            'roles' => Role::with('permissions')->get(),
-            'permissions' => Permission::all(),
-            'areas' => Area::all()
+        return Inertia::render('management/Index', [
+            'mines' => Mine::all(),
+            'units' => Unit::all(),
+            'cafes' => Cafe::all()
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {}
+    public function create()
+    {
+        //
+    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return to_route('users');
+        //
     }
 
     /**

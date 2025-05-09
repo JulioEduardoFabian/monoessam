@@ -52,4 +52,26 @@ export interface Permission{
     updated_at: string;
 }
 
+export interface Area{
+    id: number,
+    name: string
+}
+
+export interface Mine{
+    id: number,
+    name: string
+}
+
+export interface Unit{
+    id: number,
+    name: string,
+    mine_id: number
+}
+
+export interface Cafe{
+    id: number,
+    name: string,
+    cafe_id: number
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

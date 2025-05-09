@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Area;
-use App\Http\Requests\StoreAreaRequest;
-use App\Http\Requests\UpdateAreaRequest;
+use App\Models\Mine;
+use App\Http\Requests\StoreMineRequest;
+use App\Http\Requests\UpdateMineRequest;
 use Illuminate\Http\Request;
 
-class AreaController extends Controller
+class MineController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -30,17 +30,17 @@ class AreaController extends Controller
      */
     public function store(Request $request)
     {
-        $area = Area::create([
+        $mine = Mine::create([
             'name' => $request->name
         ]);
 
-        return to_route('users');
+        return to_route('management');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Area $area)
+    public function show(Mine $mine)
     {
         //
     }
@@ -48,7 +48,7 @@ class AreaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Area $area)
+    public function edit(Mine $mine)
     {
         //
     }
@@ -56,7 +56,7 @@ class AreaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAreaRequest $request, Area $area)
+    public function update(UpdateMineRequest $request, Mine $mine)
     {
         //
     }
@@ -64,12 +64,15 @@ class AreaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Mine $mine)
     {
-        $area = Area::find($id);
+        //
+    }
 
-        $area->delete();
+    public function search($word)
+    {
+        $mines = Mine::where('name', 'like', '%' . $word . '%')->get();
 
-        return to_route('users');
+        return response()->json($mines);
     }
 }

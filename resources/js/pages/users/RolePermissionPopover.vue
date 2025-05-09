@@ -74,7 +74,7 @@ const sendPermissions = () => {
                 </div>
             </div>
 
-            <Button @click="sendPermissions" class="mt-2 w-full" :disabled="!hasPermissionsChanged"> Sincronizar </Button>
+            <Button @click="sendPermissions" class="mt-2 w-full"> Sincronizar </Button>
         </PopoverContent>
     </Popover>
 </template>
