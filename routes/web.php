@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\CafeController;
+use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MineController;
 use App\Http\Controllers\PermissionController;
@@ -27,6 +28,7 @@ Route::get('/migrate', function () {
 
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/management', [ManagementController::class, 'index'])->name('management');
+Route::get('/food', [FoodController::class, 'index'])->name('management');
 
 Route::post('users', [UsersController::class, 'store'])->name('users');
 Route::post('roles', [RoleController::class, 'store'])->name('roles');

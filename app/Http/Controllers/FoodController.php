@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mine;
-use App\Http\Requests\StoreMineRequest;
-use App\Http\Requests\UpdateMineRequest;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
-class MineController extends Controller
+class FoodController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Inertia::render('food/Index');
     }
 
     /**
@@ -30,17 +28,13 @@ class MineController extends Controller
      */
     public function store(Request $request)
     {
-        $mine = Mine::create([
-            'name' => $request->name
-        ]);
-
-        return to_route('management');
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Mine $mine)
+    public function show(string $id)
     {
         //
     }
@@ -48,7 +42,7 @@ class MineController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Mine $mine)
+    public function edit(string $id)
     {
         //
     }
@@ -56,7 +50,7 @@ class MineController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMineRequest $request, Mine $mine)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -64,15 +58,8 @@ class MineController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Mine $mine)
+    public function destroy(string $id)
     {
         //
-    }
-
-    public function search($word)
-    {
-        $mines = Mine::where('name', 'like', '%' . $word . '%')->with(['units', 'units.cafes'])->get();
-
-        return response()->json($mines);
     }
 }

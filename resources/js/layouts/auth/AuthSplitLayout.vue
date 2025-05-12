@@ -14,7 +14,7 @@ defineProps<{
 <template>
     <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
         <div class="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
-            <div class="absolute inset-0 bg-zinc-900" />
+            <div class="absolute inset-0 bg-red-900" />
             <Link :href="route('home')" class="relative z-20 flex items-center text-lg font-medium">
                 {{ name }}
             </Link>

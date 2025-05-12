@@ -1,1 +1,0 @@
-import{_ as s}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{A as o,a as r,o as c,e as t,w as l,b as p,F as _}from"./app-BIxrGgnp.js";const u={};function d(m,e){const a=o("Head"),n=o("AppLayout");return c(),r(_,null,[t(a,{title:"Usuarios"}),t(n,null,{default:l(()=>e[0]||(e[0]=[p("h1",null,"Quebrados",-1)])),_:1})],64)}const x=s(u,[["render",d]]);export{x as default};
