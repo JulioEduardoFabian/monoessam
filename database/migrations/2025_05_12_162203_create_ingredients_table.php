@@ -16,13 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('presentation')->nullable();
-            $table->string('amount')->nullable();
+            $table->decimal('amount',7,2)->nullable();
             $table->string('measurement_unit')->nullable();
             $table->decimal('calories',7,2)->nullable();
-            $table->decimal('liquid_waste',5,4)->nullable();
-            $table->decimal('solid_waste',5,4)->nullable();
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->foreign('category_id')->references('id')->on('ingredient_categories')->cascadeOnUpdate()->nullOnDelete();
+            $table->decimal('liquid_waste',7,4)->nullable();
+            $table->decimal('solid_waste',7,4)->nullable();
+            $table->unsignedBigInteger('ingredient_category_id')->nullable();
+            $table->foreign('ingredient_category_id')->references('id')->on('ingredient_categories')->cascadeOnUpdate()->nullOnDelete();
             $table->timestamps();
         });
     }
