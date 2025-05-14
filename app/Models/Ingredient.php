@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ingredient extends Model
@@ -21,5 +22,9 @@ class Ingredient extends Model
     public function dishes(): BelongsToMany
     {
         return $this->belongsToMany(Dish::class);
+    }
+    public function dosification(): HasOne
+    {
+        return $this->hasOne(Dosification::class);
     }
 }
