@@ -1,1 +1,0 @@
-import{_ as o}from"./DishesTable.vue_vue_type_script_setup_true_lang-D6fKX3IV.js";import"./TableHeader.vue_vue_type_script_setup_true_lang-DK9M0_co.js";import"./utils-DjqsqOe8.js";import"./app-DbmKsYJ_.js";export{o as default};

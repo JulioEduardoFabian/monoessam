@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\CafeController;
+use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MineController;
@@ -29,6 +30,7 @@ Route::get('/migrate', function () {
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/management', [ManagementController::class, 'index'])->name('management');
 Route::get('/food', [FoodController::class, 'index'])->name('management');
+Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
 
 Route::post('users', [UsersController::class, 'store'])->name('users');
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
@@ -43,6 +45,7 @@ Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
 
 Route::get('search-mine/{word}', [MineController::class, 'search'])->name('mines.search');
 Route::get('search-unit/{word}', [UnitController::class, 'search'])->name('units.search');
+Route::get('search-dish/{word}', [DishController::class, 'search'])->name('units.search');
 
 Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
 Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');

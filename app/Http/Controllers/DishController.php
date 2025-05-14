@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dish;
 use Illuminate\Http\Request;
 
 class DishController extends Controller
@@ -60,5 +61,11 @@ class DishController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function search(string $word)
+    {
+        $dishes = Dish::where('name', 'like', '%' . $word . '%')->with('dish_category')->take(15)->get();
+        return $dishes;
     }
 }
