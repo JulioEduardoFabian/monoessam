@@ -21,4 +21,8 @@ class Dish extends Model
     {
         return $this->belongsToMany(Ingredient::class);
     }
+    public function levels(): BelongsToMany
+    {
+        return $this->belongsToMany(Level::class);
+    }
 }
