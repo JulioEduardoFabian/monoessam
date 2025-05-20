@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import Card from '@/components/ui/card/Card.vue';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RangeCalendar } from '@/components/ui/range-calendar';
 import { cn } from '@/lib/utils';
@@ -8,6 +7,7 @@ import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalize
 import { CalendarIcon } from 'lucide-vue-next';
 import type { DateRange } from 'reka-ui';
 import { type Ref, ref, watch } from 'vue';
+import DateCard from './DateCard.vue';
 
 const props = defineProps<{
     breakfasts?: [];
@@ -39,6 +39,7 @@ const generateDateRangeArray = (range: DateRange) => {
         dates.push({
             date: date,
             formatted: df.format(date),
+            dishes: [],
         });
         current = current.add({ days: 1 });
     }
@@ -56,7 +57,7 @@ watch(
         // emit('date-range-update', dateRangeArray.value);
 
         // Para ver el resultado en consola
-        console.log('Date range array:', dateRangeArray.value);
+        //console.log('Date range array:', dateRangeArray.value);
     },
     { deep: true, immediate: true },
 );
@@ -86,13 +87,7 @@ watch(
 
     <div class="h-auto w-full">
         <div class="grid grid-cols-3 gap-4">
-            <Card v-for="(date, index) in dateRangeArray" :key="index" class="p-3">
-                <p class="text-center">{{ date.formatted }}</p>
-                <p>Desayuno</p>
-                <p v-for="breakfast in breakfasts" :key="breakfast.id">{{ breakfast.name }}</p>
-                <p>Almuerzo</p>
-                <p>Cena</p>
-            </Card>
+            <DateCard :dateRangeArray="dateRangeArray" />
         </div>
     </div>
 </template>
