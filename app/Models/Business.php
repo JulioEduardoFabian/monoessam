@@ -3,18 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-class Cafe extends Model
+class Business extends Model
 {
-     use HasFactory;
-    protected $fillable = ['name', 'unit_id'];
+    use HasFactory;
+    protected $fillable = ['name'];
 
-
-    public function unit(): BelongsTo
+    public function headquarters(): HasMany
     {
-        return $this->belongsTo(Unit::class);
+        return $this->hasMany(headquarter::class);
     }
     public function services(): BelongsToMany
     {
