@@ -52,7 +52,7 @@ const sendPermissions = () => {
 <template>
     <Popover v-model:open="popoverOpen">
         <PopoverTrigger asChild>
-            <Button variant="outline" class="flex items-center gap-2"> Ver permisos </Button>
+            <Button variant="outline" class="flex items-center gap-2 bg-yellow-400 text-white"> Ver permisos </Button>
         </PopoverTrigger>
         <PopoverContent class="w-64 space-y-3 p-4">
             <div class="max-h-64 space-y-2 overflow-y-auto">

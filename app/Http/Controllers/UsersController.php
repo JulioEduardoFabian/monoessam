@@ -21,7 +21,7 @@ class UsersController extends Controller
             'users' => User::with('roles')->get(),
             'roles' => Role::with('permissions')->get(),
             'permissions' => Permission::all(),
-            'areas' => Area::all()
+            'areas' => Area::with('headquarter')->get()
         ]);
     }
 

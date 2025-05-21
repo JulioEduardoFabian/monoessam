@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CafeController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
@@ -30,6 +31,7 @@ Route::get('/migrate', function () {
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/management', [ManagementController::class, 'index'])->name('management');
 Route::get('/food', [FoodController::class, 'index'])->name('management');
+Route::get('/businesses', [BusinessController::class, 'index'])->name('businesses');
 Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
 
 Route::post('users', [UsersController::class, 'store'])->name('users');
