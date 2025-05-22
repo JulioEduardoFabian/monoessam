@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dish;
+use App\Models\Dish_category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,7 +14,9 @@ class FoodController extends Controller
      */
     public function index()
     {
-        return Inertia::render('food/Index');
+        return Inertia::render('food/Index', [
+            'dishes' => Dish::with(['dish_category', 'ingredients'])->paginate(6)->withQueryString()
+        ]);
     }
 
     /**
@@ -61,5 +65,12 @@ class FoodController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function structure()
+    {
+        return Inertia::render('structure-menu/Index', [
+            'categories' => Dish_category::all()
+        ]);
     }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Business;
+use App\Models\Headquarter;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class BusinessController extends Controller
 {
@@ -11,7 +14,10 @@ class BusinessController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('businesses/Index', [
+            'businesses' => Business::all(),
+            'headquarters' => Headquarter::with('business')->get(),
+        ]);
     }
 
     /**

@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useForm } from '@inertiajs/vue3';
+import { ListCheck } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const open = ref(false);
@@ -25,7 +27,9 @@ const submit = () => {
 
 <template>
     <Dialog v-model:open="open">
-        <DialogTrigger>Agregar Permisos</DialogTrigger>
+        <DialogTrigger
+            ><Button title="Agregar Permiso" class="h-full w-auto bg-blue-400"><ListCheck /></Button
+        ></DialogTrigger>
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Nuevo Permiso</DialogTitle>

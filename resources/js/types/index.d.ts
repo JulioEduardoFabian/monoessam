@@ -74,4 +74,26 @@ export interface Cafe{
     cafe_id: number
 }
 
+export interface Dish{
+    id: number,
+    name: string,
+    description: string,
+    dish_category_id: number
+}
+
+export interface Business{
+    id: number,
+    name: string
+}
+
+export interface Headquarter{
+    id: number,
+    name: string
+}
+
+export interface Ingredient{
+    id: number,
+    name: string
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;
