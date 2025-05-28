@@ -10,6 +10,7 @@ import ServicesTable from './ServicesTable.vue';
 interface Props {
     businesses: Business[];
     headquarters: Headquarter[];
+    services: any[];
 }
 
 defineProps<Props>();
@@ -26,7 +27,7 @@ defineProps<Props>();
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <BusinessTable :businesses="businesses" />
                 <HeadquartersTable :headquarters="headquarters" />
-                <ServicesTable />
+                <ServicesTable :services="services" />
             </div>
         </div>
     </AppLayout>

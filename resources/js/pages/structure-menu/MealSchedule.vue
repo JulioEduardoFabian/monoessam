@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import DatePicker from './DatePicker.vue';
+import DatePickerRange from './DatePickerRange.vue';
 
 const dishesPicked = ref([]);
 </script>
@@ -10,6 +10,6 @@ const dishesPicked = ref([]);
         class="border-sidebar-border/70 dark:border-sidebar-border relative col-span-2 aspect-video overflow-hidden overflow-y-auto rounded-xl border"
     >
         <h1>Programación</h1>
-        <DatePicker :dishes="dishesPicked" />
+        <DatePickerRange :dishes="dishesPicked" />
     </div>
 </template>

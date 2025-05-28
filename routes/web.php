@@ -33,6 +33,7 @@ Route::get('/management', [ManagementController::class, 'index'])->name('managem
 Route::get('/food', [FoodController::class, 'index'])->name('management');
 Route::get('/businesses', [BusinessController::class, 'index'])->name('businesses');
 Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
+//Route::get('/sales', [SaleController::class, 'index'])->name('sales');
 
 Route::post('users', [UsersController::class, 'store'])->name('users');
 Route::post('roles', [RoleController::class, 'store'])->name('roles');

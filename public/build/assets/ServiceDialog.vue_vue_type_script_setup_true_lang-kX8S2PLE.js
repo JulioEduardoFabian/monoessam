@@ -1,0 +1,6 @@
+import{_ as i}from"./index-B7Q4OLwy.js";import{_ as c,a as _,b as u,c as f,d as m}from"./DialogTrigger.vue_vue_type_script_setup_true_lang-C5tfrBgI.js";import{_ as p}from"./DialogFooter.vue_vue_type_script_setup_true_lang-B_boSRxj.js";import{c as d}from"./createLucideIcon-myYHqmjp.js";import{d as g,A as k,g as v,o as $,w as e,a,u as o,e as r}from"./app-CCCsnncY.js";/**
+ * @license lucide-vue-next v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const y=d("CirclePlusIcon",[["circle",{cx:"12",cy:"12",r:"10",key:"1mglay"}],["path",{d:"M8 12h8",key:"1wcyev"}],["path",{d:"M12 8v8",key:"napkw2"}]]),B=g({__name:"ServiceDialog",setup(b){const t=k(!1),l=()=>{console.log("Form submitted")};return(w,s)=>($(),v(o(m),{open:t.value,"onUpdate:open":s[0]||(s[0]=n=>t.value=n)},{default:e(()=>[a(o(c),null,{default:e(()=>[a(i,{title:"Agregar Servicio",class:"h-full w-auto bg-blue-400"},{default:e(()=>[a(o(y))]),_:1})]),_:1}),a(o(_),null,{default:e(()=>[a(o(u),null,{default:e(()=>[a(o(f),null,{default:e(()=>s[1]||(s[1]=[r("Insertar Servicio ")])),_:1})]),_:1}),a(o(p),{onClick:l},{default:e(()=>s[2]||(s[2]=[r(" Agregar ")])),_:1})]),_:1})]),_:1},8,["open"]))}});export{B as _};
