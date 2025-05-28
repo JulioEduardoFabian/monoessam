@@ -20,4 +20,8 @@ class Business extends Model
     {
         return $this->belongsToMany(Service::class);
     }
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class);
+    }
 }
