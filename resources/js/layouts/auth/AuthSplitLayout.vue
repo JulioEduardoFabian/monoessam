@@ -14,16 +14,16 @@ defineProps<{
 <template>
     <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
         <div class="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
-            <div class="absolute inset-0 bg-red-900" />
+            <!-- Imagen de fondo que ocupa todo el espacio -->
+            <div class="absolute inset-0 overflow-hidden">
+                <img src="/kitchen.jpg" alt="Imagen descriptiva" class="h-full w-full object-cover object-center" />
+                <!-- Capa de superposición oscura para mejorar legibilidad del texto (opcional) -->
+                <div class="absolute inset-0 bg-black/30"></div>
+            </div>
+
             <Link :href="route('home')" class="relative z-20 flex items-center text-lg font-medium">
                 {{ name }}
             </Link>
-            <div v-if="quote" class="relative z-20 mt-auto">
-                <blockquote class="space-y-2">
-                    <p class="text-lg">&ldquo;{{ quote.message }}&rdquo;</p>
-                    <footer class="text-sm text-neutral-300">{{ quote.author }}</footer>
-                </blockquote>
-            </div>
         </div>
         <div class="lg:p-8">
             <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">

@@ -4,6 +4,7 @@ import { Business, Headquarter } from '@/types';
 import BusinessTable from './BusinessTable.vue';
 import HeadquartersTable from './HeadquartersTable.vue';
 import InsertModal from './InsertBusinessModal.vue';
+import PropertiesTable from './PropertiesTable.vue';
 import ServiceDialog from './ServiceDialog.vue';
 import ServicesTable from './ServicesTable.vue';
 
@@ -28,6 +29,7 @@ defineProps<Props>();
                 <BusinessTable :businesses="businesses" />
                 <HeadquartersTable :headquarters="headquarters" />
                 <ServicesTable :services="services" />
+                <PropertiesTable />
             </div>
         </div>
     </AppLayout>

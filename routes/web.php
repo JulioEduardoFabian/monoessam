@@ -14,6 +14,7 @@ use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 Route::get('/', function () {
     return Inertia::render('auth/Login');
@@ -35,6 +36,8 @@ Route::get('/businesses', [BusinessController::class, 'index'])->name('businesse
 Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
 //Route::get('/sales', [SaleController::class, 'index'])->name('sales');
 
+Route::get('/businesses', [BusinessController::class, 'index'])->name('businesses');
+
 Route::post('users', [UsersController::class, 'store'])->name('users');
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('areas', [AreaController::class, 'store'])->name('areas');
@@ -53,7 +56,29 @@ Route::get('search-dish/{word}', [DishController::class, 'search'])->name('units
 Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
 Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');
 
+Route::get('/qr/{id}', function ($id) {
+    $arrayProducts = [
+        1 => ['id' => 1, 'name' => 'Laptop Dell XPS 13', 'url' => '/products/1'],
+        2 => ['id' => 2, 'name' => 'Proyector Epson', 'url' => '/products/2'],
+        3 => ['id' => 3, 'name' => 'Impresora HP LaserJet', 'url' => '/products/3'],
+        4 => ['id' => 4, 'name' => 'Monitor Samsung 24"', 'url' => '/products/4'],
+        5 => ['id' => 5, 'name' => 'Teclado Mecánico Logitech', 'url' => '/products/5'],
+        6 => ['id' => 6, 'name' => 'Mouse Inalámbrico Logitech', 'url' => '/products/6'],
+        7 => ['id' => 7, 'name' => 'Disco Duro Externo Seagate', 'url' => '/products/7'],
+        8 => ['id' => 8, 'name' => 'Router TP-Link Archer C6', 'url' => '/products/8'],
+    ];
 
+    // Verificar si el producto existe
+    if (!array_key_exists($id, $arrayProducts)) {
+        return response()->json(['error' => 'Product not found'], 404);
+    }
+
+    // Redirigir a la URL del producto
+    //return redirect()->to($arrayProducts[$id]['url']);
+
+    // Alternativa: Devolver los datos del producto como JSON
+    return response()->json($arrayProducts[$id]);
+});
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
