@@ -96,4 +96,13 @@ export interface Ingredient{
     name: string
 }
 
+export interface Dinner{
+    id: number,
+    name: string,
+    dni: string,
+    phone: string,
+    subdealership_id: number,
+    cafe_id: number
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CafeController;
+use App\Http\Controllers\DinnerController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\ManagementController;
@@ -36,7 +37,7 @@ Route::get('/businesses', [BusinessController::class, 'index'])->name('businesse
 Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
 //Route::get('/sales', [SaleController::class, 'index'])->name('sales');
 
-Route::get('/businesses', [BusinessController::class, 'index'])->name('businesses');
+Route::get('/dinners', [DinnerController::class, 'index'])->name('dinners');
 
 Route::post('users', [UsersController::class, 'store'])->name('users');
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
