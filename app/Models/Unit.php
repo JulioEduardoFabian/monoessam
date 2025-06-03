@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Unit extends Model
 {
@@ -19,5 +21,13 @@ class Unit extends Model
     public function cafes(): HasMany
     {
         return $this->HasMany(Cafe::class);
+    }
+    public function services(): MorphToMany
+    {
+        return $this->morphToMany(Service::class, 'serviceable');
+    }
+    public function subdealerships(): BelongsToMany
+    {
+        return $this->belongsToMany(Subdealership::class, 'subdealership_unit');
     }
 }

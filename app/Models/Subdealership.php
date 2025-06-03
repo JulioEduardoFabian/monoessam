@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Subdealership extends Model
 {
@@ -20,5 +21,8 @@ class Subdealership extends Model
     {
         return $this->hasMany(Dinner::class);
     }
-
+    public function units(): BelongsToMany
+    {
+        return $this->belongsToMany(Unit::class, 'subdealership_unit');
+    }
 }
