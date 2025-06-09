@@ -26,4 +26,8 @@ class Cafe extends Model
     {
         return $this->morphToMany(Service::class, 'serviceable');
     }
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'cafe_user');
+    }
 }
