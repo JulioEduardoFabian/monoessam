@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Business;
+use App\Models\Dealership;
 use App\Models\Headquarter;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -18,7 +19,8 @@ class BusinessController extends Controller
         return Inertia::render('businesses/Index', [
             'businesses' => Business::with('services')->get(),
             'headquarters' => Headquarter::with('business')->get(),
-            'services' => Service::all()
+            'services' => Service::all(),
+            'dealerships' => Dealership::all()
         ]);
     }
 

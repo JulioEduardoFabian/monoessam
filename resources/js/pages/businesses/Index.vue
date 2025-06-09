@@ -2,9 +2,9 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Business, Headquarter } from '@/types';
 import BusinessTable from './BusinessTable.vue';
+import DealershipsTable from './DealershipsTable.vue';
 import HeadquartersTable from './HeadquartersTable.vue';
 import InsertModal from './InsertBusinessModal.vue';
-import PropertiesTable from './PropertiesTable.vue';
 import ServiceDialog from './ServiceDialog.vue';
 import ServicesTable from './ServicesTable.vue';
 
@@ -12,6 +12,7 @@ interface Props {
     businesses: Business[];
     headquarters: Headquarter[];
     services: any[];
+    dealerships: any[];
 }
 
 defineProps<Props>();
@@ -29,7 +30,7 @@ defineProps<Props>();
                 <BusinessTable :businesses="businesses" :services="services" />
                 <HeadquartersTable :headquarters="headquarters" />
                 <ServicesTable :services="services" />
-                <PropertiesTable />
+                <DealershipsTable :dealerships="dealerships" />
             </div>
         </div>
     </AppLayout>
