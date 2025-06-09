@@ -30,4 +30,5 @@ class Unit extends Model
     {
         return $this->belongsToMany(Subdealership::class, 'subdealership_unit');
     }
+    
 }
