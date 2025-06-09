@@ -26,7 +26,7 @@ defineProps<Props>();
                 <ServiceDialog />
             </div>
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <BusinessTable :businesses="businesses" />
+                <BusinessTable :businesses="businesses" :services="services" />
                 <HeadquartersTable :headquarters="headquarters" />
                 <ServicesTable :services="services" />
                 <PropertiesTable />

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Service;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
@@ -11,7 +13,9 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('services/Index', [
+            'services' => Service::all()
+        ]);
     }
 
     /**
@@ -27,7 +31,15 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        Service::create($request->only('name', 'code', 'description'));
+
+        return to_route('businesses');
     }
 
     /**

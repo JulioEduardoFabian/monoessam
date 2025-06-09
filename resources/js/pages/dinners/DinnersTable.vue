@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash } from 'lucide-vue-next';
+import { Dinner } from '@/types';
+import { Printer, Trash } from 'lucide-vue-next';
 
 const props = defineProps({
     dinners: {
-        type: Array,
+        type: Array as () => Dinner[],
         required: true,
     },
 });
@@ -29,9 +30,10 @@ const props = defineProps({
                     <TableCell class="">{{ dinner.dni }}</TableCell>
                     <TableCell class="">{{ dinner.phone }}</TableCell>
                     <TableCell class="">{{ dinner.cafe.name }}</TableCell>
-                    <TableCell
-                        ><Button class="bg-red-400"><Trash /></Button
-                    ></TableCell>
+                    <TableCell class="flex items-center justify-start gap-2"
+                        ><Button class="bg-red-400"><Trash /></Button>
+                        <Button class="bg-blue-400"><Printer /> </Button>
+                    </TableCell>
                 </TableRow>
             </TableBody>
         </Table>

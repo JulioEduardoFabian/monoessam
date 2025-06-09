@@ -105,4 +105,11 @@ export interface Dinner{
     cafe_id: number
 }
 
+export interface Service{
+    id: number,
+    code: string,
+    name: string,
+    description: string
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

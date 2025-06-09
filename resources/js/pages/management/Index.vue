@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Cafe, Mine, Unit } from '@/types';
+import { Cafe, Mine, Service, Unit } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import ManagementModal from './ManagementModal.vue';
 import Tabs from './Tabs.vue';
@@ -9,6 +9,7 @@ interface Props {
     mines: Mine[];
     units: Unit[];
     cafes: Cafe[];
+    services: Service[];
 }
 
 defineProps<Props>();
@@ -17,7 +18,7 @@ defineProps<Props>();
     <Head title="Lugares" />
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <Tabs :mines="mines" :units="units" :cafes="cafes" />
+            <Tabs :mines="mines" :units="units" :cafes="cafes" :services="services" />
         </div>
         <ManagementModal />
     </AppLayout>

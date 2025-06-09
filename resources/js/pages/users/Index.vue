@@ -49,6 +49,7 @@ const deletePermission = (permissionId: any) => {
                                     <TableHead>Correo</TableHead>
                                     <TableHead>Rol</TableHead>
                                     <TableHead class="text-right">Area</TableHead>
+                                    <TableHead class="text-right">Cafetería</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

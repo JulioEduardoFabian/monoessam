@@ -9,6 +9,10 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    services: {
+        type: Array,
+        required: true,
+    },
 });
 </script>
 <template>
@@ -25,10 +29,10 @@ const props = defineProps({
             <TableBody>
                 <TableRow v-for="business in businesses" :key="business.id">
                     <TableCell class="font-medium">{{ business.name }}</TableCell>
-                    <TableCell class="font-medium"><ServicePopover /></TableCell>
+                    <TableCell class="font-medium"><ServicePopover :services="services" :business="business" /></TableCell>
                     <TableCell
-                        ><Button class="bg-red-400"><Trash /></Button
-                    ></TableCell>
+                        ><Button class="bg-red-400"><Trash /></Button>
+                    </TableCell>
                 </TableRow>
             </TableBody>
         </Table>

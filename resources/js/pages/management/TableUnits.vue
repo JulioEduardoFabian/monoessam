@@ -2,7 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Service } from '@/types';
 import { Pencil } from 'lucide-vue-next';
+import ServiceablesPopover from './ServiceablesPopover.vue';
 const props = defineProps<{
     units: {
         id: number;
@@ -11,6 +13,7 @@ const props = defineProps<{
             name: string;
         };
     }[];
+    services: Service[];
 }>();
 </script>
 <template>
@@ -32,8 +35,9 @@ const props = defineProps<{
                     <TableRow v-for="unit in props.units" :key="unit.id">
                         <TableCell class="font-medium">{{ unit.name }}</TableCell>
                         <TableCell class="font-medium">{{ unit.mine.name }}</TableCell>
-                        <TableCell class="text-right">
+                        <TableCell class="flex flex-row justify-end gap-2 text-right">
                             <Button><Pencil /></Button>
+                            <ServiceablesPopover :services="unit.mine.services" :business="unit" :placeType="2" />
                         </TableCell>
                     </TableRow>
                 </TableBody>

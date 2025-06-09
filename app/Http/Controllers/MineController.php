@@ -75,4 +75,15 @@ class MineController extends Controller
 
         return response()->json($mines);
     }
+
+    public function mineServiceables(Request $request)
+    {
+        $mine = Mine::find($request->placeId);
+
+        $selectedIds = array_map('intval', array_keys(array_filter($request->services)));
+
+        $serviceables = $mine->services()->sync($selectedIds);
+
+        return to_route('management');
+    }
 }

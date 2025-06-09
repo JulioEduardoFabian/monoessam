@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dinner;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,7 +15,8 @@ class DinnerController extends Controller
     public function index()
     {
         return Inertia::render('dinners/Index', [
-            'dinners' => Dinner::with('cafe')->get()
+            'dinners' => Dinner::with('cafe')->get(),
+            'services' => Service::all()
         ]);
     }
 
@@ -64,5 +66,11 @@ class DinnerController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function search(string $word)
+    {
+        $dinners = Dinner::where('name', 'like', '%' . $word . '%')->orWhere('dni', 'like', '%' . $word . '%')->with(['cafe', 'cafe.unit'])->take(8)->get();
+        return $dinners;
     }
 }

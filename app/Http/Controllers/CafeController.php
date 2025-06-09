@@ -67,4 +67,15 @@ class CafeController extends Controller
     {
         //
     }
+
+    public function cafeServiceables(Request $request)
+    {
+        $cafe = Cafe::find($request->placeId);
+
+        $selectedIds = array_map('intval', array_keys(array_filter($request->services)));
+
+        $serviceables = $cafe->services()->sync($selectedIds);
+
+        return to_route('management');
+    }
 }
