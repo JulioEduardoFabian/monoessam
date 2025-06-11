@@ -3,7 +3,7 @@ import Button from '@/components/ui/button/Button.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Dinner, Service, Unit } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { UserRoundPlus } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import DinnersTable from './DinnersTable.vue';
@@ -13,6 +13,10 @@ import SalesCard from './SalesCard.vue';
 
 const cafeSelected = ref(0);
 const servicesSelected = ref([]);
+
+const page = usePage();
+
+const userAuth = page.props.auth;
 
 interface Props {
     dinners: Dinner[];
@@ -43,7 +47,7 @@ watch(cafeSelected, (newVal) => {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                            <SelectLabel>Comedores Autorizadas</SelectLabel>
+                            <SelectLabel>Cafeterías Autorizadas</SelectLabel>
                             <SelectItem v-for="cafe in cafes" :value="cafe.id" :key="cafe.id">
                                 {{ cafe.name }}
                             </SelectItem>
@@ -55,7 +59,7 @@ watch(cafeSelected, (newVal) => {
                 <PricesDialog :services="servicesSelected" />
             </div>
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <SalesCard :services="services" />
+                <SalesCard :services="services" :cafeSelected="cafeSelected" />
                 <DinnersTable :dinners="dinners" :services="servicesSelected" />
             </div>
         </div>

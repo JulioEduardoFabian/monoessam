@@ -69,7 +69,7 @@ Route::post('subdealerships', [SubdealershipController::class, 'store'])->name('
 Route::get('search-mine/{word}', [MineController::class, 'search'])->name('mines.search');
 Route::get('search-unit/{word}', [UnitController::class, 'search'])->name('units.search');
 Route::get('search-dish/{word}', [DishController::class, 'search'])->name('units.search');
-Route::get('search-dinner/{word}', [DinnerController::class, 'search'])->name('units.search');
+Route::get('search-dinner/{word}/{id}', [DinnerController::class, 'search'])->name('units.search');
 
 Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
 Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');

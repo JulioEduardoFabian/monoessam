@@ -32,6 +32,7 @@ class RoleController extends Controller
         $user = Role::create([
             'name' => $request->name,
             'guard_name' => 'web',
+            'area_id' => $request->area_id,
         ]);
 
         return to_route('users');

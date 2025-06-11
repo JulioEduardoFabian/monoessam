@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
 import { Dinner, Service } from '@/types';
-import SaleDialog from './SaleDialog.vue';
+import { ShoppingCart } from 'lucide-vue-next';
 
 const props = defineProps({
     dinners: {
@@ -12,6 +13,11 @@ const props = defineProps({
         required: true,
     },
 });
+
+const saveSale = () => {
+    // Implement the logic to save the sale
+    console.log('Sale saved');
+};
 </script>
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
@@ -29,7 +35,8 @@ const props = defineProps({
                                 Código: <span class="font-mono">{{ service.code }}</span>
                             </p>
                             <div class="mt-3">
-                                <SaleDialog :services="props.services" />
+                                <Button class="bg-green-400" @click="saveSale"><ShoppingCart /></Button>
+                                <!-- <SaleDialog :services="props.services" /> -->
                             </div>
                         </div>
                         <div class="ml-2 flex flex-col items-end">
@@ -37,17 +44,6 @@ const props = defineProps({
                                 class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 transition-colors group-hover:bg-green-200"
                                 >S./{{ service.pivot.price }}</span
                             >
-                            <span v-if="service.duration" class="mt-2 flex items-center text-xs text-gray-400">
-                                <svg class="mr-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    ></path>
-                                </svg>
-                                {{ service.duration }} min
-                            </span>
                         </div>
                     </div>
                 </div>

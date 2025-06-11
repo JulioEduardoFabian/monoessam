@@ -11,6 +11,10 @@ const props = defineProps({
         type: Array as () => Service[],
         required: true,
     },
+    cafeSelected: {
+        type: Number,
+        required: true,
+    },
 });
 
 const dinnersFound = ref([]);
@@ -20,7 +24,7 @@ const searchDinner = (event: Event) => {
     event.preventDefault();
 
     axios
-        .get('/search-dinner/' + event.target.value)
+        .get('/search-dinner/' + event.target.value + '/' + props.cafeSelected)
         .then((response) => {
             dinnersFound.value = response.data;
             subdealership.value = response.data[0]?.subdealership || {};
@@ -33,7 +37,7 @@ const searchDinner = (event: Event) => {
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden overflow-y-auto rounded-xl border">
         <Card class="min-h-full w-full overflow-y-auto p-3 shadow">
-            <p class="text-center font-semibold">Ventas</p>
+            <p class="text-center font-semibold">Punto de Venta</p>
             <div class="mt-2">
                 <Input type="text" placeholder="Buscar por dni o nombre de comensal" class="w-full" @keyup.enter="searchDinner" />
                 <div class="mt-2 grid auto-rows-min gap-4 md:grid-cols-2" v-if="dinnersFound.length > 0">

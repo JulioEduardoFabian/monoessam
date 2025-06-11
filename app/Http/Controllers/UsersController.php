@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use App\Models\Cafe;
+use App\Models\Headquarter;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,9 +21,11 @@ class UsersController extends Controller
     {
         return Inertia::render('users/Index', [
             'users' => User::with('roles')->get(),
-            'roles' => Role::with('permissions')->get(),
+            'roles' => Role::with(['permissions', 'area', 'area.headquarter', 'area.cafe'])->get(),
             'permissions' => Permission::all(),
-            'areas' => Area::with('headquarter')->get()
+            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit'])->get(),
+            'cafes' => Cafe::all(),
+            'headquarters' => Headquarter::all()
         ]);
     }
 

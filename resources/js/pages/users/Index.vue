@@ -2,7 +2,7 @@
 import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Area, Permission, Role, User } from '@/types';
+import { Area, Cafe, Headquarter, Permission, Role, User } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { Trash } from 'lucide-vue-next';
 import AreaModal from './AreaModal.vue';
@@ -18,6 +18,8 @@ interface Props {
     roles: Role[];
     permissions: Permission[];
     areas: Area[];
+    cafes: Cafe[];
+    headquarters: Headquarter[];
 }
 
 defineProps<Props>();
@@ -35,8 +37,8 @@ const deletePermission = (permissionId: any) => {
             <div class="flex h-[40px] w-full items-center justify-start gap-1">
                 <PermissionModal />
                 <Modal />
-                <RoleModal />
-                <AreaModal />
+                <RoleModal :areas="areas" />
+                <AreaModal :cafes="cafes" :headquarters="headquarters" />
             </div>
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">

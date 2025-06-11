@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\DinnersImport;
+use App\Models\Area;
 use App\Models\Cafe;
 use App\Models\Dinner;
 use App\Models\Service;
@@ -18,13 +19,26 @@ class DinnerController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
+
+        $roles = $user->roles;
+
+        $cafes =  [];
+
+        foreach ($roles as $role) {
+            $area = Area::find($role->area_id);
+            $cafe = Cafe::with(['services' => function ($query) {
+                $query->withPivot('price');
+            }])->find($area->cafe_id);
+            if ($cafe) {
+                $cafes[] = $cafe;
+            }
+        }
         return Inertia::render('dinners/Index', [
             'dinners' => Dinner::with('cafe')->get(),
             'services' => Service::all(),
             'units' => Unit::with('services')->get(),
-            'cafes' => Cafe::with(['services' => function ($query) {
-                $query->withPivot('price');
-            }])->get()
+            'cafes' => $cafes
         ]);
     }
 
@@ -76,9 +90,9 @@ class DinnerController extends Controller
         //
     }
 
-    public function search(string $word)
+    public function search(string $word, string $id)
     {
-        $dinners = Dinner::where('name', 'like', '%' . $word . '%')->orWhere('dni', 'like', '%' . $word . '%')->with(['cafe', 'cafe.unit', 'subdealership'])->take(8)->get();
+        $dinners = Dinner::where('name', 'like', '%' . $word . '%')->where('cafe_id', $id)->orWhere('dni', 'like', '%' . $word . '%')->with(['cafe', 'cafe.unit', 'subdealership'])->take(8)->get();
         return $dinners;
     }
 

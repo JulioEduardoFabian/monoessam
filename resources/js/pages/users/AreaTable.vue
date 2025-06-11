@@ -21,14 +21,22 @@ const deleteArea = (areaId: any) => {
         <TableHeader>
             <TableRow>
                 <TableHead class="w-[100px]">Area</TableHead>
-                <TableHead class="">Sede</TableHead>
+                <TableHead class="">Sede o Cafetería</TableHead>
                 <TableHead>Opciones</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
             <TableRow v-for="area in props.areas" :key="area.id">
                 <TableCell class="font-medium">{{ area.name }}</TableCell>
-                <TableCell class="font-medium">{{ area.headquarter.name }}</TableCell>
+                <TableCell class="font-medium">
+                    {{
+                        area.headquarter
+                            ? 'Sede - ' + area.headquarter.name
+                            : area.cafe
+                              ? 'Cafe  - ' + area.cafe.name + ' - ' + area.cafe.unit.name
+                              : ''
+                    }}
+                </TableCell>
                 <TableCell
                     ><Button @click="deleteArea(area.id)"><Trash /></Button
                 ></TableCell>

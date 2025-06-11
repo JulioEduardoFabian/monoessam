@@ -16,6 +16,8 @@ const props = defineProps<{
             <TableRow>
                 <TableHead class="w-[100px]">Rol</TableHead>
                 <TableHead>Guard</TableHead>
+                <TableHead>Area</TableHead>
+                <TableHead>Cafeteria o Sede</TableHead>
                 <TableHead>Opciones</TableHead>
             </TableRow>
         </TableHeader>
@@ -23,6 +25,8 @@ const props = defineProps<{
             <TableRow v-for="role in roles" :key="role.id">
                 <TableCell class="font-medium">{{ role.name }}</TableCell>
                 <TableCell>{{ role.guard_name }}</TableCell>
+                <TableCell>{{ role.area?.name }}</TableCell>
+                <TableCell>{{ role.area?.cafe.name }}</TableCell>
                 <TableCell>
                     <RolePermissionPopover :role="role" :permissions="permissions" />
                 </TableCell>
