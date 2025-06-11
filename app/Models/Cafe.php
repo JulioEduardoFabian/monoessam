@@ -30,4 +30,8 @@ class Cafe extends Model
     {
         return $this->belongsToMany(User::class, 'cafe_user');
     }
+    public function areas(): HasMany
+    {
+        return $this->hasMany(Area::class);
+    }
 }

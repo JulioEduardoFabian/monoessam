@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Sale extends Model
 {
     use HasFactory;
+    protected $fillable = ['cafe_id',];
     
 }
