@@ -15,7 +15,7 @@ class Area extends Model
     use HasFactory;
 
 
-    protected $fillable = ['name','headquarter_id'];
+    protected $fillable = ['name','headquarter_id','cafe_id'];
 
 
     public function headquarter()
@@ -27,4 +27,8 @@ class Area extends Model
         return $this->hasMany(Role::class);
     }
     
+    public function cafe(): BelongsTo
+    {
+        return $this->belongsTo(Cafe::class);
+    }
 }
