@@ -3,6 +3,7 @@
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CafeController;
+use App\Http\Controllers\DealershipController;
 use App\Http\Controllers\DinnerController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\MineController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SubdealershipController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Artisan;
@@ -40,8 +42,10 @@ Route::get('/structure-menu', [FoodController::class, 'structure'])->name('struc
 //Route::get('/sales', [SaleController::class, 'index'])->name('sales');
 
 Route::get('/dinners', [DinnerController::class, 'index'])->name('dinners');
+Route::post('/dinners-excel', [DinnerController::class, 'excel'])->name('dinners.excel');
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
 Route::post('/services', [ServiceController::class, 'store'])->name('services.insert');
+Route::put('/services-prices', [ServiceController::class, 'updatePrices'])->name('services.update-prices');
 
 Route::post('/mine-serviceables', [MineController::class, 'mineServiceables'])->name('mineServiceables');
 Route::post('/unit-serviceables', [UnitController::class, 'unitServiceables'])->name('unitServiceables');
@@ -50,13 +54,17 @@ Route::post('/cafe-serviceables', [CafeController::class, 'cafeServiceables'])->
 Route::post('users', [UsersController::class, 'store'])->name('users');
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('areas', [AreaController::class, 'store'])->name('areas');
-Route::delete('areas/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
 Route::post('permissions', [PermissionController::class, 'store'])->name('permissions');
+
+Route::delete('areas/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
 Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
 
 Route::post('mines', [MineController::class, 'store'])->name('mines');
 Route::post('units', [UnitController::class, 'store'])->name('units');
 Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
+
+Route::post('dealerships', [DealershipController::class, 'store'])->name('dealerships');
+Route::post('subdealerships', [SubdealershipController::class, 'store'])->name('subdealerships');
 
 Route::get('search-mine/{word}', [MineController::class, 'search'])->name('mines.search');
 Route::get('search-unit/{word}', [UnitController::class, 'search'])->name('units.search');

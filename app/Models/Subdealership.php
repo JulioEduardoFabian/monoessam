@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Subdealership extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'ruc', 'fiscal_address', 'legal_address', 'phone', 'email'];
+    protected $fillable = ['name', 'ruc', 'fiscal_address', 'legal_address', 'phone', 'email', 'dealership_id'];
 
     public function dealership(): BelongsTo
     {

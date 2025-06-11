@@ -6,6 +6,7 @@ use App\Models\Business;
 use App\Models\Dealership;
 use App\Models\Headquarter;
 use App\Models\Service;
+use App\Models\Subdealership;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -20,7 +21,8 @@ class BusinessController extends Controller
             'businesses' => Business::with('services')->get(),
             'headquarters' => Headquarter::with('business')->get(),
             'services' => Service::all(),
-            'dealerships' => Dealership::all()
+            'dealerships' => Dealership::all(),
+            'subdealerships' => Subdealership::with('dealership')->get(),
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cafe;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -72,5 +73,19 @@ class ServiceController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function updatePrices(Request $request)
+    {
+        $services = $request->services;
+
+        foreach ($services as $service) {
+            $cafe = Cafe::find($service['pivot']['serviceable_id']);
+            if ($cafe) {
+                $cafe->services()->updateExistingPivot($service['id'], ['price' => $service['pivot']['price']]);
+            }
+        }
+
+        return to_route('dinners');
     }
 }

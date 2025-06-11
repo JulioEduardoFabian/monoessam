@@ -31,7 +31,7 @@ const generateQRUrl = (id: number) => {
             <TableCaption>Lista de Concesionarios de la Empresa. </TableCaption>
             <TableHeader>
                 <TableRow>
-                    <TableHead class="">Consecionaria</TableHead>
+                    <TableHead class="">Concesionaria</TableHead>
                     <TableHead class="">RUC</TableHead>
                     <TableHead>Opciones</TableHead>
                 </TableRow>

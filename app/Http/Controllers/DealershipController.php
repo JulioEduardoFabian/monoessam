@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dealership;
 use Illuminate\Http\Request;
 
 class DealershipController extends Controller
@@ -27,7 +28,9 @@ class DealershipController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dealership = Dealership::create($request->all());
+
+        return to_route('businesses');
     }
 
     /**
