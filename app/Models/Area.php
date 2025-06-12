@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role;
 
 class Area extends Model
@@ -22,9 +23,9 @@ class Area extends Model
     {
         return $this->belongsTo(Headquarter::class);
     }
-    public function roles(): HasMany
+    public function roles(): BelongsToMany
     {
-        return $this->hasMany(Role::class);
+        return $this->belongsToMany(Role::class,'area_role');
     }
     
     public function cafe(): BelongsTo
