@@ -20,12 +20,12 @@ class UsersController extends Controller
     public function index()
     {
         return Inertia::render('users/Index', [
-            'users' => User::with('roles')->get(),
-            'roles' => Role::with(['permissions', 'area', 'area.headquarter', 'area.cafe'])->get(),
+            'users' => User::with(['roles', 'roles.areas', 'roles.areas.headquarter', 'roles.areas.cafe'])->get(),
+            'roles' => Role::with(['permissions', 'areas', 'areas.roles', 'areas.headquarter', 'areas.cafe'])->get(),
             'permissions' => Permission::all(),
-            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit'])->get(),
-            'cafes' => Cafe::all(),
-            'headquarters' => Headquarter::all()
+            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles'])->get(),
+            'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.roles'])->get(),
+            'headquarters' => Headquarter::with(['areas', 'areas.roles'])->get()
         ]);
     }
 
@@ -44,6 +44,10 @@ class UsersController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        $role = Role::find($request->role_id);
+
+        $user->syncRoles([$role->name]);
 
         return to_route('users');
     }

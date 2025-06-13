@@ -14,10 +14,7 @@ const props = defineProps({
     },
 });
 
-const saveSale = () => {
-    // Implement the logic to save the sale
-    console.log('Sale saved');
-};
+const saveSale = () => {};
 </script>
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">

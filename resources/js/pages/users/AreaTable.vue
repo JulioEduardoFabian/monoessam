@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Area } from '@/types';
+import { Area, Role } from '@/types';
 import { router } from '@inertiajs/vue3';
 import { Trash } from 'lucide-vue-next';
+import AreaRolesDialog from './AreaRolesDialog.vue';
 
 const props = defineProps<{
     areas?: Area[];
+    roles?: Role[];
 }>();
 
 const deleteArea = (areaId: any) => {
@@ -37,8 +39,9 @@ const deleteArea = (areaId: any) => {
                               : ''
                     }}
                 </TableCell>
-                <TableCell
-                    ><Button @click="deleteArea(area.id)"><Trash /></Button
+                <TableCell>
+                    <AreaRolesDialog :area="area" :roles="roles" />
+                    <Button class="ms-2" @click="deleteArea(area.id)"><Trash /></Button
                 ></TableCell>
             </TableRow>
         </TableBody>

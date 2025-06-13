@@ -24,6 +24,19 @@ interface Props {
 
 defineProps<Props>();
 
+const locationLabel = (user: User): string => {
+    const area = user.roles?.[0]?.areas?.[0];
+    if (!area) return '';
+
+    if (area.headquarter) {
+        return `Sede - ${area.headquarter.name}`;
+    } else if (area.cafe) {
+        return `Cafetería - ${area.cafe.name}`;
+    }
+
+    return '';
+};
+
 const deletePermission = (permissionId: any) => {
     if (confirm('Estas seguro de eliminar el permiso?')) {
         router.delete(route('permissions.destroy', permissionId));
@@ -36,7 +49,7 @@ const deletePermission = (permissionId: any) => {
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex h-[40px] w-full items-center justify-start gap-1">
                 <PermissionModal />
-                <Modal />
+                <Modal :cafes="cafes" :headquarters="headquarters" :roles="roles" />
                 <RoleModal :areas="areas" />
                 <AreaModal :cafes="cafes" :headquarters="headquarters" />
             </div>
@@ -51,7 +64,7 @@ const deletePermission = (permissionId: any) => {
                                     <TableHead>Correo</TableHead>
                                     <TableHead>Rol</TableHead>
                                     <TableHead class="text-right">Area</TableHead>
-                                    <TableHead class="text-right">Cafetería</TableHead>
+                                    <TableHead class="text-right">Sede o Cafetería</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -61,7 +74,10 @@ const deletePermission = (permissionId: any) => {
                                     <TableCell>
                                         <SelectRole :user="user" :roles="roles" />
                                     </TableCell>
-                                    <TableCell class="text-right"> Sistemas </TableCell>
+                                    <TableCell class="text-right"> {{ user.roles[0].areas[0].name }} </TableCell>
+                                    <TableCell class="text-right">
+                                        {{ locationLabel(user) }}
+                                    </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -94,7 +110,7 @@ const deletePermission = (permissionId: any) => {
                     </Card>
                 </div>
                 <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                    <AreaTable :areas="areas" />
+                    <AreaTable :areas="areas" :roles="roles" />
                 </div>
             </div>
         </div>

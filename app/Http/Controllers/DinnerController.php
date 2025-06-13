@@ -8,6 +8,7 @@ use App\Models\Cafe;
 use App\Models\Dinner;
 use App\Models\Service;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -21,17 +22,21 @@ class DinnerController extends Controller
     {
         $user = auth()->user();
 
+        $user = User::with(['roles.areas' => function ($query) {
+            $query->select('areas.id', 'areas.name', 'cafe_id');
+        }])->find($user->id);
+
+        return $user;
+
         $roles = $user->roles;
 
         $cafes =  [];
 
         foreach ($roles as $role) {
-            $area = Area::find($role->area_id);
-            $cafe = Cafe::with(['services' => function ($query) {
-                $query->withPivot('price');
-            }])->find($area->cafe_id);
-            if ($cafe) {
-                $cafes[] = $cafe;
+            foreach ($role->areas as $area) {
+                if ($area->cafe_id) {
+                    $cafes[] = $area->cafe;
+                }
             }
         }
         return Inertia::render('dinners/Index', [
