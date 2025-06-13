@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
+use function PHPUnit\Framework\isArray;
+
 class DinnerController extends Controller
 {
     /**
@@ -22,28 +24,28 @@ class DinnerController extends Controller
     {
         $user = auth()->user();
 
-        $user = User::with(['roles.areas' => function ($query) {
-            $query->select('areas.id', 'areas.name', 'cafe_id');
-        }])->find($user->id);
+        // Cargar solo los datos necesarios en una sola consulta
+        $user->load([
+            'roleAreas.area:id,name,cafe_id',
+            'roleAreas.role:id,name'
+        ]);
 
-        return $user;
+        // Obtener IDs de cafés únicos directamente
+        $cafeIds = $user->roleAreas
+            ->pluck('area.cafe_id')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
 
-        $roles = $user->roles;
-
-        $cafes =  [];
-
-        foreach ($roles as $role) {
-            foreach ($role->areas as $area) {
-                if ($area->cafe_id) {
-                    $cafes[] = $area->cafe;
-                }
-            }
-        }
+        // Cargar todos los datos necesarios en consultas eficientes
         return Inertia::render('dinners/Index', [
             'dinners' => Dinner::with('cafe')->get(),
             'services' => Service::all(),
             'units' => Unit::with('services')->get(),
-            'cafes' => $cafes
+            'cafes' => Cafe::with(['services' => function ($query) {
+                $query->withPivot('price');
+            }])->whereIn('id', $cafeIds)->get()
         ]);
     }
 
@@ -97,7 +99,14 @@ class DinnerController extends Controller
 
     public function search(string $word, string $id)
     {
-        $dinners = Dinner::where('name', 'like', '%' . $word . '%')->where('cafe_id', $id)->orWhere('dni', 'like', '%' . $word . '%')->with(['cafe', 'cafe.unit', 'subdealership'])->take(8)->get();
+        $dinners = Dinner::where(function ($query) use ($word) {
+            $query->where('name', 'like', '%' . $word . '%')
+                ->orWhere('dni', 'like', '%' . $word . '%');
+        })
+            ->where('cafe_id', $id)
+            ->with(['cafe', 'cafe.unit', 'subdealership'])
+            ->take(8)
+            ->get();
         return $dinners;
     }
 

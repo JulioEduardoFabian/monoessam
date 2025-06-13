@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Permission\Models\Role;
 
 class User extends Authenticatable
 {
@@ -48,7 +49,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-     public function cafes(): BelongsToMany
+    public function cafes(): BelongsToMany
     {
         return $this->belongsToMany(Cafe::class, 'cafe_user');
     }
@@ -57,8 +58,13 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Area::class, 'user_role_area', 'user_id', 'area_id');
     }
-    public function roles(): BelongsToMany
+    public function roleAssignments(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'user_role_area', 'user_id', 'role_id');
+        return $this->belongsToMany(Role::class, 'user_role_area', 'user_id', 'role_id')->withPivot('area_id');
+    }
+
+    public function roleAreas()
+    {
+        return $this->hasMany(UserRoleArea::class, 'user_id');
     }
 }
