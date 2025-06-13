@@ -52,4 +52,13 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Cafe::class, 'cafe_user');
     }
+
+    public function areas(): BelongsToMany
+    {
+        return $this->belongsToMany(Area::class, 'user_role_area', 'user_id', 'area_id');
+    }
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_role_area', 'user_id', 'role_id');
+    }
 }
