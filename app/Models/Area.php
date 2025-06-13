@@ -25,11 +25,15 @@ class Area extends Model
     }
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class,'area_role');
+        return $this->belongsToMany(Role::class,'user_role_area','area_id', 'role_id');
     }
-    
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class,'user_role_area','area_id', 'user_id');
+    }
     public function cafe(): BelongsTo
     {
         return $this->belongsTo(Cafe::class);
     }
+
 }
