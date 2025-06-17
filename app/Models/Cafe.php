@@ -34,4 +34,8 @@ class Cafe extends Model
     {
         return $this->hasMany(Area::class);
     }
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
 }
