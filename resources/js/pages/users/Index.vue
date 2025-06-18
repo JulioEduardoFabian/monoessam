@@ -53,7 +53,10 @@ const deletePermission = (permissionId: any) => {
                 <RoleModal :areas="areas" />
                 <AreaModal :cafes="cafes" :headquarters="headquarters" />
             </div>
-            <div class="grid auto-rows-min gap-4 md:grid-cols-2">
+            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
+                    <AreaTable :areas="areas" :roles="roles" />
+                </div>
                 <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
                     <Card>
                         <Table>
@@ -108,9 +111,6 @@ const deletePermission = (permissionId: any) => {
                             </TableBody>
                         </Table>
                     </Card>
-                </div>
-                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                    <AreaTable :areas="areas" :roles="roles" />
                 </div>
             </div>
         </div>

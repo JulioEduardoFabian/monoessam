@@ -71,6 +71,8 @@ Route::get('search-unit/{word}', [UnitController::class, 'search'])->name('units
 Route::get('search-dish/{word}', [DishController::class, 'search'])->name('units.search');
 Route::get('search-dinner/{word}/{id}', [DinnerController::class, 'search'])->name('units.search');
 
+Route::get('print-test', [CafeController::class, 'printTest']);
+
 Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
 Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');
 

@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 use function PHPUnit\Framework\isArray;
 
@@ -107,6 +109,9 @@ class DinnerController extends Controller
             ->with(['cafe', 'cafe.unit', 'subdealership'])
             ->take(8)
             ->get();
+
+        $this->printTest();
+
         return $dinners;
     }
 
@@ -124,5 +129,32 @@ class DinnerController extends Controller
         }
 
         return redirect()->back()->with('error', 'No se pudo subir el archivo');
+    }
+
+    public function printTest()
+    {
+        try {
+            $nombreImpresora = "EPSON TM-T20II Receipt";
+
+            $connector = new WindowsPrintConnector($nombreImpresora);
+
+            $printer = new Printer($connector);
+
+            $printer->text("Hello World\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->text("SOY DIEGO\n");
+            $printer->cut();
+            $printer->close();
+
+            return response()->json(['success' => 'Ticket impreso correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al imprimir: ' . $e->getMessage()]);
+        }
     }
 }
