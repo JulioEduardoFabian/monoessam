@@ -38,4 +38,8 @@ class Cafe extends Model
     {
         return $this->hasMany(Sale::class);
     }
+    public function businesses(): MorphToMany
+    {
+        return $this->morphToMany(Business::class, 'businessable');
+    }
 }
