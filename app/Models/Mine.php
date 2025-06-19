@@ -23,4 +23,8 @@ class Mine extends Model
     {
         return $this->morphToMany(Service::class, 'serviceable');
     }
+    public function businesses(): MorphToMany
+    {
+        return $this->morphToMany(Business::class, 'businessable');
+    }
 }
