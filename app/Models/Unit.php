@@ -30,5 +30,8 @@ class Unit extends Model
     {
         return $this->belongsToMany(Subdealership::class, 'subdealership_unit');
     }
-    
+   public function businesses(): MorphToMany
+    {
+        return $this->morphToMany(Business::class, 'businessable');
+    }
 }
