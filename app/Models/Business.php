@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Business extends Model
 {
@@ -22,5 +23,17 @@ class Business extends Model
     public function contracts(): HasMany
     {
         return $this->hasMany(Contract::class);
+    }
+    public function mines(): MorphToMany
+    {
+        return $this->morphedByMany(Mine::class, 'businessable');
+    }
+    public function units(): MorphToMany
+    {
+        return $this->morphedByMany(Unit::class, 'businessable');   
+    }
+    public function cafes(): MorphToMany
+    {
+        return $this->morphedByMany(Cafe::class, 'businessable');
     }
 }
