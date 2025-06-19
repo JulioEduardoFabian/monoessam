@@ -21,11 +21,11 @@ class UsersController extends Controller
     {
         return Inertia::render('users/Index', [
             'users' => User::with(['roles', 'roles.areas', 'roles.areas.headquarter', 'roles.areas.cafe'])->get(),
-            'roles' => Role::with(['permissions', 'areas', 'areas.roles', 'areas.headquarter', 'areas.cafe'])->get(),
+            'roles' => Role::with(['permissions', 'areas', 'areas.roles', 'areas.headquarter', 'areas.cafe', 'users'])->get(),
             'permissions' => Permission::all(),
-            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles'])->get(),
-            'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.roles'])->get(),
-            'headquarters' => Headquarter::with(['areas', 'areas.roles'])->get()
+            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users'])->get(),
+            'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get(),
+            'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get()
         ]);
     }
 
@@ -48,6 +48,10 @@ class UsersController extends Controller
         $role = Role::find($request->role_id);
 
         $user->syncRoles([$role->name]);
+
+        $user->roleAreas()->attach($request->role_id, [
+            'area_id' => $request->area_id
+        ]);
 
         return to_route('users');
     }

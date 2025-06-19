@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Permission\Models\Role;
 
-class UserRoleArea extends Model
+class UserRoleArea extends Pivot
 {
 
     protected $table = 'user_role_area';

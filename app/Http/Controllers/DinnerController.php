@@ -6,6 +6,7 @@ use App\Imports\DinnersImport;
 use App\Models\Area;
 use App\Models\Cafe;
 use App\Models\Dinner;
+use App\Models\Sale_type;
 use App\Models\Service;
 use App\Models\Unit;
 use App\Models\User;
@@ -26,28 +27,21 @@ class DinnerController extends Controller
     {
         $user = auth()->user();
 
-        // Cargar solo los datos necesarios en una sola consulta
-        $user->load([
-            'roleAreas.area:id,name,cafe_id',
-            'roleAreas.role:id,name'
-        ]);
+        $user->load(['areas', 'areas.cafe', 'areas.cafe.services']);
 
-        // Obtener IDs de cafés únicos directamente
-        $cafeIds = $user->roleAreas
-            ->pluck('area.cafe_id')
-            ->filter()
-            ->unique()
-            ->values()
-            ->toArray();
+        $cafes = [];
+
+        foreach ($user->areas as $area) {
+            array_push($cafes, $area->cafe);
+        }
 
         // Cargar todos los datos necesarios en consultas eficientes
         return Inertia::render('dinners/Index', [
             'dinners' => Dinner::with('cafe')->get(),
             'services' => Service::all(),
             'units' => Unit::with('services')->get(),
-            'cafes' => Cafe::with(['services' => function ($query) {
-                $query->withPivot('price');
-            }])->whereIn('id', $cafeIds)->get()
+            'cafes' => $cafes,
+            'sale_types' => Sale_type::all()
         ]);
     }
 

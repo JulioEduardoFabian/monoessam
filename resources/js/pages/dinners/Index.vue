@@ -12,6 +12,7 @@ import PricesDialog from './PricesDialog.vue';
 import SalesCard from './SalesCard.vue';
 
 const cafeSelected = ref(0);
+const saletypeSelected = ref(0);
 const servicesSelected = ref([]);
 
 const page = usePage();
@@ -23,12 +24,14 @@ interface Props {
     services: Service[];
     units: Unit[];
     cafes: Cafe[];
+    sale_types: any[];
 }
 
 const props = defineProps<Props>();
 
 watch(cafeSelected, (newVal) => {
     const cafeSelected = props.cafes.find((cafe) => cafe.id === newVal);
+    console.log(cafeSelected);
     if (cafeSelected) {
         servicesSelected.value = cafeSelected.services;
     } else {
@@ -41,6 +44,19 @@ watch(cafeSelected, (newVal) => {
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex h-[40px] w-full items-center justify-start gap-1">
+                <Select class="w-full" v-model="saletypeSelected">
+                    <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un tipo de venta" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Tipo de Venta</SelectLabel>
+                            <SelectItem v-for="sale_type in sale_types" :value="sale_type.id" :key="sale_type.id">
+                                {{ sale_type.name }}
+                            </SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
                 <Select class="w-full" v-model="cafeSelected">
                     <SelectTrigger>
                         <SelectValue placeholder="Selecciona una cafetería" />
@@ -59,7 +75,7 @@ watch(cafeSelected, (newVal) => {
                 <PricesDialog :services="servicesSelected" />
             </div>
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <SalesCard :services="services" :cafeSelected="cafeSelected" />
+                <SalesCard :services="services" :cafeSelected="cafeSelected" :saletypeSelected="saletypeSelected" />
                 <DinnersTable :dinners="dinners" :services="servicesSelected" />
             </div>
         </div>

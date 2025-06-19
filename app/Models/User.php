@@ -63,8 +63,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'user_role_area', 'user_id', 'role_id')->withPivot('area_id');
     }
 
-    public function roleAreas()
+    public function roleAreas(): BelongsToMany
     {
-        return $this->hasMany(UserRoleArea::class, 'user_id');
+        return $this->belongsToMany(Role::class, 'user_role_area', 'user_id', 'role_id')
+            ->withPivot('area_id')
+            ->using(UserRoleArea::class);
     }
 }

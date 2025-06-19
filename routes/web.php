@@ -11,6 +11,7 @@ use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MineController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SubdealershipController;
 use App\Http\Controllers\UnitController;
@@ -62,6 +63,7 @@ Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->nam
 Route::post('mines', [MineController::class, 'store'])->name('mines');
 Route::post('units', [UnitController::class, 'store'])->name('units');
 Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
+Route::post('sales', [SaleController::class, 'store'])->name('cafes');
 
 Route::post('dealerships', [DealershipController::class, 'store'])->name('dealerships');
 Route::post('subdealerships', [SubdealershipController::class, 'store'])->name('subdealerships');

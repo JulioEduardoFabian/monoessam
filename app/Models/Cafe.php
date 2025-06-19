@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+
 class Cafe extends Model
 {
-     use HasFactory;
+    use HasFactory;
     protected $fillable = ['name', 'unit_id'];
 
 
@@ -24,7 +25,7 @@ class Cafe extends Model
     }
     public function services(): MorphToMany
     {
-        return $this->morphToMany(Service::class, 'serviceable');
+        return $this->morphToMany(Service::class, 'serviceable')->withPivot('price');
     }
     public function users(): BelongsToMany
     {
