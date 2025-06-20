@@ -2,6 +2,7 @@
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { Dinner, Service } from '@/types';
+import { ref } from 'vue';
 
 const props = defineProps({
     dinners: {
@@ -14,8 +15,28 @@ const props = defineProps({
     },
 });
 
-const saveSale = () => {};
+// Objeto para almacenar las cantidades de cada servicio
+const quantities = ref<Record<number, number>>(
+    props.services.reduce(
+        (acc, service) => {
+            acc[service.id] = 1; // Valor inicial 1 para cada servicio
+            return acc;
+        },
+        {} as Record<number, number>,
+    ),
+);
+
+const emits = defineEmits(['addServiceSelected']);
+
+function addServiceSelected(service: Service) {
+    const serviceWithQuantity = {
+        ...service,
+        quantity: quantities.value[service.id] || 1,
+    };
+    emits('addServiceSelected', serviceWithQuantity);
+}
 </script>
+
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
         <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-2">
@@ -36,6 +57,7 @@ const saveSale = () => {};
                                     <Checkbox
                                         id="terms"
                                         class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 data-[state=checked]:border-gray-300 data-[state=checked]:bg-green-600"
+                                        @click="addServiceSelected(service)"
                                     />
                                     <label
                                         for="terms"
@@ -53,7 +75,7 @@ const saveSale = () => {};
                             >
                             <div class="mt-1 flex flex-col items-end">
                                 <label for="quantity" class="text-dark text-sm font-medium">Cantidad</label>
-                                <Input id="quantity" type="number" class="w-[60%]" :default-value="1" />
+                                <Input id="quantity" type="number" class="w-[60%]" v-model="quantities[service.id]" min="1" />
                             </div>
                         </div>
                     </div>

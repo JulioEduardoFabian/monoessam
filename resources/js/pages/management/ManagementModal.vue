@@ -2,10 +2,15 @@
 import Button from '@/components/ui/button/Button.vue';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Input from '@/components/ui/input/Input.vue';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Business } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 
+const props = defineProps<{
+    businesses: Business[];
+}>();
 // Estados para las listas de búsqueda
 const mines = ref([]);
 const units = ref([]);
@@ -24,6 +29,7 @@ const form = useForm({
     unitId: 0,
     cafe: '',
     cafeId: 0,
+    businessId: 0,
 });
 
 const submit = () => {
@@ -115,7 +121,7 @@ const insertCafe = () => {
 
     isLoading.value.cafe = true;
     axios
-        .post('/cafes', { name: form.cafe, unit_id: form.unitId })
+        .post('/cafes', { name: form.cafe, unit_id: form.unitId, business_id: form.businessId })
         .then(() => {
             form.cafeId = 0;
             searchCafe();
@@ -228,6 +234,19 @@ function debounce(fn: Function, delay: number) {
                             @focus="searchCafe"
                             class="flex-1"
                         />
+                        <Select class="w-max-[50%]" v-model="form.businessId">
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecciona una empresa" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Empresas</SelectLabel>
+                                    <SelectItem v-for="business in props.businesses" :value="business.id" :key="business.id">
+                                        {{ business.name }}
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
                         <Button type="button" @click="insertCafe" :disabled="!form.cafe.trim() || isLoading.cafe">
                             <span v-if="isLoading.cafe">...</span>
                             <span v-else>+</span>

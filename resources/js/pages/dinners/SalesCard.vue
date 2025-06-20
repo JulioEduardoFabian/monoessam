@@ -19,26 +19,42 @@ const props = defineProps({
         type: Number,
         required: true,
     },
+    servicesSelectedToSale: {
+        type: Array as () => any[],
+        required: true,
+    },
 });
 
-const dinnersFound = ref([]);
+const emits = defineEmits(['handleShowAlert']);
+
+const dinnerFound = ref({});
 const subdealership = ref({});
+const dni = ref('');
 
 const saveSale = (event: Event) => {
     event.preventDefault();
 
+    if (!dni.value.trim()) {
+        alert('Por favor, ingrese un DNI o nombre de comensal.');
+        return;
+    }
+
     const fd = new FormData();
     fd.append('cafe_id', props.cafeSelected);
     fd.append('sale_type_id', props.saletypeSelected);
+    fd.append('services', JSON.stringify(props.servicesSelectedToSale));
+    fd.append('dni', dni.value);
 
     axios
         .post('/sales/', fd)
         .then((response) => {
-            dinnersFound.value = response.data;
-            subdealership.value = response.data[0]?.subdealership || {};
+            dinnerFound.value = response.data.dinner;
+            subdealership.value = response.data.dinner.subdealership;
+            emits('handleShowAlert', 'success', response.data.message || 'Venta registrada exitosamente.');
         })
         .catch((error) => {
             console.error('Error fetching dinners:', error);
+            emits('handleShowAlert', 'error', error);
         });
 };
 </script>
@@ -47,8 +63,8 @@ const saveSale = (event: Event) => {
         <Card class="min-h-full w-full overflow-y-auto p-3 shadow">
             <p class="text-center font-semibold">Punto de Venta</p>
             <div class="mt-2">
-                <Input type="text" placeholder="Buscar por dni o nombre de comensal" class="w-full" @keyup.enter="saveSale" />
-                <div class="mt-2 grid auto-rows-min gap-4 md:grid-cols-2" v-if="dinnersFound.length > 0">
+                <Input type="text" placeholder="Buscar por dni o nombre de comensal" v-model="dni" class="w-full" @keyup.enter="saveSale" />
+                <div class="mt-2 grid auto-rows-min gap-4 md:grid-cols-2" v-if="dinnerFound.id">
                     <div class="w-full max-w-md overflow-hidden rounded-lg bg-white shadow-md">
                         <div class="bg-red-600 p-4 text-white">
                             <h3 class="text-xl font-bold">Información de la Concesionaria</h3>
@@ -88,7 +104,7 @@ const saveSale = (event: Event) => {
                                 <User />
                                 <div>
                                     <p class="text-sm text-gray-500">Nombre</p>
-                                    <p class="font-medium">{{ dinnersFound[0].name }}</p>
+                                    <p class="font-medium">{{ dinnerFound.name }}</p>
                                 </div>
                             </div>
 
@@ -96,7 +112,7 @@ const saveSale = (event: Event) => {
                                 <Badge />
                                 <div>
                                     <p class="text-sm text-gray-500">DNI</p>
-                                    <p class="font-medium">{{ dinnersFound[0].dni }}</p>
+                                    <p class="font-medium">{{ dinnerFound.dni }}</p>
                                 </div>
                             </div>
 
@@ -104,7 +120,7 @@ const saveSale = (event: Event) => {
                                 <Phone />
                                 <div>
                                     <p class="text-sm text-gray-500">Teléfono</p>
-                                    <p class="font-medium">{{ dinnersFound[0].phone }}</p>
+                                    <p class="font-medium">{{ dinnerFound.phone }}</p>
                                 </div>
                             </div>
 
@@ -112,7 +128,7 @@ const saveSale = (event: Event) => {
                                 <Sandwich />
                                 <div>
                                     <p class="text-sm text-gray-500">Cafetería</p>
-                                    <p class="font-medium">{{ dinnersFound[0].cafe.name }}</p>
+                                    <p class="font-medium">{{ dinnerFound.cafe?.name }}</p>
                                 </div>
                             </div>
                         </div>

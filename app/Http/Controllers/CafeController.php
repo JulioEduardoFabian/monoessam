@@ -35,6 +35,8 @@ class CafeController extends Controller
             'unit_id' => $request->unit_id
         ]);
 
+        $cafe->businesses()->sync([$request->business_id]);
+
         return to_route('management');
     }
 

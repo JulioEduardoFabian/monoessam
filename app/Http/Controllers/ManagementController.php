@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Business;
 use App\Models\Cafe;
 use App\Models\Mine;
 use App\Models\Service;
@@ -20,7 +21,8 @@ class ManagementController extends Controller
             'mines' => Mine::with(['units', 'services'])->get(),
             'units' => Unit::with(['mine', 'mine.services', 'services'])->get(),
             'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services'])->get(),
-            'services' => Service::all()
+            'services' => Service::all(),
+            'businesses' => Business::all()
         ]);
     }
 
