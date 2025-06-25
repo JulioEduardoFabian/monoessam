@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Sale extends Model
 {
     use HasFactory;
-    protected $fillable = ['cafe_id','date','total','discount','payment_method','payment_status','user_id'];
+    protected $fillable = ['dinner_id','cafe_id','date','total','discount','payment_method','payment_status','user_id'];
     
     public function cafe(): BelongsTo
     {
@@ -22,5 +22,9 @@ class Sale extends Model
     public function sale_details(): HasMany
     {
         return $this->hasMany(Sale_detail::class);
+    }
+    public function dinner(): BelongsTo
+    {
+        return $this->belongsTo(Dinner::class);
     }
 }
