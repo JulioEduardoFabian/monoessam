@@ -16,7 +16,7 @@ class Area extends Model
     use HasFactory;
 
 
-    protected $fillable = ['name','headquarter_id','cafe_id'];
+    protected $fillable = ['name', 'headquarter_id', 'cafe_id'];
 
 
     public function headquarter()
@@ -25,15 +25,15 @@ class Area extends Model
     }
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class,'user_role_area','area_id', 'role_id');
+        return $this->belongsToMany(Role::class, 'user_role_area', 'area_id', 'role_id');
     }
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class,'user_role_area','area_id', 'user_id');
+        return $this->belongsToMany(User::class, 'user_role_area', 'area_id', 'user_id');
     }
+
     public function cafe(): BelongsTo
     {
         return $this->belongsTo(Cafe::class);
     }
-
 }

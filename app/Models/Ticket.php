@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Ticket extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id','cafe_id','area_id','status','total','discount','payment_method','payment_status',];
+    protected $fillable = ['sale_id', 'dinner_id', 'dinner_name', 'dni', 'subdealership_name', 'serial_number', 'subdealership_ruc', 'price_value', 'igv', 'status'];
 
     public function sale(): BelongsTo
     {
@@ -20,4 +21,8 @@ class Ticket extends Model
         return $this->hasMany(Ticket_detail::class);
     }
 
+    public function dinner(): BelongsTo
+    {
+        return $this->belongsTo(Dinner::class);
+    }
 }

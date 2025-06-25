@@ -15,6 +15,11 @@ const categoriesSelected = ref([]);
 const selectCategory = (category: any) => {
     categoriesSelected.value.push(category);
 };
+
+const deleteCategory = (index) => {
+    console.log(index);
+    categoriesSelected.value.splice(index, 1);
+};
 </script>
 
 <template>
@@ -41,16 +46,16 @@ const selectCategory = (category: any) => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow v-for="category in categoriesSelected" :key="category.id">
+                <TableRow v-for="(category, index) in categoriesSelected" :key="category.id">
                     <TableCell class="w-[105px]"><Input type="number" /></TableCell>
                     <TableCell class="text-right">{{ category.id }}</TableCell>
                     <TableCell class="">{{ category.name }}</TableCell>
-                    <TableCell class="text-right"> </TableCell>
-                    <TableCell class="text-right"> </TableCell>
-                    <TableCell class="text-right"> </TableCell>
-                    <TableCell class="text-right"> </TableCell>
+                    <TableCell class="text-right"> <Input type="number" /></TableCell>
+                    <TableCell class="text-right"><Input type="number" /></TableCell>
+                    <TableCell class="text-right"> <Input type="number" /></TableCell>
+                    <TableCell class="text-right"> <Input type="number" /></TableCell>
                     <TableCell class="text-right">
-                        <Button><Trash /></Button>
+                        <Button @click="deleteCategory(index)"><Trash /></Button>
                     </TableCell>
                 </TableRow>
             </TableBody>

@@ -2,8 +2,14 @@
 import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Trash } from 'lucide-vue-next';
+import ServicePopover from './ServicePopover.vue';
+
 const props = defineProps({
     businesses: {
+        type: Array,
+        required: true,
+    },
+    services: {
         type: Array,
         required: true,
     },
@@ -16,15 +22,17 @@ const props = defineProps({
             <TableHeader>
                 <TableRow>
                     <TableHead class="">Empresa</TableHead>
+                    <TableHead class="">Servicios</TableHead>
                     <TableHead>Opciones</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 <TableRow v-for="business in businesses" :key="business.id">
                     <TableCell class="font-medium">{{ business.name }}</TableCell>
+                    <TableCell class="font-medium"><ServicePopover :services="services" :business="business" /></TableCell>
                     <TableCell
-                        ><Button class="bg-red-400"><Trash /></Button
-                    ></TableCell>
+                        ><Button class="bg-red-400"><Trash /></Button>
+                    </TableCell>
                 </TableRow>
             </TableBody>
         </Table>

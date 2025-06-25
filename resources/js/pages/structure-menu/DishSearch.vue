@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Input from '@/components/ui/input/Input.vue';
-import Label from '@/components/ui/label/Label.vue';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dish } from '@/types';
 import axios from 'axios';
 import { ref } from 'vue';
 
-const dishesSearched = ref([]);
+const dishesSearched = ref([] as Dish[]);
+const dialogRefs = ref<HTMLElement[]>([]);
 
-const searchDish = (e) => {
+const searchDish = (e: any) => {
     if (!e.target.value) {
         dishesSearched.value = [];
         return;
@@ -23,6 +21,15 @@ const searchDish = (e) => {
         .catch((err) => {
             console.log(err);
         });
+};
+
+const dragstartHandler = (e: any) => {
+    const dishId = e.target.id;
+
+    const dishSelected = dishesSearched.value.find((dish) => `dish${dish.id}` === dishId);
+
+    e.dataTransfer.setData('dishObject', JSON.stringify(dishSelected));
+    e.dataTransfer.setData('text', dishId);
 };
 </script>
 
@@ -43,39 +50,18 @@ const searchDish = (e) => {
             </div>
 
             <ul class="max-h-96 space-y-2 overflow-y-auto pr-2">
-                <Dialog v-for="dish in dishesSearched" :key="dish.id">
-                    <DialogTrigger as-child>
-                        <Button variant="outline" class="w-full"> {{ dish.name }} - {{ dish.dish_category.name }} </Button>
-                    </DialogTrigger>
-                    <DialogContent class="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Escoger fecha y turno</DialogTitle>
-                        </DialogHeader>
-                        <div class="grid gap-4 py-4">
-                            <div class="grid grid-cols-4 items-center gap-4">
-                                <Label for="name" class="text-right"> Fecha </Label>
-                                <Input id="name" value="Pedro Duarte" class="col-span-3" />
-                            </div>
-                            <div class="grid grid-cols-4 items-center gap-4">
-                                <Label for="username" class="text-right"> Turno </Label>
-                                <Select>
-                                    <SelectTrigger class="col-span-3">
-                                        <SelectValue placeholder="Seleccionar turno" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="desayuno">Desayuno</SelectItem>
-                                        <SelectItem value="almuerzo">Almuerzo</SelectItem>
-                                        <SelectItem value="cena">Cena</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button type="submit"> Asignar </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
+                <p
+                    draggable="true"
+                    @dragstart="dragstartHandler"
+                    @dragover.prevent
+                    @dragenter.prevent
+                    :id="`dish${dish.id}`"
+                    v-for="dish in dishesSearched"
+                    :key="dish.id"
+                    class="w-full rounded border p-2"
+                >
+                    {{ dish.name }} - {{ dish.dish_category.name }}
+                </p>
                 <li v-if="dishesSearched.length === 0" class="p-3 text-center text-gray-500 dark:text-gray-400">No se encontraron platos</li>
             </ul>
         </div>

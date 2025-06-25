@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cafe;
+use App\Models\Service;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
@@ -11,7 +14,9 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('services/Index', [
+            'services' => Service::all()
+        ]);
     }
 
     /**
@@ -27,7 +32,15 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        Service::create($request->only('name', 'code', 'description'));
+
+        return to_route('businesses');
     }
 
     /**
@@ -60,5 +73,19 @@ class ServiceController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function updatePrices(Request $request)
+    {
+        $services = $request->services;
+
+        foreach ($services as $service) {
+            $cafe = Cafe::find($service['pivot']['serviceable_id']);
+            if ($cafe) {
+                $cafe->services()->updateExistingPivot($service['id'], ['price' => $service['pivot']['price']]);
+            }
+        }
+
+        return to_route('dinners');
     }
 }

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Business;
+use App\Models\Dealership;
 use App\Models\Headquarter;
+use App\Models\Service;
+use App\Models\Subdealership;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,8 +18,11 @@ class BusinessController extends Controller
     public function index()
     {
         return Inertia::render('businesses/Index', [
-            'businesses' => Business::all(),
+            'businesses' => Business::with('services')->get(),
             'headquarters' => Headquarter::with('business')->get(),
+            'services' => Service::all(),
+            'dealerships' => Dealership::all(),
+            'subdealerships' => Subdealership::with('dealership')->get(),
         ]);
     }
 
@@ -66,5 +72,17 @@ class BusinessController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function businessServices(Request $request)
+    {
+
+        $business = Business::find($request->businessId);
+
+        $selectedIds = array_map('intval', array_keys(array_filter($request->services)));
+
+        $business->services()->sync($selectedIds);
+
+        return to_route('businesses');
     }
 }

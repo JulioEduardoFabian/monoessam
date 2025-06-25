@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Business;
 use App\Models\Cafe;
 use App\Models\Mine;
+use App\Models\Service;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,9 +18,11 @@ class ManagementController extends Controller
     public function index()
     {
         return Inertia::render('management/Index', [
-            'mines' => Mine::with('units')->get(),
-            'units' => Unit::with('mine')->get(),
-            'cafes' => Cafe::all()
+            'mines' => Mine::with(['units', 'services'])->get(),
+            'units' => Unit::with(['mine', 'mine.services', 'services'])->get(),
+            'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services'])->get(),
+            'services' => Service::all(),
+            'businesses' => Business::all()
         ]);
     }
 

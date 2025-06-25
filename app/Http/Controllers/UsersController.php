@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use App\Models\Cafe;
+use App\Models\Headquarter;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,10 +20,12 @@ class UsersController extends Controller
     public function index()
     {
         return Inertia::render('users/Index', [
-            'users' => User::with('roles')->get(),
-            'roles' => Role::with('permissions')->get(),
+            'users' => User::with(['roles', 'roles.areas', 'roles.areas.headquarter', 'roles.areas.cafe'])->get(),
+            'roles' => Role::with(['permissions', 'areas', 'areas.roles', 'areas.headquarter', 'areas.cafe', 'users'])->get(),
             'permissions' => Permission::all(),
-            'areas' => Area::with('headquarter')->get()
+            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users'])->get(),
+            'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get(),
+            'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get()
         ]);
     }
 
@@ -39,6 +43,14 @@ class UsersController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+        ]);
+
+        $role = Role::find($request->role_id);
+
+        $user->syncRoles([$role->name]);
+
+        $user->roleAreas()->attach($request->role_id, [
+            'area_id' => $request->area_id
         ]);
 
         return to_route('users');

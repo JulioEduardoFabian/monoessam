@@ -49,7 +49,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => $user ? [
                 'user' => $user,
                 'permissions' => $user->getAllPermissions(),
-                'roles' => $user->getRoleNames(),
+                'roles' => $user->getRoleNames()
             ] : null,
             'ziggy' => [
                 ...(new Ziggy)->toArray(),

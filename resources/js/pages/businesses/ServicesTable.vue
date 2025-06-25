@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import Button from '@/components/ui/button/Button.vue';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Trash } from 'lucide-vue-next';
+
+const props = defineProps({
+    services: {
+        type: Array,
+        required: true,
+    },
+});
 </script>
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
         <Table>
-            <TableCaption>Lista de Servicios del Sistema.</TableCaption>
+            <TableCaption>Lista de Servicios del Sistema. </TableCaption>
             <TableHeader>
                 <TableRow>
                     <TableHead class="">Servicio</TableHead>
@@ -12,12 +21,12 @@ import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow } from
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <!--  <TableRow v-for="business in businesses" :key="business.id">
-                    <TableCell class="font-medium">{{ business.name }}</TableCell>
+                <TableRow v-for="service in services" :key="service.id">
+                    <TableCell class="font-medium">{{ service.name }}</TableCell>
                     <TableCell
                         ><Button class="bg-red-400"><Trash /></Button
                     ></TableCell>
-                </TableRow> -->
+                </TableRow>
             </TableBody>
         </Table>
     </div>

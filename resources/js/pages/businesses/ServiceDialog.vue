@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Input from '@/components/ui/input/Input.vue';
+import { useForm } from '@inertiajs/vue3';
 import { CirclePlus } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const open = ref(false);
 
+const form = useForm({
+    name: '',
+    code: '',
+    description: '',
+});
+
 const submit = () => {
-    // Assuming you have a function to handle the form submission
-    // You can use the form data here
-    console.log('Form submitted');
+    form.post(route('services'), {
+        onSuccess: () => {
+            open.value = false;
+            form.reset();
+        },
+    });
 };
 </script>
 <template>
@@ -21,7 +32,10 @@ const submit = () => {
             <DialogHeader>
                 <DialogTitle>Insertar Servicio </DialogTitle>
             </DialogHeader>
-            <DialogFooter @click="submit"> Agregar </DialogFooter>
+            <Input type="text" v-model="form.name" placeholder="Nombre del Servicio" class="mb-1" />
+            <Input type="text" v-model="form.code" placeholder="Código del Servicio" class="mb-1" />
+            <Input type="text" v-model="form.description" placeholder="Descripción del Servicio" class="mb-1" />
+            <DialogFooter @click="submit"> Registrar </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>

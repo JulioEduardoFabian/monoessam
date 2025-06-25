@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Business extends Model
 {
     use HasFactory;
@@ -14,7 +15,7 @@ class Business extends Model
 
     public function headquarters(): HasMany
     {
-        return $this->hasMany(headquarter::class);
+        return $this->hasMany(Headquarter::class);
     }
     public function services(): BelongsToMany
     {

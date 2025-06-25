@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subdealership;
 use Illuminate\Http\Request;
 
 class SubdealershipController extends Controller
@@ -27,7 +28,9 @@ class SubdealershipController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $subdealership = Subdealership::create($request->all());
+
+        return to_route('businesses');
     }
 
     /**

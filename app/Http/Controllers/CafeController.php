@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Cafe;
 use Illuminate\Http\Request;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 class CafeController extends Controller
 {
@@ -32,6 +34,8 @@ class CafeController extends Controller
             'name' => $request->name,
             'unit_id' => $request->unit_id
         ]);
+
+        $cafe->businesses()->sync([$request->business_id]);
 
         return to_route('management');
     }
@@ -66,5 +70,35 @@ class CafeController extends Controller
     public function destroy(Cafe $cafe)
     {
         //
+    }
+
+    public function cafeServiceables(Request $request)
+    {
+        $cafe = Cafe::find($request->placeId);
+
+        $selectedIds = array_map('intval', array_keys(array_filter($request->services)));
+
+        $serviceables = $cafe->services()->sync($selectedIds);
+
+        return to_route('management');
+    }
+
+    public function printTest()
+    {
+        try {
+            $nombreImpresora = "EPSON TM-T20II Receipt";
+
+            $connector = new WindowsPrintConnector($nombreImpresora);
+
+            $printer = new Printer($connector);
+
+            $printer->text("Hello World\n");
+            $printer->cut();
+            $printer->close();
+
+            return response()->json(['success' => 'Ticket impreso correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al imprimir: ' . $e->getMessage()]);
+        }
     }
 }

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Area } from '@/types';
+import { Area, Role } from '@/types';
 import { router } from '@inertiajs/vue3';
 import { Trash } from 'lucide-vue-next';
+import AreaRolesDialog from './AreaRolesDialog.vue';
 
 const props = defineProps<{
     areas?: Area[];
+    roles?: Role[];
 }>();
 
 const deleteArea = (areaId: any) => {
@@ -21,16 +23,25 @@ const deleteArea = (areaId: any) => {
         <TableHeader>
             <TableRow>
                 <TableHead class="w-[100px]">Area</TableHead>
-                <TableHead class="">Sede</TableHead>
+                <TableHead class="">Sede o Cafetería</TableHead>
                 <TableHead>Opciones</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
             <TableRow v-for="area in props.areas" :key="area.id">
                 <TableCell class="font-medium">{{ area.name }}</TableCell>
-                <TableCell class="font-medium">{{ area.headquarter.name }}</TableCell>
-                <TableCell
-                    ><Button @click="deleteArea(area.id)"><Trash /></Button
+                <TableCell class="font-medium">
+                    {{
+                        area.headquarter
+                            ? 'Sede - ' + area.headquarter.name
+                            : area.cafe
+                              ? 'Cafe  - ' + area.cafe.name + ' - ' + area.cafe.unit.name
+                              : ''
+                    }}
+                </TableCell>
+                <TableCell>
+                    <AreaRolesDialog :area="area" :roles="roles" />
+                    <Button class="ms-2" @click="deleteArea(area.id)"><Trash /></Button
                 ></TableCell>
             </TableRow>
         </TableBody>

@@ -30,9 +30,7 @@ class AreaController extends Controller
      */
     public function store(Request $request)
     {
-        $area = Area::create([
-            'name' => $request->name
-        ]);
+        $area = Area::create($request->all());
 
         return to_route('users');
     }

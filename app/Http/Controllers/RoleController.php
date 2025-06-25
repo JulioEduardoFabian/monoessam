@@ -29,10 +29,14 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Role::create([
+        $role = Role::create([
             'name' => $request->name,
             'guard_name' => 'web',
+            'area_id' => $request->area_id,
         ]);
+
+
+        $role->areas()->sync($request->area_id);
 
         return to_route('users');
     }

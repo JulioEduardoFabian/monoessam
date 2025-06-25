@@ -74,4 +74,15 @@ class UnitController extends Controller
 
         return response()->json($units);
     }
+
+    public function unitServiceables(Request $request)
+    {
+        $unit = Unit::find($request->placeId);
+
+        $selectedIds = array_map('intval', array_keys(array_filter($request->services)));
+
+        $serviceables = $unit->services()->sync($selectedIds);
+
+        return to_route('management');
+    }
 }

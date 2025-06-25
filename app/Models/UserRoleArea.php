@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-class UserRoleArea extends Model
+use Spatie\Permission\Models\Role;
+
+class UserRoleArea extends Pivot
 {
 
     protected $table = 'user_role_area';
@@ -17,18 +19,18 @@ class UserRoleArea extends Model
     ];
 
     // Ejemplo: Si necesitas acceder al rol desde el pivot
-    public function role():BelongsTo
+    public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
     }
 
     // Ejemplo: Si necesitas acceder al área desde el pivot
-    public function area():BelongsTo
+    public function area(): BelongsTo
     {
         return $this->belongsTo(Area::class);
     }
     // Ejemplo: Si necesitas acceder al área desde el pivot
-    public function user():BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(Area::class);
     }

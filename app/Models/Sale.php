@@ -3,14 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;  
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Sale extends Model
 {
     use HasFactory;
-    protected $fillable = ['dinner_id','cafe_id','date','total','discount','payment_method','payment_status','user_id'];
-    
+  
+    protected $fillable = ['cafe_id', 'date', 'sale_type_id', 'payment_method_id', 'business_id', 'total', 'discount', 'payment_status', 'user_id', 'status'];
+
     public function cafe(): BelongsTo
     {
         return $this->belongsTo(Cafe::class);
