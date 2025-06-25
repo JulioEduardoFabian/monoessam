@@ -63,7 +63,7 @@ Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->nam
 Route::post('mines', [MineController::class, 'store'])->name('mines');
 Route::post('units', [UnitController::class, 'store'])->name('units');
 Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
-Route::post('sales', [SaleController::class, 'store'])->name('cafes');
+Route::post('sales', [SaleController::class, 'store'])->name('sales');
 
 Route::post('dealerships', [DealershipController::class, 'store'])->name('dealerships');
 Route::post('subdealerships', [SubdealershipController::class, 'store'])->name('subdealerships');

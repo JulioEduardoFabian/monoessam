@@ -6,6 +6,8 @@ use App\Imports\DinnersImport;
 use App\Models\Area;
 use App\Models\Cafe;
 use App\Models\Dinner;
+use App\Models\Receipt_type;
+use App\Models\Sale;
 use App\Models\Sale_type;
 use App\Models\Service;
 use App\Models\Unit;
@@ -41,7 +43,9 @@ class DinnerController extends Controller
             'services' => Service::all(),
             'units' => Unit::with('services')->get(),
             'cafes' => $cafes,
-            'sale_types' => Sale_type::all()
+            'sale_types' => Sale_type::all(),
+            'receipt_types' => Receipt_type::all(),
+            'sales' => Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])->orderBy('id', 'desc')->get()
         ]);
     }
 

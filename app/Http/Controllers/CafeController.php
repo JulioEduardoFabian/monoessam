@@ -93,14 +93,6 @@ class CafeController extends Controller
             $printer = new Printer($connector);
 
             $printer->text("Hello World\n");
-            $printer->text("SOY DIEGO\n");
-            $printer->text("SOY DIEGO\n");
-            $printer->text("SOY DIEGO\n");
-            $printer->text("SOY DIEGO\n");
-            $printer->text("SOY DIEGO\n");
-            $printer->text("SOY DIEGO\n");
-            $printer->text("SOY DIEGO\n");
-            $printer->text("SOY DIEGO\n");
             $printer->cut();
             $printer->close();
 

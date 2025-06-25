@@ -23,6 +23,10 @@ const props = defineProps({
         type: Array as () => any[],
         required: true,
     },
+    receiptType: {
+        type: Number,
+        required: true,
+    },
 });
 
 const emits = defineEmits(['handleShowAlert']);
@@ -42,6 +46,7 @@ const saveSale = (event: Event) => {
     const fd = new FormData();
     fd.append('cafe_id', props.cafeSelected);
     fd.append('sale_type_id', props.saletypeSelected);
+    fd.append('receipt_type', props.receiptType);
     fd.append('services', JSON.stringify(props.servicesSelectedToSale));
     fd.append('dni', dni.value);
 
@@ -51,10 +56,12 @@ const saveSale = (event: Event) => {
             dinnerFound.value = response.data.dinner;
             subdealership.value = response.data.dinner.subdealership;
             emits('handleShowAlert', 'success', response.data.message || 'Venta registrada exitosamente.');
+            dni.value = '';
         })
         .catch((error) => {
             console.error('Error fetching dinners:', error);
             emits('handleShowAlert', 'error', error);
+            dni.value = '';
         });
 };
 </script>

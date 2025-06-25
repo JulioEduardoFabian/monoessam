@@ -11,11 +11,13 @@ import DinnersTable from './DinnersTable.vue';
 import ExcelDialog from './ExcelDialog.vue';
 import PricesDialog from './PricesDialog.vue';
 import SalesCard from './SalesCard.vue';
+import SalesTable from './SalesTable.vue';
 
 const cafeSelected = ref(0);
 const saletypeSelected = ref(0);
 const servicesSelected = ref([]);
 const servicesSelectedToSale = ref([]);
+const receiptType = ref(0); // Assuming this is used somewhere in the component, though not shown in the original code
 
 const page = usePage();
 
@@ -27,6 +29,8 @@ interface Props {
     units: Unit[];
     cafes: Cafe[];
     sale_types: any[];
+    receipt_types: any[];
+    sales: any[];
 }
 
 const props = defineProps<Props>();
@@ -40,7 +44,14 @@ const addServiceSelected = (service: Service) => {
         servicesSelectedToSale.value = servicesSelectedToSale.value.filter((s) => s.serviceID !== service.id);
         return;
     }
-    servicesSelectedToSale.value.push({ serviceID: service.id, quantity: service.quantity || 1, price: service.quantity * service.pivot.price });
+    servicesSelectedToSale.value.push({
+        serviceID: service.id,
+        quantity: service.quantity || 1,
+        price: service.quantity * service.pivot.price,
+        code: service.code,
+        name: service.name,
+        unit_price: service.pivot.price,
+    });
 };
 
 const showAlert = ref(false);
@@ -69,6 +80,19 @@ watch(cafeSelected, (newVal) => {
         <Alert :showAlert="showAlert" :type="typeAlert" :description="textAlert" />
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex h-[40px] w-full items-center justify-start gap-1">
+                <Select class="w-full" v-model="receiptType">
+                    <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un tipo de documento" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Tipo de Documento</SelectLabel>
+                            <SelectItem v-for="receipt_type in receipt_types" :value="receipt_type.id" :key="receipt_type.id">
+                                {{ receipt_type.name }}
+                            </SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
                 <Select class="w-full" v-model="saletypeSelected">
                     <SelectTrigger>
                         <SelectValue placeholder="Selecciona un tipo de venta" />
@@ -105,9 +129,11 @@ watch(cafeSelected, (newVal) => {
                     :cafeSelected="cafeSelected"
                     :saletypeSelected="saletypeSelected"
                     :servicesSelectedToSale="servicesSelectedToSale"
+                    :receiptType="receiptType"
                     @handleShowAlert="handleShowAlert"
                 />
                 <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" />
+                <SalesTable :sales="sales" />
             </div>
         </div>
     </AppLayout>
