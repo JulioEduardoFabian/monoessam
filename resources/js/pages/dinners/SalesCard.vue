@@ -58,7 +58,7 @@ const saveSale = () => {
     fd.append('double_price', props.doublePrice);
 
     axios
-        .post('./sales/', fd)
+        .post('./sales', fd)
         .then((response) => {
             if (response.data.dinner) {
                 dinnerFound.value = response.data.dinner;
