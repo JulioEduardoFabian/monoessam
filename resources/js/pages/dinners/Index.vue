@@ -7,11 +7,15 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { UserRoundPlus } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import Alert from './Alert.vue';
+import DatePicker from './DatePicker.vue';
 import DinnersTable from './DinnersTable.vue';
 import ExcelDialog from './ExcelDialog.vue';
+import OtherUnitDialog from './OtherUnitDialog.vue';
 import PricesDialog from './PricesDialog.vue';
 import SalesCard from './SalesCard.vue';
 import SalesTable from './SalesTable.vue';
+
+const salesCardRef = ref<InstanceType<typeof SalesCard> | null>(null);
 
 const cafeSelected = ref(0);
 const saletypeSelected = ref(0);
@@ -44,6 +48,7 @@ const addServiceSelected = (service: Service) => {
         servicesSelectedToSale.value = servicesSelectedToSale.value.filter((s) => s.serviceID !== service.id);
         return;
     }
+
     servicesSelectedToSale.value.push({
         serviceID: service.id,
         quantity: service.quantity || 1,
@@ -51,17 +56,35 @@ const addServiceSelected = (service: Service) => {
         code: service.code,
         name: service.name,
         unit_price: service.pivot.price,
+        service_type: service.type,
     });
 };
 
 const showAlert = ref(false);
 const textAlert = ref('');
 const typeAlert = ref('');
+const dateSelected = ref(new Date());
+
+const showOtherUnitDialog = ref(false);
+const doublePrice = ref(false);
 
 const handleShowAlert = (typeAlertComing: string, payload: any) => {
     textAlert.value = payload.response?.data.message || payload || 'Ha ocurrido un error inesperado.';
     typeAlert.value = typeAlertComing;
     showAlert.value = true;
+};
+
+const showDialog = () => {
+    showOtherUnitDialog.value = true;
+};
+
+const doublePriceSave = () => {
+    doublePrice.value = true;
+    showOtherUnitDialog.value = false;
+};
+
+const updateDate = (date: Date) => {
+    dateSelected.value = date;
 };
 
 watch(cafeSelected, (newVal) => {
@@ -119,9 +142,11 @@ watch(cafeSelected, (newVal) => {
                         </SelectGroup>
                     </SelectContent>
                 </Select>
+                <DatePicker @updateDate="updateDate" />
                 <Button class="bg-blue-500"><UserRoundPlus /></Button>
                 <ExcelDialog />
                 <PricesDialog :services="servicesSelected" />
+                <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @doublePriceSave="doublePriceSave" />
             </div>
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <SalesCard
@@ -130,7 +155,11 @@ watch(cafeSelected, (newVal) => {
                     :saletypeSelected="saletypeSelected"
                     :servicesSelectedToSale="servicesSelectedToSale"
                     :receiptType="receiptType"
+                    :doublePrice="doublePrice"
+                    :dateSelected="dateSelected"
                     @handleShowAlert="handleShowAlert"
+                    @showDialog="showDialog"
+                    ref="salesCardRef"
                 />
                 <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" />
                 <SalesTable :sales="sales" />

@@ -4,7 +4,7 @@ import Input from '@/components/ui/input/Input.vue';
 import { Service } from '@/types';
 import axios from 'axios';
 import { Badge, Building, Fingerprint, Phone, Sandwich, User } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     services: {
@@ -27,17 +27,22 @@ const props = defineProps({
         type: Number,
         required: true,
     },
+    doublePrice: {
+        type: Boolean,
+    },
+    dateSelected: {
+        type: String,
+        default: '',
+    },
 });
 
-const emits = defineEmits(['handleShowAlert']);
+const emits = defineEmits(['handleShowAlert', 'showDialog']);
 
 const dinnerFound = ref({});
 const subdealership = ref({});
 const dni = ref('');
 
-const saveSale = (event: Event) => {
-    event.preventDefault();
-
+const saveSale = () => {
     if (!dni.value.trim()) {
         alert('Por favor, ingrese un DNI o nombre de comensal.');
         return;
@@ -49,14 +54,20 @@ const saveSale = (event: Event) => {
     fd.append('receipt_type', props.receiptType);
     fd.append('services', JSON.stringify(props.servicesSelectedToSale));
     fd.append('dni', dni.value);
+    fd.append('date', props.dateSelected);
+    fd.append('double_price', props.doublePrice);
 
     axios
         .post('/sales/', fd)
         .then((response) => {
-            dinnerFound.value = response.data.dinner;
-            subdealership.value = response.data.dinner.subdealership;
-            emits('handleShowAlert', 'success', response.data.message || 'Venta registrada exitosamente.');
-            dni.value = '';
+            if (response.data.dinner) {
+                dinnerFound.value = response.data.dinner;
+                subdealership.value = response.data.dinner.subdealership;
+                emits('handleShowAlert', 'success', response.data.message || 'Venta registrada exitosamente.');
+                dni.value = '';
+            }
+
+            if (response.data.otherCafe) emits('showDialog');
         })
         .catch((error) => {
             console.error('Error fetching dinners:', error);
@@ -64,6 +75,12 @@ const saveSale = (event: Event) => {
             dni.value = '';
         });
 };
+
+watch(props, (newVal) => {
+    if (newVal.doublePrice) {
+        saveSale();
+    }
+});
 </script>
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden overflow-y-auto rounded-xl border">
