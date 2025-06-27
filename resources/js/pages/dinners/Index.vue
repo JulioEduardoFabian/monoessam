@@ -1,31 +1,17 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Dinner, Service, Unit } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
-import { UserRoundPlus } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { Head } from '@inertiajs/vue3';
+import axios from 'axios';
+import { ref } from 'vue';
 import Alert from './Alert.vue';
-import DatePicker from './DatePicker.vue';
 import DinnersTable from './DinnersTable.vue';
-import ExcelDialog from './ExcelDialog.vue';
 import OtherUnitDialog from './OtherUnitDialog.vue';
-import PricesDialog from './PricesDialog.vue';
 import SalesCard from './SalesCard.vue';
+import SalesHeader from './SalesHeader.vue';
 import SalesTable from './SalesTable.vue';
 
 const salesCardRef = ref<InstanceType<typeof SalesCard> | null>(null);
-
-const cafeSelected = ref(0);
-const saletypeSelected = ref(0);
-const servicesSelected = ref([]);
-const servicesSelectedToSale = ref([]);
-const receiptType = ref(0); // Assuming this is used somewhere in the component, though not shown in the original code
-
-const page = usePage();
-
-const userAuth = page.props.auth;
 
 interface Props {
     dinners: Dinner[];
@@ -38,6 +24,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const servicesSelectedToSale = ref([]);
 
 const verifyServiceSelected = (service: Service) => {
     return servicesSelectedToSale.value.some((s) => s.serviceID === service.id);
@@ -60,10 +48,15 @@ const addServiceSelected = (service: Service) => {
     });
 };
 
+const showServicesFromCafeSelected = (services) => {
+    servicesSelected.value = services;
+};
+
+const servicesSelected = ref([]);
 const showAlert = ref(false);
 const textAlert = ref('');
 const typeAlert = ref('');
-const dateSelected = ref(new Date());
+const dateSelected = ref('');
 
 const showOtherUnitDialog = ref(false);
 const doublePrice = ref(false);
@@ -77,92 +70,93 @@ const handleShowAlert = (typeAlertComing: string, payload: any) => {
 const showDialog = () => {
     showOtherUnitDialog.value = true;
 };
-
-const doublePriceSave = () => {
-    doublePrice.value = true;
+const hideDialog = () => {
     showOtherUnitDialog.value = false;
+    doublePrice.value = false;
 };
 
-const updateDate = (date: Date) => {
+const updateDate = (date: String) => {
     dateSelected.value = date;
 };
 
-watch(cafeSelected, (newVal) => {
-    const cafeSelected = props.cafes.find((cafe) => cafe.id === newVal);
-    console.log(cafeSelected);
-    if (cafeSelected) {
-        servicesSelected.value = cafeSelected.services;
+const handleDniUpdate = (dni: string) => {
+    if (!dni.trim() || dni.length != 8) {
+        alert('Por favor, ingrese un DNI válido.');
+        return;
     } else {
-        servicesSelected.value = [];
+        saveSale(dni);
     }
-});
+};
+
+const cafeSelected = ref(0);
+const saletypeSelected = ref(0);
+const receiptType = ref(0);
+
+const handleFormDataUpdate = (formData: SaleFormData) => {
+    cafeSelected.value = formData.cafe_id;
+    saletypeSelected.value = formData.sale_type_id;
+    receiptType.value = formData.receipt_type_id;
+};
+
+const dinnerFound = ref({});
+const subdealership = ref({});
+
+const saveSale = (dni: String) => {
+    const fd = new FormData();
+    fd.append('cafe_id', cafeSelected.value);
+    fd.append('sale_type_id', saletypeSelected.value);
+    fd.append('receipt_type', receiptType.value);
+    fd.append('services', JSON.stringify(servicesSelectedToSale.value));
+    fd.append('dni', dni);
+    fd.append('date', dateSelected.value);
+    fd.append('double_price', doublePrice.value);
+
+    axios
+        .post('./sales', fd)
+        .then((response) => {
+            if (response.data.dinner) {
+                dinnerFound.value = response.data.dinner;
+                subdealership.value = response.data.dinner.subdealership;
+                handleShowAlert('success', response.data.message || 'Venta registrada exitosamente.');
+                dni.value = '';
+            }
+
+            if (response.data.otherCafe) showDialog();
+        })
+        .catch((error) => {
+            console.error('Error fetching dinners:', error);
+            handleShowAlert('error', error);
+            dni.value = '';
+        });
+};
 </script>
 <template>
     <Head title="Comensales" />
     <AppLayout>
         <Alert :showAlert="showAlert" :type="typeAlert" :description="textAlert" />
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="flex h-[40px] w-full items-center justify-start gap-1">
-                <Select class="w-full" v-model="receiptType">
-                    <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un tipo de documento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Tipo de Documento</SelectLabel>
-                            <SelectItem v-for="receipt_type in receipt_types" :value="receipt_type.id" :key="receipt_type.id">
-                                {{ receipt_type.name }}
-                            </SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-                <Select class="w-full" v-model="saletypeSelected">
-                    <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un tipo de venta" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Tipo de Venta</SelectLabel>
-                            <SelectItem v-for="sale_type in sale_types" :value="sale_type.id" :key="sale_type.id">
-                                {{ sale_type.name }}
-                            </SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-                <Select class="w-full" v-model="cafeSelected">
-                    <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una cafetería" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Cafeterías Autorizadas</SelectLabel>
-                            <SelectItem v-for="cafe in cafes" :value="cafe.id" :key="cafe.id">
-                                {{ cafe.name }}
-                            </SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-                <DatePicker @updateDate="updateDate" />
-                <Button class="bg-blue-500"><UserRoundPlus /></Button>
-                <ExcelDialog />
-                <PricesDialog :services="servicesSelected" />
-                <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @doublePriceSave="doublePriceSave" />
-            </div>
+            <SalesHeader
+                :cafes="cafes"
+                :services="services"
+                :receipt_types="receipt_types"
+                :sale_types="sale_types"
+                @showServicesFromCafeSelected="showServicesFromCafeSelected"
+                @updateDate="updateDate"
+                @updateFormData="handleFormDataUpdate"
+            />
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <SalesCard
-                    :services="services"
-                    :cafeSelected="cafeSelected"
-                    :saletypeSelected="saletypeSelected"
-                    :servicesSelectedToSale="servicesSelectedToSale"
-                    :receiptType="receiptType"
-                    :doublePrice="doublePrice"
-                    :dateSelected="dateSelected"
+                    :dinnerFound="dinnerFound"
+                    :subdealership="subdealership"
                     @handleShowAlert="handleShowAlert"
                     @showDialog="showDialog"
+                    @saveSale="saveSale"
+                    @updateDni="handleDniUpdate"
                     ref="salesCardRef"
                 />
                 <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" />
                 <SalesTable :sales="sales" />
+                <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @hideDialog="hideDialog" />
             </div>
         </div>
     </AppLayout>

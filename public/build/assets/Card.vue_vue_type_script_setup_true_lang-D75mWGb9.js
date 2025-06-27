@@ -1,1 +1,0 @@
-import{c as o}from"./utils-bRKmu4jq.js";import{d as r,c,o as t,j as n,s as l,u as d}from"./app-DtjHK6VR.js";const u=r({__name:"Card",props:{class:{}},setup(s){const a=s;return(e,p)=>(t(),c("div",{"data-slot":"card",class:l(d(o)("bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",a.class))},[n(e.$slots,"default")],2))}});export{u as _};

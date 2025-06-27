@@ -41,7 +41,7 @@ const props = defineProps({
                 <TableRow v-for="sale in props.sales" :key="sale.id">
                     <TableCell class="w-[100px]">{{ sale.tickets[0]?.dinner.dni }}</TableCell>
                     <TableCell class="w-[200px] font-medium" :title="sale.name">{{ sale.tickets[0]?.dinner.name }}</TableCell>
-                    <TableCell class="w-[200px] font-medium" :title="sale.total">{{ parseFloat(sale.total).toFixed(2) }}</TableCell>
+                    <TableCell class="w-[200px] font-medium" :title="sale.total">S./{{ parseFloat(sale.total).toFixed(2) }}</TableCell>
                     <TableCell class="text-right">
                         <Button>Imprimir</Button>
                         <SaleDetailsPopover :ticket="sale.tickets[0]" />
