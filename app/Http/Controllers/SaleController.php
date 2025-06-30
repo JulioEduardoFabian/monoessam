@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\Facade as PDF;
 use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 
 class SaleController extends Controller
@@ -242,7 +242,7 @@ class SaleController extends Controller
 
         try {
             // Generar PDF
-            $dompdf = Pdf::loadView('tickets.print', $data)->setPaper([0, 0, 226.77, 1000], 'portrait');
+            $dompdf = PDF::loadView('tickets.print', $data)->setPaper([0, 0, 226.77, 1000], 'portrait');
 
             // Opción 1: Descargar el PDF
             return $dompdf->stream('ticket-' . $ticketId . '.pdf');
