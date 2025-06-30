@@ -98,6 +98,12 @@ const handleFormDataUpdate = (formData: SaleFormData) => {
     receiptType.value = formData.receipt_type_id;
 };
 
+const handleDoublePriceSave = (dni: string) => {
+    doublePrice.value = true;
+
+    saveSale(dinnerFound.value?.dni);
+};
+
 const dinnerFound = ref({});
 const subdealership = ref({});
 
@@ -156,7 +162,7 @@ const saveSale = (dni: String) => {
                 />
                 <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" />
                 <SalesTable :sales="sales" />
-                <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @hideDialog="hideDialog" />
+                <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @hideDialog="hideDialog" @handleDoublePriceSave="handleDoublePriceSave" />
             </div>
         </div>
     </AppLayout>

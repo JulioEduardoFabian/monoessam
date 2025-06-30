@@ -8,6 +8,7 @@ import DatePicker from './DatePicker.vue';
 import ExcelDialog from './ExcelDialog.vue';
 import OtherUnitDialog from './OtherUnitDialog.vue';
 import PricesDialog from './PricesDialog.vue';
+import ReportDialog from './ReportDialog.vue';
 
 interface Props {
     cafes: Cafe[];
@@ -111,6 +112,7 @@ const updateDate = (date) => {
         <DatePicker @updateDate="updateDate" />
         <Button class="bg-blue-500"><UserRoundPlus /></Button>
         <ExcelDialog />
+        <ReportDialog />
         <PricesDialog :services="servicesSelected" />
         <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @doublePriceSave="doublePriceSave" />
     </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Business;
 use App\Models\Cafe;
 use App\Models\Dinner;
 use App\Models\Sale;
@@ -10,8 +11,10 @@ use App\Models\Ticket;
 use App\Models\Ticket_detail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
+use Barryvdh\DomPDF\Facade\Pdf;
 use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 
 class SaleController extends Controller
@@ -182,7 +185,8 @@ class SaleController extends Controller
 
         $newTicket = $ticket->load(['ticket_details']);
 
-        $this->printTest($newTicket, $dinner->cafe->businesses[0]);
+
+        //$this->printTest($newTicket, $dinner->cafe->businesses[0]);
 
         return response()->json([
             'dinner' => $dinner,
@@ -223,53 +227,43 @@ class SaleController extends Controller
         //
     }
 
-    public function printTest($ticket, $business)
+
+    public function printTest($ticketId, $businessId)
     {
+        $ticket = Ticket::with(['ticket_details', 'dinner'])->find($ticketId);
+        $business = Business::find($businessId);
+
+        // Datos para la vista
+        $data = [
+            'ticket' => $ticket,
+            'business' => $business,
+            'date' => $ticket->created_at->format('d/m/Y H:i:s'),
+        ];
 
         try {
-            $nombreImpresora = "EPSON TM-T20II Receipt";
-            $connector = new WindowsPrintConnector($nombreImpresora);
-            $printer = new Printer($connector);
+            // Generar PDF
+            $dompdf = Pdf::loadView('tickets.print', $data)->setPaper([0, 0, 226.77, 1000], 'portrait');
 
+            // Opción 1: Descargar el PDF
+            return $dompdf->stream('ticket-' . $ticketId . '.pdf');
 
-            // Ticket header
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text("--------------------------------\n");
-            $printer->text($business->legal_address . "\n");
-            $printer->text("RUC: " . $business->ruc . "\n");
-            /* $printer->text($ticket->subdealership_name . "\n"); */
-            $printer->text("TICKET DE VENTA\n");
-            $printer->text("--------------------------------\n");
+            // Opción 2: Mostrar en el navegador
+            //return $dompdf->stream('ticket-' . $ticketId . '.pdf');
 
-            // Sale details
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text("N° Ticket: " . $ticket->id . "\n");
-            $printer->text("Fecha: " . date('d/m/Y h:i') . "\n");
-            $printer->text("--------------------------------\n");
+            // Opción 3: Guardar en el servidor
+            // $pdf->save(storage_path('app/public/tickets/ticket-'.$ticketId.'.pdf'));
+            // return response()->json(['success' => 'PDF generado correctamente']);
 
-            // Client information
-            $printer->text("Cliente: " . $ticket->dinner_name . "\n");
-            $printer->text("DNI: " . $ticket->dni . "\n");
-            $printer->text("--------------------------------\n");
-
-            // Product details
-            $printer->text("Producto/Servicio:\n");
-            foreach ($ticket->ticket_details as $detail) {
-                $printer->text($detail->service_name . " - Cantidad: " . $detail->amount . "\n");
-                $printer->text("--------------------------------\n");
-            }
-
-            // Footer
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text("Gracias por su compra!\n");
-            $printer->text("--------------------------------\n");
-
-            $printer->cut();
-            $printer->close();
-
-            return response()->json(['success' => 'Ticket impreso correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al imprimir: ' . $e->getMessage()]);
+            return response()->json(['error' => 'Error al generar PDF: ' . $e->getMessage()]);
         }
+    }
+
+    public function report($dateInitial, $dateFinal)
+    {
+        $sales = Sale::with(['cafe', 'dinner', 'dinner.subdealership', 'tickets', 'tickets.ticket_details'])
+            ->whereBetween('date', [$dateInitial, $dateFinal])
+            ->get();
+        return response()->json($sales);
     }
 }

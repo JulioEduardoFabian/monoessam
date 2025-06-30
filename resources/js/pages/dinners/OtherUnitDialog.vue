@@ -9,16 +9,15 @@ const props = defineProps({
     },
 });
 
-const emits = defineEmits(['doublePriceSave', 'hideDialog']);
+const emits = defineEmits(['handleDoublePriceSave', 'hideDialog']);
 
 const submit = () => {
-    emits('doublePriceSave');
+    emits('handleDoublePriceSave');
     closeDialog();
 };
 
 const closeDialog = () => {
     emits('hideDialog');
-    form.reset();
 };
 </script>
 
