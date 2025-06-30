@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facades\Pdf;
 use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 
 class SaleController extends Controller
