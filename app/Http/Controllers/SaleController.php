@@ -10,6 +10,7 @@ use App\Models\Subdealership;
 use App\Models\Ticket;
 use App\Models\Ticket_detail;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
@@ -242,7 +243,7 @@ class SaleController extends Controller
 
         try {
             // Generar PDF
-            $dompdf = PDF::loadView('tickets.print', $data)->setPaper([0, 0, 226.77, 1000], 'portrait');
+            $dompdf = FacadePdf::loadView('tickets.print', $data)->setPaper([0, 0, 226.77, 1000], 'portrait');
 
             // Opción 1: Descargar el PDF
             return $dompdf->stream('ticket-' . $ticketId . '.pdf');
