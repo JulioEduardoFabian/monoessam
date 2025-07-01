@@ -58,12 +58,16 @@ Route::post('areas', [AreaController::class, 'store'])->name('areas');
 Route::post('permissions', [PermissionController::class, 'store'])->name('permissions');
 
 Route::delete('areas/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
+
+Route::get('sales-report/{dateInitial}/{datFinal}', [SaleController::class, 'report']);
+
 Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
 
 Route::post('mines', [MineController::class, 'store'])->name('mines');
 Route::post('units', [UnitController::class, 'store'])->name('units');
 Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
 Route::post('sales', [SaleController::class, 'store'])->name('sales');
+Route::get('print-ticket/{ticketId}/{businessId}', [SaleController::class, 'printTest'])->name('sales');
 
 Route::post('dealerships', [DealershipController::class, 'store'])->name('dealerships');
 Route::post('subdealerships', [SubdealershipController::class, 'store'])->name('subdealerships');

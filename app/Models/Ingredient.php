@@ -18,13 +18,16 @@ class Ingredient extends Model
     {
         return $this->belongsTo(Ingredient_category::class);
     }
-
-    public function dishes(): BelongsToMany
-    {
-        return $this->belongsToMany(Dish::class);
-    }
     public function dosification(): HasOne
     {
         return $this->hasOne(Dosification::class);
+    }
+    public function levels(): BelongsToMany
+    {
+        return $this->belongsToMany(Level::class,'dish_ingredient_level', 'ingredient_id', 'level_id');
+    }
+    public function dishes(): BelongsToMany
+    {
+        return $this->belongsToMany(Dish::class, 'dish_ingredient_level', 'ingredient_id', 'dish_id');
     }
 }
