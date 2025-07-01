@@ -27,6 +27,7 @@ const props = defineProps({
             <TableCaption>Lista de Ventas</TableCaption>
             <TableHeader>
                 <TableRow>
+                    <TableHead class="w-[100px]">Fecha</TableHead>
                     <TableHead class="w-[100px]">DNI</TableHead>
                     <TableHead class="w-[200px]">Nombre</TableHead>
                     <TableHead class="w-[200px]">Total</TableHead>
@@ -35,6 +36,7 @@ const props = defineProps({
             </TableHeader>
             <TableBody>
                 <TableRow v-for="sale in props.sales" :key="sale.id">
+                    <TableCell class="w-[100px]">{{ sale.date }}</TableCell>
                     <TableCell class="w-[100px]">{{ sale.tickets[0]?.dinner.dni }}</TableCell>
                     <TableCell class="w-[200px] font-medium" :title="sale.name">{{ sale.tickets[0]?.dinner.name }}</TableCell>
                     <TableCell class="w-[200px] font-medium" :title="sale.total">S./{{ parseFloat(sale.total).toFixed(2) }}</TableCell>
