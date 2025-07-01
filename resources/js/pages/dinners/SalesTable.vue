@@ -2,21 +2,17 @@
 import Button from '@/components/ui/button/Button.vue';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import SaleDetailsPopover from './SaleDetailsPopover.vue';
-/* const searchDish = (e) => {
-    if (!e.target.value) {
-        dishesSearched.value = [];
-        return;
-    }
-
-    axios
-        .get('/sales/'e)
+const sendToPrint = (ticketId, businnessId) => {
+    window.open('/print-ticket/' + ticketId + '/' + businnessId, '_blank');
+    /* axios
+        .get('/print-ticket/' + ticketId + '/' + businnessId)
         .then((result) => {
-            sales.value = result.data;
+            console.log(result.data);
         })
         .catch((err) => {
             console.log(err);
-        });
-}; */
+        }); */
+};
 
 const props = defineProps({
     sales: {
@@ -41,9 +37,9 @@ const props = defineProps({
                 <TableRow v-for="sale in props.sales" :key="sale.id">
                     <TableCell class="w-[100px]">{{ sale.tickets[0]?.dinner.dni }}</TableCell>
                     <TableCell class="w-[200px] font-medium" :title="sale.name">{{ sale.tickets[0]?.dinner.name }}</TableCell>
-                    <TableCell class="w-[200px] font-medium" :title="sale.total">{{ parseFloat(sale.total).toFixed(2) }}</TableCell>
+                    <TableCell class="w-[200px] font-medium" :title="sale.total">S./{{ parseFloat(sale.total).toFixed(2) }}</TableCell>
                     <TableCell class="text-right">
-                        <Button>Imprimir</Button>
+                        <Button @click="sendToPrint(sale.tickets[0].id, 1)">Imprimir</Button>
                         <SaleDetailsPopover :ticket="sale.tickets[0]" />
                     </TableCell>
                 </TableRow>
