@@ -124,7 +124,7 @@ const saveSale = (dni: String) => {
                 dinnerFound.value = response.data.dinner;
                 subdealership.value = response.data.dinner.subdealership;
                 handleShowAlert('success', response.data.message || 'Venta registrada exitosamente.');
-                dni.value = '';
+                //dni.value = '';
             }
 
             if (response.data.otherCafe) showDialog();
@@ -132,7 +132,7 @@ const saveSale = (dni: String) => {
         .catch((error) => {
             console.error('Error fetching dinners:', error);
             handleShowAlert('error', error);
-            dni.value = '';
+            //dni.valueOf = '';
         });
 };
 </script>

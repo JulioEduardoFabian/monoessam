@@ -43,8 +43,6 @@ const props = defineProps({
 
 const emits = defineEmits(['handleShowAlert', 'showDialog', 'updateDni']);
 
-const dinnerFound = ref({});
-const subdealership = ref({});
 const dni = ref('');
 </script>
 <template>
