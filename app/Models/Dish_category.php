@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Dish_category extends Model
@@ -13,8 +14,12 @@ class Dish_category extends Model
 
     protected $fillable = ['name','description','measurement_unit'];
 
-    public function dishes(): HasMany
+    public function dishes(): BelongsToMany
     {
-        return $this->HasMany(Dish::class);
+        return $this->belongsToMany(Dish::class, 'dish_category_dish', 'dish_category_id', 'dish_id');
+    }
+    public function serviceables(): BelongsToMany
+    {
+        return $this->belongsToMany(Serviceable::class);
     }
 }

@@ -13,6 +13,10 @@ class Level extends Model
     protected $fillable = ['name'];  
     public function dishes(): BelongsToMany
     {
-        return $this->belongsToMany(Dish::class);
+        return $this->belongsToMany(Dish::class,'dish_ingredient_level', 'level_id', 'dish_id');
+    }
+    public function ingredients(): BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class, 'dish_ingredient_level', 'level_id', 'ingredient_id');
     }
 }

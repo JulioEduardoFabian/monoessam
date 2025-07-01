@@ -13,16 +13,16 @@ class Dish extends Model
     use HasFactory;
     protected $fillable = ['name','description','dish_category_id'];
 
-     public function dish_category(): BelongsTo
+    public function dish_categories(): BelongsToMany
     {
-        return $this->belongsTo(Dish_category::class);
-    }
-    public function ingredients(): BelongsToMany
-    {
-        return $this->belongsToMany(Ingredient::class);
+        return $this->belongsToMany(Dish_category::class,'dish_category_dish', 'dish_id', 'dish_category_id');
     }
     public function levels(): BelongsToMany
     {
-        return $this->belongsToMany(Level::class);
+        return $this->belongsToMany(Level::class,'dish_ingredient_level', 'dish_id', 'level_id');
+    }
+    public function ingredients(): BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class, 'dish_ingredient_level', 'dish_id', 'ingredient_id');
     }
 }
