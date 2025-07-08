@@ -7,6 +7,7 @@ use App\Http\Controllers\DealershipController;
 use App\Http\Controllers\DinnerController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MineController;
 use App\Http\Controllers\PermissionController;
@@ -40,6 +41,7 @@ Route::get('/food', [FoodController::class, 'index'])->name('food');
 Route::get('/businesses', [BusinessController::class, 'index'])->name('businesses');
 Route::post('/business-services', [BusinessController::class, 'businessServices'])->name('businessServices');
 Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
+Route::get('/logistics', [LogisticController::class, 'index'])->name('logistics');
 //Route::get('/sales', [SaleController::class, 'index'])->name('sales');
 
 Route::get('/dinners', [DinnerController::class, 'index'])->name('dinners');

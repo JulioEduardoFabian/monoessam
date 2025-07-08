@@ -15,7 +15,7 @@ class FoodController extends Controller
     public function index()
     {
         return Inertia::render('food/Index', [
-            'dishes' => Dish::with(['dish_category', 'ingredients'])->paginate(6)->withQueryString()
+            'dishes' => Dish::with(['dish_categories', 'ingredients'])->paginate(6)->withQueryString()
         ]);
     }
 

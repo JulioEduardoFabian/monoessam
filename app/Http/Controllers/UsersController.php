@@ -23,9 +23,9 @@ class UsersController extends Controller
             'users' => User::with(['roles', 'roles.areas', 'roles.areas.headquarter', 'roles.areas.cafe'])->get(),
             'roles' => Role::with(['permissions', 'areas', 'areas.roles', 'areas.headquarter', 'areas.cafe', 'users'])->get(),
             'permissions' => Permission::all(),
-            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users'])->get(),
+            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users', 'areaRoles'])->get(),
             'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get(),
-            'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get()
+            'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.areaRoles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'business'])->get()
         ]);
     }
 
