@@ -27,6 +27,10 @@ class Area extends Model
     {
         return $this->belongsToMany(Role::class, 'user_role_area', 'area_id', 'role_id');
     }
+    public function areaRoles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_role_area', 'area_id', 'user_id');

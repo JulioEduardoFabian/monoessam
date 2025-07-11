@@ -43,9 +43,15 @@ const props = defineProps({
 
 const emits = defineEmits(['handleShowAlert', 'showDialog', 'updateDni']);
 
-const dinnerFound = ref({});
-const subdealership = ref({});
 const dni = ref('');
+
+const cleanInput = () => {
+    dni.value = '';
+};
+
+defineExpose({
+    cleanInput,
+});
 </script>
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden overflow-y-auto rounded-xl border">

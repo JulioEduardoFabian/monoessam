@@ -48,8 +48,9 @@ watch(form, (newVal) => {
     }
     if (newVal.area_id) {
         const areaSelected = areasSelected.value.find((area) => area.id == newVal.area_id);
+        console.log(areaSelected);
         if (areaSelected) {
-            rolesSelected.value = areaSelected.roles;
+            rolesSelected.value = areaSelected.area_roles;
         } else {
             rolesSelected.value = [];
         }
@@ -104,7 +105,7 @@ const submit = () => {
                             <SelectGroup>
                                 <SelectLabel>Sedes</SelectLabel>
                                 <SelectItem v-for="headquarter in headquarters" :value="headquarter.id" :key="headquarter.id">
-                                    {{ headquarter.name }}
+                                    {{ headquarter.name }} - {{ headquarter.business.name }}
                                 </SelectItem>
                             </SelectGroup>
                         </SelectContent>

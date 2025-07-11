@@ -60,7 +60,7 @@ const dragstartHandler = (e: any) => {
                     :key="dish.id"
                     class="w-full rounded border p-2"
                 >
-                    {{ dish.name }} - {{ dish.dish_category.name }}
+                    {{ dish.name }} - {{ dish.dish_categories[0].name }}
                 </p>
                 <li v-if="dishesSearched.length === 0" class="p-3 text-center text-gray-500 dark:text-gray-400">No se encontraron platos</li>
             </ul>

@@ -30,4 +30,12 @@ class Ingredient extends Model
     {
         return $this->belongsToMany(Dish::class, 'dish_ingredient_level', 'ingredient_id', 'dish_id');
     }
+    public function providers(): BelongsToMany
+    {
+        return $this->belongsToMany(Provider::class, 'ingredient_city_provider', 'ingredient_id', 'provider_id');
+    }
+    public function cities(): BelongsToMany
+    {
+        return $this->belongsToMany(City::class, 'ingredient_city_provider', 'ingredient_id', 'city_id');
+    }
 }

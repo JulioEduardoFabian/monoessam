@@ -3,11 +3,8 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Business, Headquarter } from '@/types';
 import BusinessTable from './BusinessTable.vue';
 import DealershipsDialog from './DealershipsDialog.vue';
-import DealershipsTable from './DealershipsTable.vue';
-import HeadquartersTable from './HeadquartersTable.vue';
 import InsertModal from './InsertBusinessModal.vue';
 import ServiceDialog from './ServiceDialog.vue';
-import ServicesTable from './ServicesTable.vue';
 import SubdealershipsDialog from './SubdealershipsDialog.vue';
 import SubdealershipsTable from './SubdealershipsTable.vue';
 
@@ -32,11 +29,11 @@ defineProps<Props>();
                 <SubdealershipsDialog :dealerships="dealerships" />
                 <DealershipsDialog />
             </div>
-            <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <BusinessTable :businesses="businesses" :services="services" />
-                <HeadquartersTable :headquarters="headquarters" />
-                <ServicesTable :services="services" />
-                <DealershipsTable :dealerships="dealerships" />
+            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+                <BusinessTable :businesses="businesses" :headquarters="headquarters" :services="services" />
+                <!-- <HeadquartersTable :headquarters="headquarters" /> -->
+                <!-- <ServicesTable :services="services" /> -->
+                <!-- <DealershipsTable :dealerships="dealerships" /> -->
                 <SubdealershipsTable :subdealerships="subdealerships" :dealerships="dealerships" />
             </div>
         </div>

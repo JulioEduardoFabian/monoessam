@@ -72,14 +72,14 @@ class SaleController extends Controller
         }
 
         // Verificar si hay servicios coincidentes en los detalles del ticket
-        if ($sale->tickets->isNotEmpty() && $sale->tickets[0]->ticket_details->isNotEmpty()) {
+        /* if ($sale->tickets->isNotEmpty() && $sale->tickets[0]->ticket_details->isNotEmpty()) {
             $serviceTypes = collect($services)->pluck('service_type')->toArray();
 
             return $sale->tickets[0]->ticket_details
                 ->pluck('service_type')
                 ->intersect($serviceTypes)
                 ->isNotEmpty();
-        }
+        } */
 
         return true;
     }
