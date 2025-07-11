@@ -23,7 +23,7 @@ const open = ref(false);
 
 const form = useForm({
     name: '',
-    cafe_id: 0,
+    cafe_id: null,
     headquarter_id: null,
 });
 

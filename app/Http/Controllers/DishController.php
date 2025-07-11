@@ -65,7 +65,7 @@ class DishController extends Controller
 
     public function search(string $word)
     {
-        $dishes = Dish::where('name', 'like', '%' . $word . '%')->with(['dish_category', 'ingredients'])->take(8)->get();
+        $dishes = Dish::where('name', 'like', '%' . $word . '%')->with(['dish_categories', 'ingredients'])->take(8)->get();
         return $dishes;
     }
 }

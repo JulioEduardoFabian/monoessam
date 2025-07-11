@@ -47,7 +47,7 @@ dishesSearched.value = props.dishes || [];
                 <TableCell class="w-[100px]" :title="dish.name">{{
                     dish.name.length > 30 ? dish.name.substring(0, 30) + '...' : dish.name
                 }}</TableCell>
-                <TableCell class="w-[200px] font-medium">{{ dish.dish_category.name }}</TableCell>
+                <TableCell class="w-[200px] font-medium">{{ dish.dish_category?.name }}</TableCell>
                 <TableCell class="text-right">
                     <Button class="mx-1 bg-blue-400"><Pencil /></Button>
                     <IngredientsPopover :ingredients="dish.ingredients" />
