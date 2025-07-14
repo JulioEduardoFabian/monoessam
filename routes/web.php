@@ -59,6 +59,10 @@ Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('areas', [AreaController::class, 'store'])->name('areas');
 Route::post('permissions', [PermissionController::class, 'store'])->name('permissions');
 
+Route::get('users-ban/{id}', [UsersController::class, 'banUser'])->name('users.ban');
+
+Route::get('blacklist/{id}', [UsersController::class, 'blacklist'])->name('blacklist');
+
 Route::delete('areas/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
 
 Route::get('sales-report/{dateInitial}/{datFinal}', [SaleController::class, 'report']);

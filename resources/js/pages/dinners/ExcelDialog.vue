@@ -44,7 +44,7 @@ const submit = () => {
 <template>
     <Dialog v-model:open="open">
         <DialogTrigger>
-            <Button title="Agregar comensales" class="bg-green-600"><Sheet /></Button>
+            <Button title="Agregar comensales" class="bg-green-600"><Sheet /> Agregar con Excel</Button>
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>

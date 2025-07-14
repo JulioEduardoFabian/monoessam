@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import Input from '@/components/ui/input/Input.vue';
-import { Dinner, Service } from '@/types';
+import { Service } from '@/types';
 import { ref } from 'vue';
 
 const props = defineProps({
-    dinners: {
-        type: Array as () => Dinner[],
-        required: true,
-    },
     services: {
         type: Array as () => Service[],
         required: true,

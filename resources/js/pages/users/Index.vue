@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Permission, Role, User } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
+import axios from 'axios';
+import { Ban } from 'lucide-vue-next';
 import { ref } from 'vue';
 import AreaModal from './AreaModal.vue';
 import Modal from './Modal.vue';
@@ -72,6 +75,26 @@ const selectArea = (area: Area) => {
 
 const selectUser = (user: User) => {
     selectedUser.value = user;
+};
+
+const toBlacklist = (userId: number) => {
+    if (confirm('¿Estás seguro de que deseas enviar a lista negra a este usuario?')) {
+        router.get(route('blacklist', userId));
+    }
+};
+
+const blockUser = (userId: number) => {
+    if (confirm('¿Estás seguro de que deseas dar de baja a este usuario?')) {
+        axios
+            .get('./users-ban/' + userId)
+            .then(() => {
+                console.log('sending message');
+            })
+            .catch((error) => {
+                console.error('Error al dar de baja al usuario:', error);
+                alert('Ocurrió un error al dar de baja al usuario. Por favor, inténtalo de nuevo.');
+            });
+    }
 };
 </script>
 <template>
@@ -214,7 +237,9 @@ const selectUser = (user: User) => {
                                     {{ user.roles[0].name }}
                                 </span>
                             </div>
-                            <div class="mt-2 flex justify-end">
+                            <div class="mt-2 flex justify-end gap-1">
+                                <Button class="bg-red-500" title="Dar de baja" @click="blockUser(user.id)"><Ban /></Button>
+                                <Button @click="toBlacklist(user.id)" title="Pasar a lista negra"><Ban /></Button>
                                 <RolePermissionPopover
                                     :role="user.roles[0]"
                                     :permissions="permissions"

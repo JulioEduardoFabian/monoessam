@@ -39,7 +39,7 @@ const submit = () => {
 <template>
     <Dialog v-model:open="open">
         <DialogTrigger>
-            <Button title="Agregar comensales" class="bg-green-600"><DollarSign /></Button>
+            <Button title="Agregar comensales" class="bg-green-600"><DollarSign /> Gestionar Precios</Button>
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>

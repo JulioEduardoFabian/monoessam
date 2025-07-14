@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Cafe } from '@/types';
-import { UserRoundPlus } from 'lucide-vue-next';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Cafe, Service } from '@/types';
+import { Coffee, File, Tag } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import DatePicker from './DatePicker.vue';
+import DinnersTable from './DinnersTable.vue';
 import ExcelDialog from './ExcelDialog.vue';
 import OtherUnitDialog from './OtherUnitDialog.vue';
 import PricesDialog from './PricesDialog.vue';
@@ -24,7 +24,7 @@ interface SaleFormData {
     date: string;
 }
 
-const emits = defineEmits(['showServicesFromCafeSelected', 'updateDate', 'updateFormData']);
+const emits = defineEmits(['showServicesFromCafeSelected', 'updateDate', 'updateFormData', 'addServiceSelected']);
 
 const emitFormData = () => {
     const formData: SaleFormData = {
@@ -67,53 +67,116 @@ watch([receiptType, saletypeSelected, cafeSelected], () => {
 const updateDate = (date) => {
     emits('updateDate', date);
 };
+
+const addServiceSelected = (service: Service) => {
+    emits('addServiceSelected', service);
+};
 </script>
+
 <template>
-    <div class="flex h-[40px] w-full items-center justify-start gap-1">
-        <Select class="w-full" v-model="receiptType">
-            <SelectTrigger>
-                <SelectValue placeholder="Selecciona un tipo de documento" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                    <SelectLabel>Tipo de Documento</SelectLabel>
-                    <SelectItem v-for="receipt_type in receipt_types" :value="receipt_type.id" :key="receipt_type.id">
-                        {{ receipt_type.name }}
-                    </SelectItem>
-                </SelectGroup>
-            </SelectContent>
-        </Select>
-        <Select class="w-full" v-model="saletypeSelected">
-            <SelectTrigger>
-                <SelectValue placeholder="Selecciona un tipo de venta" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                    <SelectLabel>Tipo de Venta</SelectLabel>
-                    <SelectItem v-for="sale_type in sale_types" :value="sale_type.id" :key="sale_type.id">
-                        {{ sale_type.name }}
-                    </SelectItem>
-                </SelectGroup>
-            </SelectContent>
-        </Select>
-        <Select class="w-full" v-model="cafeSelected">
-            <SelectTrigger>
-                <SelectValue placeholder="Selecciona una cafetería" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                    <SelectLabel>Cafeterías Autorizadas</SelectLabel>
-                    <SelectItem v-for="cafe in cafes" :value="cafe.id" :key="cafe.id">
-                        {{ cafe.name }}
-                    </SelectItem>
-                </SelectGroup>
-            </SelectContent>
-        </Select>
-        <DatePicker @updateDate="updateDate" />
-        <Button class="bg-blue-500"><UserRoundPlus /></Button>
-        <ExcelDialog />
-        <ReportDialog />
-        <PricesDialog :services="servicesSelected" />
-        <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @doublePriceSave="doublePriceSave" />
-    </div>
+    <header class="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-md">
+        <!-- Fila superior: Tres columnas simétricas -->
+        <div class="flex flex-col gap-3 md:flex-row">
+            <!-- Columna izquierda: Selectores apilados -->
+            <div class="min-w-0 flex-1 space-y-3">
+                <!-- Selector de Tipo de Documento -->
+                <div class="space-y-1">
+                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <File class="h-4 w-4 text-blue-500" />
+                        <span>Tipo de Documento</span>
+                    </label>
+                    <ToggleGroup v-model="receiptType" type="single" class="flex flex-wrap gap-1 rounded-lg bg-gray-50 p-1">
+                        <ToggleGroupItem
+                            v-for="receipt_type in receipt_types"
+                            :value="receipt_type.id"
+                            :key="receipt_type.id"
+                            class="min-w-[100px] flex-1 rounded-md px-3 py-2 text-center text-sm transition-all hover:bg-blue-50 hover:text-blue-600 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                        >
+                            {{ receipt_type.name }}
+                        </ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+
+                <!-- Selector de Tipo de Venta -->
+                <div class="space-y-1">
+                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <Tag class="h-4 w-4 text-purple-500" />
+                        <span>Tipo de Venta</span>
+                    </label>
+                    <ToggleGroup v-model="saletypeSelected" type="single" class="flex flex-wrap gap-1 rounded-lg bg-gray-50 p-1">
+                        <ToggleGroupItem
+                            v-for="sale_type in sale_types"
+                            :value="sale_type.id"
+                            :key="sale_type.id"
+                            class="min-w-[100px] flex-1 rounded-md px-3 py-2 text-center text-sm transition-all hover:bg-purple-50 hover:text-purple-600 data-[state=on]:bg-purple-500 data-[state=on]:text-white"
+                        >
+                            {{ sale_type.name }}
+                        </ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+
+                <!-- Selector de Cafetería -->
+                <div class="space-y-1">
+                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <Coffee class="h-4 w-4 text-amber-500" />
+                        <span>Cafetería</span>
+                    </label>
+                    <ToggleGroup v-model="cafeSelected" type="single" class="flex flex-wrap gap-1 rounded-lg bg-gray-50 p-1">
+                        <ToggleGroupItem
+                            v-for="cafe in cafes"
+                            :value="cafe.id"
+                            :key="cafe.id"
+                            class="min-w-[120px] flex-1 rounded-md px-2 py-2 text-center text-sm transition-all hover:bg-amber-50 hover:text-amber-600 data-[state=on]:bg-amber-500 data-[state=on]:text-white"
+                        >
+                            <span class="truncate">{{ cafe.name }}</span>
+                        </ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+                <DatePicker @updateDate="updateDate" class="w-full" />
+            </div>
+
+            <!-- Columna derecha: Tabla de comensales -->
+            <div class="flex min-w-0 flex-1 flex-col gap-3">
+                <DinnersTable :services="servicesSelected" @addServiceSelected="addServiceSelected" />
+            </div>
+            <!-- Columna central: Fecha y acciones principales -->
+            <div class="flex min-w-0 flex-1 flex-col gap-3">
+                <!-- Fecha -->
+                <div class="flex w-full flex-col items-center space-y-1">
+                    <ExcelDialog class="w-full" />
+
+                    <ReportDialog class="w-full" />
+
+                    <PricesDialog :services="servicesSelected" class="w-full" />
+
+                    <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @doublePriceSave="doublePriceSave" class="w-full" />
+                </div>
+
+                <!-- Botones en columna -->
+                <div class="flex w-full flex-col gap-2">
+                    <!-- <Button class="flex w-full items-center justify-center gap-1 bg-blue-600 hover:bg-blue-700">
+                        <UserRoundPlus class="h-4 w-4" />
+                        <span>Agregar</span>
+                    </Button> -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado actual (selecciones) -->
+        <div class="flex flex-wrap items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm">
+            <span v-if="receiptType" class="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-blue-800">
+                <File class="h-3 w-3" />
+                {{ receipt_types.find((t) => t.id === receiptType)?.name }}
+            </span>
+            <span v-if="saletypeSelected" class="flex items-center gap-1 rounded-full bg-purple-100 px-2 py-1 text-purple-800">
+                <Tag class="h-3 w-3" />
+                {{ sale_types.find((t) => t.id === saletypeSelected)?.name }}
+            </span>
+            <span v-if="cafeSelected" class="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-amber-800">
+                <Coffee class="h-3 w-3" />
+                {{ cafes.find((c) => c.id === cafeSelected)?.name }}
+            </span>
+            <span v-if="servicesSelected.length" class="ml-auto text-gray-500"> {{ servicesSelected.length }} servicios disponibles </span>
+        </div>
+    </header>
 </template>
