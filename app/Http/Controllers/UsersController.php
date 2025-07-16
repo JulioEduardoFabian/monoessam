@@ -111,6 +111,6 @@ class UsersController extends Controller
 
         event(new SessionEnded($id));
 
-        return 'sending message';
+        return to_route('users');
     }
 }

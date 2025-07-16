@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Permission, Role, User } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import axios from 'axios';
 import { Ban } from 'lucide-vue-next';
 import { ref } from 'vue';
 import AreaModal from './AreaModal.vue';
@@ -65,7 +64,7 @@ const selectArea = (area: Area) => {
     selectedArea.value = area;
     selectedUser.value = null;
     if (area.users.length !== 0) {
-        usersSelected.value = area.users;
+        usersSelected.value = area.users.filter((user) => user.type != 3);
         showNoUsers.value = false;
     } else {
         usersSelected.value = [];
@@ -85,16 +84,21 @@ const toBlacklist = (userId: number) => {
 
 const blockUser = (userId: number) => {
     if (confirm('¿Estás seguro de que deseas dar de baja a este usuario?')) {
-        axios
-            .get('./users-ban/' + userId)
+        router
+            .get(route('users.ban', userId))
             .then(() => {
-                console.log('sending message');
+                console.log('Usuario dado de baja');
+                // Aquí podrías agregar lógica adicional si es necesario
             })
             .catch((error) => {
                 console.error('Error al dar de baja al usuario:', error);
                 alert('Ocurrió un error al dar de baja al usuario. Por favor, inténtalo de nuevo.');
             });
     }
+};
+
+const toBlacklistRoute = () => {
+    router.get(route('blacklist'));
 };
 </script>
 <template>
@@ -123,6 +127,7 @@ const blockUser = (userId: number) => {
                     :headquarters="headquarters"
                     class="rounded p-1 text-orange-600 transition-colors hover:bg-orange-100 hover:text-orange-700 dark:text-orange-400 dark:hover:bg-orange-900/30"
                 />
+                <Button @click="toBlacklistRoute"><Ban /></Button>
             </div>
 
             <!-- Contenedor principal de tres columnas -->
