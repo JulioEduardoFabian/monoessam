@@ -56,7 +56,7 @@ class SaleController extends Controller
     }
 
     /**
-     * Verify if the sale is duplicated.
+     * Verify if the sale is duplicated or service has been taken.
      */
 
     public function verifySale($cafeId, $dinnerId, $services)
@@ -65,23 +65,28 @@ class SaleController extends Controller
             ->where('cafe_id', $cafeId)
             ->where('date', date('Y-m-d'))
             ->where('dinner_id', $dinnerId)
+            ->orderBy('id', 'desc')
             ->first();
 
         if (!$sale) {
+            return false; // No existe venta previa, no hay duplicidad
+        }
+
+        // Si no hay tickets o detalles, no hay duplicidad
+        if ($sale->tickets->isEmpty() || $sale->tickets[0]->ticket_details->isEmpty()) {
             return false;
         }
 
-        // Verificar si hay servicios coincidentes en los detalles del ticket
-        /* if ($sale->tickets->isNotEmpty() && $sale->tickets[0]->ticket_details->isNotEmpty()) {
-            $serviceTypes = collect($services)->pluck('service_type')->toArray();
+        $existingCodes = $sale->tickets[0]->ticket_details->pluck('code')->toArray();
+        $newCodes = collect($services)->pluck('code')->toArray();
 
-            return $sale->tickets[0]->ticket_details
-                ->pluck('service_type')
-                ->intersect($serviceTypes)
-                ->isNotEmpty();
-        } */
+        // Verificar si todos los nuevos códigos ya existen en la venta anterior
+        $allExist = collect($newCodes)->every(function ($code) use ($existingCodes) {
+            return in_array($code, $existingCodes);
+        });
 
-        return true;
+        // Si todos los servicios nuevos ya existen en la venta anterior, es duplicado
+        return $allExist;
     }
 
 
@@ -108,7 +113,8 @@ class SaleController extends Controller
 
             if ($this->verifySale($request->cafe_id, $dinner->id, $services)) {
                 return response()->json([
-                    'message' => 'Venta ya registrada a este usuario.'
+                    'message' => 'Venta ya registrada a este usuario.',
+                    'verification' => $this->verifySale($request->cafe_id, $dinner->id, $services)
                 ], 404);
             }
         }
@@ -121,7 +127,7 @@ class SaleController extends Controller
             return $carry + $service['price'];
         }, 0);
 
-        if ($request->double_price) {
+        if ($request->double_price == 'true') {
             $total *= 2;
         }
 
@@ -193,6 +199,7 @@ class SaleController extends Controller
             'dinner' => $dinner,
             'ticket' => $ticket ?? null,
             'message' => 'Venta registrada correctamente.',
+            'sales' => Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])->orderBy('id', 'desc')->get()
         ], 200);
     }
 

@@ -33,6 +33,7 @@ const form = useForm({
 watch(form, (newVal) => {
     if (newVal.cafe_id) {
         const cafeSelected = props.cafes.find((cafe) => cafe.id == newVal.cafe_id);
+        console.log(cafeSelected);
         if (cafeSelected) {
             areasSelected.value = cafeSelected.areas;
         } else {

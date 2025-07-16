@@ -5,7 +5,6 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 import Alert from './Alert.vue';
-import DinnersTable from './DinnersTable.vue';
 import OtherUnitDialog from './OtherUnitDialog.vue';
 import SalesCard from './SalesCard.vue';
 import SalesHeader from './SalesHeader.vue';
@@ -51,6 +50,8 @@ const addServiceSelected = (service: Service) => {
 const showServicesFromCafeSelected = (services) => {
     servicesSelected.value = services;
 };
+
+const localSales = ref([...props.sales]);
 
 const servicesSelected = ref([]);
 const showAlert = ref(false);
@@ -117,6 +118,11 @@ const saveSale = (dni: String) => {
     fd.append('date', dateSelected.value);
     fd.append('double_price', doublePrice.value);
 
+    if (dateSelected.value == null || dateSelected.value == '') {
+        handleShowAlert('error', 'Por favor, seleccione una fecha válida.');
+        return;
+    }
+
     axios
         .post('./sales', fd)
         .then((response) => {
@@ -125,6 +131,7 @@ const saveSale = (dni: String) => {
                 subdealership.value = response.data.dinner.subdealership;
                 handleShowAlert('success', response.data.message || 'Venta registrada exitosamente.');
                 salesCardRef.value?.cleanInput();
+                localSales.value = response.data.sales || [];
             }
 
             if (response.data.otherCafe) showDialog();
@@ -141,6 +148,7 @@ const saveSale = (dni: String) => {
     <AppLayout>
         <Alert :showAlert="showAlert" :type="typeAlert" :description="textAlert" />
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+            <h2 class="text-center text-2xl font-semibold">Punto de Venta</h2>
             <SalesHeader
                 :cafes="cafes"
                 :services="services"
@@ -149,6 +157,7 @@ const saveSale = (dni: String) => {
                 @showServicesFromCafeSelected="showServicesFromCafeSelected"
                 @updateDate="updateDate"
                 @updateFormData="handleFormDataUpdate"
+                @addServiceSelected="addServiceSelected"
             />
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <SalesCard
@@ -160,8 +169,8 @@ const saveSale = (dni: String) => {
                     @updateDni="handleDniUpdate"
                     ref="salesCardRef"
                 />
-                <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" />
-                <SalesTable :sales="sales" />
+                <!-- <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" /> -->
+                <SalesTable :sales="localSales" />
                 <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @hideDialog="hideDialog" @handleDoublePriceSave="handleDoublePriceSave" />
             </div>
         </div>
