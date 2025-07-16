@@ -19,10 +19,10 @@ class Dish extends Model
     }
     public function levels(): BelongsToMany
     {
-        return $this->belongsToMany(Level::class,'dish_ingredient_level', 'dish_id', 'level_id');
+        return $this->belongsToMany(Level::class,'dish_ingredient_levels', 'dish_id', 'level_id');
     }
     public function ingredients(): BelongsToMany
     {
-        return $this->belongsToMany(Ingredient::class, 'dish_ingredient_level', 'dish_id', 'ingredient_id');
+        return $this->belongsToMany(Ingredient::class, 'dish_ingredient_levels', 'dish_id', 'ingredient_id');
     }
 }
