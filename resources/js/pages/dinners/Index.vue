@@ -68,6 +68,8 @@ const handleShowAlert = (typeAlertComing: string, payload: any) => {
     showAlert.value = true;
 };
 
+const dniDinnerSearched = ref('');
+
 const showDialog = () => {
     showOtherUnitDialog.value = true;
 };
@@ -101,14 +103,15 @@ const handleFormDataUpdate = (formData: SaleFormData) => {
 
 const handleDoublePriceSave = (dni: string) => {
     doublePrice.value = true;
-
-    saveSale(dinnerFound.value?.dni);
+    saveSale(dniDinnerSearched.value);
 };
 
 const dinnerFound = ref({});
 const subdealership = ref({});
 
 const saveSale = (dni: String) => {
+    dniDinnerSearched.value = dni;
+
     const fd = new FormData();
     fd.append('cafe_id', cafeSelected.value);
     fd.append('sale_type_id', saletypeSelected.value);
@@ -134,7 +137,10 @@ const saveSale = (dni: String) => {
                 localSales.value = response.data.sales || [];
             }
 
-            if (response.data.otherCafe) showDialog();
+            if (response.data.otherCafe) {
+                console.log(dniDinnerSearched.value);
+                showDialog();
+            }
         })
         .catch((error) => {
             console.error('Error fetching dinners:', error);
