@@ -24,11 +24,11 @@ class Ingredient extends Model
     }
     public function levels(): BelongsToMany
     {
-        return $this->belongsToMany(Level::class,'dish_ingredient_level', 'ingredient_id', 'level_id');
+        return $this->belongsToMany(Level::class,'dish_ingredient_levels', 'ingredient_id', 'level_id');
     }
     public function dishes(): BelongsToMany
     {
-        return $this->belongsToMany(Dish::class, 'dish_ingredient_level', 'ingredient_id', 'dish_id');
+        return $this->belongsToMany(Dish::class, 'dish_ingredient_levels', 'ingredient_id', 'dish_id');
     }
     public function providers(): BelongsToMany
     {
