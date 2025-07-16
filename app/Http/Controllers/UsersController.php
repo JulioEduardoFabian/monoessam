@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SessionEnded;
 use App\Models\Area;
 use App\Models\Cafe;
 use App\Models\Headquarter;
@@ -20,11 +21,11 @@ class UsersController extends Controller
     public function index()
     {
         return Inertia::render('users/Index', [
-            'users' => User::with(['roles', 'roles.areas', 'roles.areas.headquarter', 'roles.areas.cafe'])->get(),
-            'roles' => Role::with(['permissions', 'areas', 'areas.roles', 'areas.headquarter', 'areas.cafe', 'users'])->get(),
+            'users' => User::with(['roles'])->get(),
+            'roles' => Role::with(['permissions', 'users'])->get(),
             'permissions' => Permission::all(),
             'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users', 'areaRoles'])->get(),
-            'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get(),
+            'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.areaRoles', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions'])->get(),
             'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.areaRoles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'business'])->get()
         ]);
     }
@@ -86,5 +87,30 @@ class UsersController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function blacklist(string $id)
+    {
+        $user = User::find($id);
+
+        $user->update([
+            'type' => 2
+        ]);
+    }
+
+    public function banUser(string $id)
+    {
+        $user = User::find($id);
+
+        if ($user) {
+            $user->update([
+                'type' => 3,
+                'password' => Hash::make('lindltaylor7@gmail.com') // Reset password to a default value
+            ]);
+        }
+
+        event(new SessionEnded($id));
+
+        return to_route('users');
     }
 }

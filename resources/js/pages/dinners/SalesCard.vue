@@ -56,7 +56,6 @@ defineExpose({
 <template>
     <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden overflow-y-auto rounded-xl border">
         <Card class="min-h-full w-full overflow-y-auto p-3 shadow">
-            <p class="text-center font-semibold">Punto de Venta</p>
             <div class="mt-2">
                 <Input
                     type="text"
