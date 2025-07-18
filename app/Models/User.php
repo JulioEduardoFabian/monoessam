@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Models\Role;
 
 class User extends Authenticatable
@@ -69,5 +70,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'user_role_area', 'user_id', 'role_id')
             ->withPivot('area_id')
             ->using(UserRoleArea::class);
+    }
+    public function dishes(): HasMany
+    {
+        return $this->hasMany(Dish::class);
     }
 }
