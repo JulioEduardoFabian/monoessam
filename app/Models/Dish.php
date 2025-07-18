@@ -11,7 +11,7 @@ class Dish extends Model
 {
         /** @use HasFactory<\Database\Factories\MineFactory> */
     use HasFactory;
-    protected $fillable = ['name','description','dish_category_id'];
+    protected $fillable = ['name','description','dish_category_id','user_id'];
 
     public function dish_categories(): BelongsToMany
     {
@@ -24,5 +24,9 @@ class Dish extends Model
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Ingredient::class, 'dish_ingredient_levels', 'dish_id', 'ingredient_id');
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
