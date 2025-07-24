@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Permission, Role, User } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { Ban } from 'lucide-vue-next';
+import { Ban, Building, Building2, Coffee, MapPin, Mountain } from 'lucide-vue-next';
 import { ref } from 'vue';
 import AreaModal from './AreaModal.vue';
 import Modal from './Modal.vue';
@@ -137,6 +137,7 @@ const toBlacklistRoute = () => {
                     <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
                         <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Lugares</span>
                     </h2>
+                    <p>Seleccione una sede o cafetería</p>
                     <Input
                         type="text"
                         class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
@@ -162,9 +163,23 @@ const toBlacklistRoute = () => {
                                     }"
                                     @click="selectSide(headquarter)"
                                 >
-                                    <p class="font-medium text-gray-700 dark:text-gray-200">
-                                        {{ headquarter.business.name }} - {{ headquarter.name }}
-                                    </p>
+                                    <div class="flex items-start gap-3 text-gray-700 dark:text-gray-200">
+                                        <!-- Icono de empresa (Lucide) -->
+                                        <Building class="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+
+                                        <div class="min-w-0 flex-1">
+                                            <!-- Nombre de la empresa (destacado) -->
+                                            <h3 class="truncate font-semibold text-gray-900 dark:text-white">
+                                                {{ headquarter.business.name }}
+                                            </h3>
+
+                                            <!-- Sede (detalle secundario) -->
+                                            <div class="mt-1 flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                                                <MapPin class="h-4 w-4 opacity-70" />
+                                                <span class="max-w-[180px] truncate">{{ headquarter.name }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </TabsContent>
                             <TabsContent value="cafes">
@@ -177,7 +192,32 @@ const toBlacklistRoute = () => {
                                     }"
                                     @click="selectSide(cafe)"
                                 >
-                                    <p class="font-medium text-gray-700 dark:text-gray-200">{{ cafe.name }}</p>
+                                    <div class="flex items-start gap-3 text-gray-700 dark:text-gray-200">
+                                        <!-- Icono de café (Lucide) -->
+                                        <Coffee class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+
+                                        <div class="min-w-0 flex-1">
+                                            <!-- Nombre del café (destacado) -->
+                                            <h3 class="truncate font-semibold text-gray-900 dark:text-white">
+                                                {{ cafe.name }}
+                                            </h3>
+
+                                            <!-- Detalles secundarios (unidad y mina) -->
+                                            <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                                                <!-- Unidad -->
+                                                <span class="inline-flex items-center gap-1.5">
+                                                    <Building2 class="h-4 w-4 opacity-70" />
+                                                    <span class="max-w-[120px] truncate">{{ cafe.unit.name }}</span>
+                                                </span>
+
+                                                <!-- Mina -->
+                                                <span class="inline-flex items-center gap-1.5">
+                                                    <Mountain class="h-4 w-4 opacity-70" />
+                                                    <span class="max-w-[100px] truncate">{{ cafe.unit.mine.name }}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </TabsContent>
                         </Tabs>

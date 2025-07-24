@@ -112,4 +112,22 @@ export interface Service{
     description: string
 }
 
+export interface IngredientCategory{
+    id: number;
+    name: string;
+    description: string;
+}
+
+export interface DishCategory{
+    id: number,
+    name: string,
+    description: string,
+    mesearument_unit: string
+}
+
+export interface Provider{
+    id: number,
+    name: string
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

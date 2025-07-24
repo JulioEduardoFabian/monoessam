@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Dinner, Service, Unit } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
+import SubdealershipsDialog from '../businesses/SubdealershipsDialog.vue';
 import Alert from './Alert.vue';
 import OtherUnitDialog from './OtherUnitDialog.vue';
 import SalesCard from './SalesCard.vue';
@@ -20,7 +21,12 @@ interface Props {
     sale_types: any[];
     receipt_types: any[];
     sales: any[];
+    subdealerships: any[];
+    dealerships: any[];
 }
+const page = usePage();
+
+const permissions = page.props.auth.permissions;
 
 const props = defineProps<Props>();
 
@@ -155,8 +161,10 @@ const saveSale = (dni: String) => {
         <Alert :showAlert="showAlert" :type="typeAlert" :description="textAlert" />
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <h2 class="text-center text-2xl font-semibold">Punto de Venta</h2>
+            <SubdealershipsDialog :dealerships="dealerships" v-if="permissions.find((p) => p.id == 14)" />
             <SalesHeader
                 :cafes="cafes"
+                :subdealerships="subdealerships"
                 :services="services"
                 :receipt_types="receipt_types"
                 :sale_types="sale_types"
@@ -165,6 +173,7 @@ const saveSale = (dni: String) => {
                 @updateFormData="handleFormDataUpdate"
                 @addServiceSelected="addServiceSelected"
             />
+
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <SalesCard
                     :dinnerFound="dinnerFound"

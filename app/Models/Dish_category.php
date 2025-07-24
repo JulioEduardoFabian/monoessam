@@ -12,7 +12,7 @@ class Dish_category extends Model
     /** @use HasFactory<\Database\Factories\MineFactory> */
     use HasFactory;
 
-    protected $fillable = ['name','description','measurement_unit'];
+    protected $fillable = ['name', 'description', 'mesearument_unit'];
 
     public function dishes(): BelongsToMany
     {

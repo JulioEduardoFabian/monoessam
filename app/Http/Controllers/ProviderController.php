@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ingredient_city_provider;
+use App\Models\Provider;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProviderController extends Controller
 {
@@ -11,7 +14,9 @@ class ProviderController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('providers/Index', [
+            'ingredient_city_providers' => Ingredient_city_provider::with(['ingredient', 'provider', 'city'])->get()
+        ]);
     }
 
     /**

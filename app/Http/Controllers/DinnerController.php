@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Imports\DinnersImport;
 use App\Models\Area;
 use App\Models\Cafe;
+use App\Models\Dealership;
 use App\Models\Dinner;
 use App\Models\Receipt_type;
 use App\Models\Sale;
 use App\Models\Sale_type;
 use App\Models\Service;
+use App\Models\Subdealership;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -45,7 +47,9 @@ class DinnerController extends Controller
             'cafes' => $cafes,
             'sale_types' => Sale_type::all(),
             'receipt_types' => Receipt_type::all(),
-            'sales' => Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])->orderBy('id', 'desc')->get()
+            'sales' => Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])->orderBy('id', 'desc')->get(),
+            'subdealerships' => Subdealership::all(),
+            'dealerships' => Dealership::all()
         ]);
     }
 
@@ -62,7 +66,9 @@ class DinnerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dinner = Dinner::create($request->all());
+
+        return redirect()->back();
     }
 
     /**

@@ -5,12 +5,15 @@ use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CafeController;
 use App\Http\Controllers\DealershipController;
 use App\Http\Controllers\DinnerController;
+use App\Http\Controllers\DishCategoryController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\IngredientCategoryController;
 use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MineController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ServiceController;
@@ -37,7 +40,8 @@ Route::get('/migrate', function () {
 
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/management', [ManagementController::class, 'index'])->name('management');
-Route::get('/food', [FoodController::class, 'index'])->name('food');
+Route::get('/providers', [ProviderController::class, 'index'])->name('providers');
+Route::get('/food', [FoodController::class, 'index'])->middleware(['auth', 'verified'])->name('food');
 Route::get('/businesses', [BusinessController::class, 'index'])->name('businesses');
 Route::post('/business-services', [BusinessController::class, 'businessServices'])->name('businessServices');
 Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
@@ -46,6 +50,7 @@ Route::get('/logistics', [LogisticController::class, 'index'])->name('logistics'
 
 Route::get('/dinners', [DinnerController::class, 'index'])->name('dinners');
 Route::post('/dinners-excel', [DinnerController::class, 'excel'])->name('dinners.excel');
+Route::post('/dinners', [DinnerController::class, 'store'])->name('dinners.insert');
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
 Route::post('/services', [ServiceController::class, 'store'])->name('services.insert');
 Route::put('/services-prices', [ServiceController::class, 'updatePrices'])->name('services.update-prices');
@@ -87,6 +92,13 @@ Route::get('print-test', [CafeController::class, 'printTest']);
 
 Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
 Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');
+
+
+Route::post('dish-category', [DishCategoryController::class, 'store'])->name('dish-category-insert');
+Route::post('ingredient-category', [IngredientCategoryController::class, 'store'])->name('ingredient-category-insert');
+
+Route::delete('delete-dish-category/{id}', [DishCategoryController::class, 'destroy']);
+Route::delete('delete-ingredient-category/{id}', [IngredientCategoryController::class, 'destroy']);
 
 Route::get('/qr/{id}', function ($id) {
     $arrayProducts = [

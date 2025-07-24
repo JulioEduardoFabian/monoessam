@@ -25,7 +25,7 @@ class Area extends Model
     }
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'user_role_area', 'area_id', 'role_id');
+        return $this->belongsToMany(Role::class);
     }
     public function areaRoles(): BelongsToMany
     {
