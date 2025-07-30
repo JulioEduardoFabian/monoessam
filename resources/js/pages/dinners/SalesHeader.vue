@@ -42,6 +42,7 @@ const doublePrice = ref(false);
 const cafeSelected = ref(0);
 const saletypeSelected = ref(0);
 const servicesSelected = ref([]);
+const salesSelected = ref([]);
 const receiptType = ref(0);
 const showOtherUnitDialog = ref(false);
 
@@ -54,7 +55,8 @@ watch(cafeSelected, (newVal) => {
     const cafeSelected = props.cafes.find((cafe) => cafe.id === newVal);
     if (cafeSelected) {
         servicesSelected.value = cafeSelected.services;
-        emits('showServicesFromCafeSelected', servicesSelected.value);
+        salesSelected.value = cafeSelected.sales;
+        emits('showServicesFromCafeSelected', servicesSelected.value, salesSelected.value);
     } else {
         servicesSelected.value = [];
         emits('showServicesFromCafeSelected', servicesSelected.value);

@@ -29,7 +29,7 @@ const submit = () => {
 <template>
     <Dialog v-model:open="open">
         <DialogTrigger
-            ><Button title="Agregar Permiso" class="h-full w-auto bg-blue-400"><Building2 /></Button
+            ><Button title="Agregar Empresa" class="h-full w-auto bg-blue-400"><Building2 /></Button
         ></DialogTrigger>
         <DialogContent>
             <DialogHeader>

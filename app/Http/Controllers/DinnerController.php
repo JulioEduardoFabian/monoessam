@@ -31,7 +31,9 @@ class DinnerController extends Controller
     {
         $user = auth()->user();
 
-        $user->load(['areas', 'areas.cafe', 'areas.cafe.services']);
+        $user->load(['areas', 'areas.cafe', 'areas.cafe.services', 'areas.cafe.sales' => function ($query) {
+            $query->orderBy('id', 'desc');
+        }, 'areas.cafe.sales.tickets', 'areas.cafe.sales.tickets.dinner']);
 
         $cafes = [];
 

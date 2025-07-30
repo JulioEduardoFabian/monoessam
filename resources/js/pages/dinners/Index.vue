@@ -53,11 +53,12 @@ const addServiceSelected = (service: Service) => {
     });
 };
 
-const showServicesFromCafeSelected = (services) => {
+const showServicesFromCafeSelected = (services, sales) => {
     servicesSelected.value = services;
+    localSales.value = sales;
 };
 
-const localSales = ref([...props.sales]);
+const localSales = ref([]);
 
 const servicesSelected = ref([]);
 const showAlert = ref(false);

@@ -38,9 +38,9 @@ class ServiceController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
-        Service::create($request->only('name', 'code', 'description'));
+        Service::create($request->only('name', 'code', 'description', 'type'));
 
-        return to_route('businesses');
+        return to_route('services');
     }
 
     /**
@@ -72,7 +72,8 @@ class ServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $service = Service::find($id);
+        $service->delete();
     }
 
     public function updatePrices(Request $request)
@@ -87,5 +88,12 @@ class ServiceController extends Controller
         }
 
         return to_route('dinners');
+    }
+
+    public function list()
+    {
+        $services = Service::with('cafes')->get();
+
+        return response()->json($services);
     }
 }

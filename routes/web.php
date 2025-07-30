@@ -52,7 +52,9 @@ Route::get('/dinners', [DinnerController::class, 'index'])->name('dinners');
 Route::post('/dinners-excel', [DinnerController::class, 'excel'])->name('dinners.excel');
 Route::post('/dinners', [DinnerController::class, 'store'])->name('dinners.insert');
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
+Route::get('/services-list', [ServiceController::class, 'list']);
 Route::post('/services', [ServiceController::class, 'store'])->name('services.insert');
+Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
 Route::put('/services-prices', [ServiceController::class, 'updatePrices'])->name('services.update-prices');
 
 Route::post('/mine-serviceables', [MineController::class, 'mineServiceables'])->name('mineServiceables');
@@ -80,6 +82,7 @@ Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
 Route::post('sales', [SaleController::class, 'store'])->name('sales');
 Route::get('print-ticket/{ticketId}/{businessId}', [SaleController::class, 'printTest'])->name('sales');
 
+Route::get('dealerships', [DealershipController::class, 'index']);
 Route::post('dealerships', [DealershipController::class, 'store'])->name('dealerships');
 Route::post('subdealerships', [SubdealershipController::class, 'store'])->name('subdealerships');
 
