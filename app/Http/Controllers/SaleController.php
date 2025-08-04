@@ -155,6 +155,8 @@ class SaleController extends Controller
             'status' => 1
         ]);
 
+
+
         if ($request->receipt_type == 1) {
             $ticket = Ticket::create([
                 'sale_id' => $sale->id,
@@ -199,7 +201,11 @@ class SaleController extends Controller
             'dinner' => $dinner,
             'ticket' => $ticket ?? null,
             'message' => 'Venta registrada correctamente.',
-            'sales' => Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])->orderBy('id', 'desc')->get()
+            'sales' => Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])
+                ->where('cafe_id', $request->cafe_id)
+                ->where('date', date('Y-m-d'))
+                ->orderBy('id', 'desc')
+                ->get(),
         ], 200);
     }
 
@@ -272,6 +278,19 @@ class SaleController extends Controller
         $sales = Sale::with(['cafe', 'dinner', 'dinner.subdealership', 'tickets', 'tickets.ticket_details'])
             ->whereBetween('date', [$dateInitial, $dateFinal])
             ->get();
+        return response()->json($sales);
+    }
+
+    public function pagination($offset)
+    {
+        $sales = Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])
+            ->where('cafe_id', $request->cafe_id)
+            ->where('date', date('Y-m-d'))
+            ->orderBy('id', 'desc')
+            ->offset($offset)
+            ->limit(10)
+            ->get();
+
         return response()->json($sales);
     }
 }

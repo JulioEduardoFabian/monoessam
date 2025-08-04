@@ -2,6 +2,8 @@
 import Button from '@/components/ui/button/Button.vue';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Cafe, Headquarter } from '@/types';
@@ -46,6 +48,11 @@ const submit = () => {
 };
 
 const selectIngredient = (ingredient) => {
+    ingredient.originalValues = {
+        liquid_waste: ingredient.liquid_waste,
+        solid_waste: ingredient.solid_waste,
+        calories: ingredient.calories,
+    };
     form.ingredients = [...(form.ingredients || []), ingredient];
 };
 
@@ -56,6 +63,30 @@ const deleteIngredient = (id) => {
 const searchIngredients = (e: Event) => {
     if (e.target.value == '') ingredientsFounded.value = [];
     else ingredientsFounded.value = props.ingredients?.filter((ingredient) => ingredient.name.toLowerCase().includes(e.target.value)).slice(0, 10);
+};
+
+const updateValues = (ingredientID, e: Event) => {
+    console.log(ingredientID, e.target.value);
+    const multiplier = parseFloat(e.target.value);
+    const ingredientSelected = form.ingredients.find((ingredient) => ingredient.id == ingredientID);
+
+    if (ingredientSelected) {
+        // Si no existen los valores originales, guardarlos primero
+        if (!ingredientSelected.originalValues) {
+            ingredientSelected.originalValues = {
+                liquid_waste: ingredientSelected.liquid_waste,
+                solid_waste: ingredientSelected.solid_waste,
+                calories: ingredientSelected.calories,
+            };
+        }
+
+        console.log(ingredientSelected);
+
+        // Calcular los nuevos valores basados en los originales
+        ingredientSelected.liquid_waste = ingredientSelected.originalValues.liquid_waste * multiplier;
+        ingredientSelected.solid_waste = ingredientSelected.originalValues.solid_waste * multiplier;
+        ingredientSelected.calories = ingredientSelected.originalValues.calories * multiplier;
+    }
 };
 </script>
 
@@ -119,6 +150,33 @@ const searchIngredients = (e: Event) => {
                                         <Button @click="deleteIngredient(ingredient.id)" size="sm" class="bg-red-500"
                                             ><Trash class="h-4 w-4"
                                         /></Button>
+                                        <Popover>
+                                            <PopoverTrigger> <Button>Valores </Button> </PopoverTrigger>
+                                            <PopoverContent>
+                                                <div class="grid gap-2">
+                                                    <div class="grid grid-cols-3 items-center gap-4">
+                                                        <Label for="width">Cantidad</Label>
+                                                        <Input @keyup="updateValues(ingredient.id, $event)" type="text" class="col-span-2 h-8" />
+                                                    </div>
+                                                    <div class="grid grid-cols-3 items-center gap-4">
+                                                        <Label for="maxWidth">Unidad</Label>
+                                                        <Input v-model="ingredient.measurement_unit" type="text" class="col-span-2 h-8" readonly />
+                                                    </div>
+                                                    <div class="grid grid-cols-3 items-center gap-4">
+                                                        <Label for="maxWidth">Desecho liquido ({{ ingredient.originalValues.liquid_waste }})</Label>
+                                                        <Input v-model="ingredient.liquid_waste" type="text" class="col-span-2 h-8" />
+                                                    </div>
+                                                    <div class="grid grid-cols-3 items-center gap-4">
+                                                        <Label for="height">Desecho sólido ({{ ingredient.originalValues.solid_waste }})</Label>
+                                                        <Input v-model="ingredient.solid_waste" type="text" class="col-span-2 h-8" />
+                                                    </div>
+                                                    <div class="grid grid-cols-3 items-center gap-4">
+                                                        <Label for="maxHeight">Calorias ({{ ingredient.originalValues.calories }})</Label>
+                                                        <Input v-model="ingredient.calories" type="text" class="col-span-2 h-8" />
+                                                    </div>
+                                                </div>
+                                            </PopoverContent>
+                                        </Popover>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
