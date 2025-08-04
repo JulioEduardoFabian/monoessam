@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class Provider extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'email', 'phone']; 
+    protected $fillable = ['name', 'email', 'phone'];
 
     public function cities(): BelongsToMany
     {
@@ -16,6 +17,6 @@ class Provider extends Model
     }
     public function ingredients(): BelongsToMany
     {
-        return $this->belongsToMany(Ingredient::class, 'ingredient_city_providers', 'provider_id', 'ingredient_id');
+        return $this->belongsToMany(Ingredient::class, 'ingredient_city_providers', 'provider_id', 'ingredient_id')->withPivot('cost_price');
     }
 }

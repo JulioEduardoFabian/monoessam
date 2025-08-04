@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Provider;
+use App\Models\Service;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class IngredientController extends Controller
 {
@@ -11,7 +14,10 @@ class IngredientController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('ingredients/Index', [
+            'services' => Service::all(),
+            'providers' => Provider::with('ingredients')->get()
+        ]);
     }
 
     /**
