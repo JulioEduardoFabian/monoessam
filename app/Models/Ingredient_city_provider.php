@@ -21,4 +21,8 @@ class Ingredient_city_provider extends Model
     {
         return $this->belongsTo(City::class);
     }
+    public function measurement_unit(): BelongsTo
+    {
+        return $this->belongsTo(Measurement_unit::class);
+    }
 }
