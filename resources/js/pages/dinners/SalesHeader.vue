@@ -53,6 +53,7 @@ const doublePriceSave = () => {
 
 watch(cafeSelected, (newVal) => {
     const cafeSelected = props.cafes.find((cafe) => cafe.id === newVal);
+    console.log(cafeSelected);
     if (cafeSelected) {
         servicesSelected.value = cafeSelected.services;
         salesSelected.value = cafeSelected.sales;

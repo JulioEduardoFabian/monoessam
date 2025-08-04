@@ -80,6 +80,7 @@ Route::post('mines', [MineController::class, 'store'])->name('mines');
 Route::post('units', [UnitController::class, 'store'])->name('units');
 Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
 Route::post('sales', [SaleController::class, 'store'])->name('sales');
+Route::get('sales-pagination/{offset}', [SaleController::class, 'pagination'])->name('sales.pagination');
 Route::get('print-ticket/{ticketId}/{businessId}', [SaleController::class, 'printTest'])->name('sales');
 
 Route::get('dealerships', [DealershipController::class, 'index']);

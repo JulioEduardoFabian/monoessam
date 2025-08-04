@@ -31,25 +31,27 @@ class DinnerController extends Controller
     {
         $user = auth()->user();
 
-        $user->load(['areas', 'areas.cafe', 'areas.cafe.services', 'areas.cafe.sales' => function ($query) {
-            $query->orderBy('id', 'desc');
-        }, 'areas.cafe.sales.tickets', 'areas.cafe.sales.tickets.dinner']);
+        // Cargar relaciones básicas
+        $user->load(['areas.cafe.services']);
 
-        $cafes = [];
+        // Obtener cafés del usuario
+        $cafeIds = $user->areas->pluck('cafe.id')->unique();
 
-        foreach ($user->areas as $area) {
-            array_push($cafes, $area->cafe);
-        }
+        // Obtener ventas paginadas por separado
+        $todaySales = Sale::whereIn('cafe_id', $cafeIds)
+            ->where('date', date('Y-m-d'))
+            ->orderBy('id', 'desc')
+            ->with(['tickets.dinner', 'cafe'])
+            ->paginate(10);
 
-        // Cargar todos los datos necesarios en consultas eficientes
         return Inertia::render('dinners/Index', [
             'dinners' => Dinner::with('cafe')->get(),
             'services' => Service::all(),
             'units' => Unit::with('services')->get(),
-            'cafes' => $cafes,
+            'cafes' => $user->areas->pluck('cafe')->unique(),
+            'todaySales' => $todaySales, // Esto incluirá los links de paginación
             'sale_types' => Sale_type::all(),
             'receipt_types' => Receipt_type::all(),
-            'sales' => Sale::with(['tickets', 'tickets.ticket_details', 'tickets.dinner', 'sale_details'])->orderBy('id', 'desc')->get(),
             'subdealerships' => Subdealership::all(),
             'dealerships' => Dealership::all()
         ]);

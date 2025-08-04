@@ -20,7 +20,7 @@ interface Props {
     cafes: Cafe[];
     sale_types: any[];
     receipt_types: any[];
-    sales: any[];
+    todaySales: any[];
     subdealerships: any[];
     dealerships: any[];
 }
@@ -58,7 +58,7 @@ const showServicesFromCafeSelected = (services, sales) => {
     localSales.value = sales;
 };
 
-const localSales = ref([]);
+const localSales = ref([...props.todaySales.data]);
 
 const servicesSelected = ref([]);
 const showAlert = ref(false);
@@ -186,7 +186,7 @@ const saveSale = (dni: String) => {
                     ref="salesCardRef"
                 />
                 <!-- <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" /> -->
-                <SalesTable :sales="localSales" />
+                <SalesTable :sales="localSales" :paginateData="props.todaySales" />
                 <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @hideDialog="hideDialog" @handleDoublePriceSave="handleDoublePriceSave" />
             </div>
         </div>

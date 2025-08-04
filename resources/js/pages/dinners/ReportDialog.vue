@@ -159,7 +159,7 @@ const exportToExcel = () => {
                                             {{ result.dinner.name }}
                                         </td>
                                         <td class="px-4 py-2 text-sm whitespace-nowrap text-gray-900">
-                                            {{ result.tickets[0].ticket_details[0].service_name }}
+                                            {{ result.tickets[0].ticket_details[0]?.service_name }}
                                         </td>
                                         <td class="px-4 py-2 text-sm font-medium whitespace-nowrap text-green-600">
                                             S./{{ parseFloat(result.total).toFixed(2) }}
