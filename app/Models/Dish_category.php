@@ -20,6 +20,8 @@ class Dish_category extends Model
     }
     public function serviceables(): BelongsToMany
     {
-        return $this->belongsToMany(Serviceable::class);
+        return $this->belongsToMany(Serviceable::class, 'dish_category_serviceables', 'dish_category_id', 'serviceable_id')
+            ->withPivot('serving_amount', 'measurement_unit_id', 'serving_percentaje', 'lower_limit_cost', 'total_lower_limit_cost', 'upper_limit_cost', 'total_upper_limit_cost')
+            ->withTimestamps();
     }
 }
