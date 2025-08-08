@@ -2,11 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Business, Headquarter } from '@/types';
 import BusinessTable from './BusinessTable.vue';
-import DealershipsDialog from './DealershipsDialog.vue';
 import InsertModal from './InsertBusinessModal.vue';
-import ServiceDialog from './ServiceDialog.vue';
-import SubdealershipsDialog from './SubdealershipsDialog.vue';
-import SubdealershipsTable from './SubdealershipsTable.vue';
 
 interface Props {
     businesses: Business[];
@@ -25,16 +21,12 @@ defineProps<Props>();
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex h-[40px] w-full items-center justify-start gap-1">
                 <InsertModal />
-                <ServiceDialog />
+                <!-- <ServiceDialog />
                 <SubdealershipsDialog :dealerships="dealerships" />
-                <DealershipsDialog />
+                <DealershipsDialog /> -->
             </div>
             <div class="grid auto-rows-min gap-4 md:grid-cols-3">
                 <BusinessTable :businesses="businesses" :headquarters="headquarters" :services="services" />
-                <!-- <HeadquartersTable :headquarters="headquarters" /> -->
-                <!-- <ServicesTable :services="services" /> -->
-                <!-- <DealershipsTable :dealerships="dealerships" /> -->
-                <SubdealershipsTable :subdealerships="subdealerships" :dealerships="dealerships" />
             </div>
         </div>
     </AppLayout>

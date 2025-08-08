@@ -6,8 +6,8 @@ import { ref, watch } from 'vue';
 import DatePicker from './DatePicker.vue';
 import DinnersTable from './DinnersTable.vue';
 import ExcelDialog from './ExcelDialog.vue';
+import NewDinnerDialog from './NewDinnerDialog.vue';
 import OtherUnitDialog from './OtherUnitDialog.vue';
-import PricesDialog from './PricesDialog.vue';
 import ReportDialog from './ReportDialog.vue';
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
     services: any[];
     receipt_types: any[];
     sale_types: any[];
+    subdealerships: any[];
 }
 
 interface SaleFormData {
@@ -41,6 +42,7 @@ const doublePrice = ref(false);
 const cafeSelected = ref(0);
 const saletypeSelected = ref(0);
 const servicesSelected = ref([]);
+const salesSelected = ref([]);
 const receiptType = ref(0);
 const showOtherUnitDialog = ref(false);
 
@@ -51,9 +53,11 @@ const doublePriceSave = () => {
 
 watch(cafeSelected, (newVal) => {
     const cafeSelected = props.cafes.find((cafe) => cafe.id === newVal);
+    console.log(cafeSelected);
     if (cafeSelected) {
         servicesSelected.value = cafeSelected.services;
-        emits('showServicesFromCafeSelected', servicesSelected.value);
+        salesSelected.value = cafeSelected.sales;
+        emits('showServicesFromCafeSelected', servicesSelected.value, salesSelected.value);
     } else {
         servicesSelected.value = [];
         emits('showServicesFromCafeSelected', servicesSelected.value);
@@ -147,7 +151,9 @@ const addServiceSelected = (service: Service) => {
 
                     <ReportDialog class="w-full" />
 
-                    <PricesDialog :services="servicesSelected" class="w-full" />
+                    <NewDinnerDialog :cafes="cafes" :subdealerships="subdealerships" />
+
+                    <!-- <PricesDialog :services="servicesSelected" class="w-full" /> -->
 
                     <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @doublePriceSave="doublePriceSave" class="w-full" />
                 </div>

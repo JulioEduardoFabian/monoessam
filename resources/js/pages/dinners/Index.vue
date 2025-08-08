@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Dinner, Service, Unit } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
+import SubdealershipsDialog from '../businesses/SubdealershipsDialog.vue';
 import Alert from './Alert.vue';
 import OtherUnitDialog from './OtherUnitDialog.vue';
 import SalesCard from './SalesCard.vue';
@@ -19,8 +20,13 @@ interface Props {
     cafes: Cafe[];
     sale_types: any[];
     receipt_types: any[];
-    sales: any[];
+    todaySales: any[];
+    subdealerships: any[];
+    dealerships: any[];
 }
+const page = usePage();
+
+const permissions = page.props.auth.permissions;
 
 const props = defineProps<Props>();
 
@@ -47,11 +53,12 @@ const addServiceSelected = (service: Service) => {
     });
 };
 
-const showServicesFromCafeSelected = (services) => {
+const showServicesFromCafeSelected = (services, sales) => {
     servicesSelected.value = services;
+    localSales.value = sales;
 };
 
-const localSales = ref([...props.sales]);
+const localSales = ref([...props.todaySales.data]);
 
 const servicesSelected = ref([]);
 const showAlert = ref(false);
@@ -67,6 +74,8 @@ const handleShowAlert = (typeAlertComing: string, payload: any) => {
     typeAlert.value = typeAlertComing;
     showAlert.value = true;
 };
+
+const dniDinnerSearched = ref('');
 
 const showDialog = () => {
     showOtherUnitDialog.value = true;
@@ -101,14 +110,15 @@ const handleFormDataUpdate = (formData: SaleFormData) => {
 
 const handleDoublePriceSave = (dni: string) => {
     doublePrice.value = true;
-
-    saveSale(dinnerFound.value?.dni);
+    saveSale(dniDinnerSearched.value);
 };
 
 const dinnerFound = ref({});
 const subdealership = ref({});
 
 const saveSale = (dni: String) => {
+    dniDinnerSearched.value = dni;
+
     const fd = new FormData();
     fd.append('cafe_id', cafeSelected.value);
     fd.append('sale_type_id', saletypeSelected.value);
@@ -134,7 +144,10 @@ const saveSale = (dni: String) => {
                 localSales.value = response.data.sales || [];
             }
 
-            if (response.data.otherCafe) showDialog();
+            if (response.data.otherCafe) {
+                console.log(dniDinnerSearched.value);
+                showDialog();
+            }
         })
         .catch((error) => {
             console.error('Error fetching dinners:', error);
@@ -149,8 +162,10 @@ const saveSale = (dni: String) => {
         <Alert :showAlert="showAlert" :type="typeAlert" :description="textAlert" />
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <h2 class="text-center text-2xl font-semibold">Punto de Venta</h2>
+            <SubdealershipsDialog :dealerships="dealerships" v-if="permissions.find((p) => p.id == 14)" />
             <SalesHeader
                 :cafes="cafes"
+                :subdealerships="subdealerships"
                 :services="services"
                 :receipt_types="receipt_types"
                 :sale_types="sale_types"
@@ -159,6 +174,7 @@ const saveSale = (dni: String) => {
                 @updateFormData="handleFormDataUpdate"
                 @addServiceSelected="addServiceSelected"
             />
+
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <SalesCard
                     :dinnerFound="dinnerFound"
@@ -170,7 +186,7 @@ const saveSale = (dni: String) => {
                     ref="salesCardRef"
                 />
                 <!-- <DinnersTable :dinners="dinners" :services="servicesSelected" @addServiceSelected="addServiceSelected" /> -->
-                <SalesTable :sales="localSales" />
+                <SalesTable :sales="localSales" :paginateData="props.todaySales" />
                 <OtherUnitDialog :showOtherUnitDialog="showOtherUnitDialog" @hideDialog="hideDialog" @handleDoublePriceSave="handleDoublePriceSave" />
             </div>
         </div>

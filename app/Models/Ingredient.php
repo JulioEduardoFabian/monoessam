@@ -32,10 +32,12 @@ class Ingredient extends Model
     }
     public function providers(): BelongsToMany
     {
-        return $this->belongsToMany(Provider::class, 'ingredient_city_provider', 'ingredient_id', 'provider_id');
+        return $this->belongsToMany(Provider::class, 'ingredient_city_provider', 'ingredient_id', 'provider_id')->withPivot('price', 'city_id')
+            ->withTimestamps();
     }
     public function cities(): BelongsToMany
     {
-        return $this->belongsToMany(City::class, 'ingredient_city_provider', 'ingredient_id', 'city_id');
+        return $this->belongsToMany(City::class, 'ingredient_city_provider', 'ingredient_id', 'city_id')->withPivot('price', 'provider_id')
+            ->withTimestamps();
     }
 }

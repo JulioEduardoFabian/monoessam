@@ -31,9 +31,10 @@ const mainNavItems: NavItem[] = [
 permissions.forEach((permission: any) => {
     const IconComponent = iconMap[permission.icon_class] || House;
 
-    const newPermission = { title: permission.sidebar_name, href: '/' + permission.route_name, icon: IconComponent };
-
-    mainNavItems.push(newPermission);
+    if (permission.route_name != null) {
+        const newPermission = { title: permission.sidebar_name, href: '/' + permission.route_name, icon: IconComponent };
+        mainNavItems.push(newPermission);
+    }
 });
 
 const footerNavItems: NavItem[] = [];

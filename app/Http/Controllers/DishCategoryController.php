@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dish_category;
 use Illuminate\Http\Request;
 
 class DishCategoryController extends Controller
@@ -27,7 +28,8 @@ class DishCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dishCategory = Dish_category::create($request->all());
+        return to_route('food');
     }
 
     /**
@@ -59,6 +61,10 @@ class DishCategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $dish_category = Dish_category::find($id);
+
+        $dish_category->delete();
+
+        return route('food');
     }
 }

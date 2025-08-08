@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ingredient_category;
 use Illuminate\Http\Request;
 
 class IngredientCategoryController extends Controller
@@ -27,7 +28,8 @@ class IngredientCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $ingredientCategory = Ingredient_category::create($request->all());
+        return to_route('food');
     }
 
     /**
@@ -59,6 +61,10 @@ class IngredientCategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $ingredient_category = Ingredient_category::find($id);
+
+        $ingredient_category->delete();
+
+        return route('food');
     }
 }
