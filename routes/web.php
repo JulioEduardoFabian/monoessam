@@ -50,6 +50,9 @@ Route::get('/logistics', [LogisticController::class, 'index'])->name('logistics'
 Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients');
 //Route::get('/sales', [SaleController::class, 'index'])->name('sales');
 
+Route::post('/providers', [ProviderController::class, 'store'])->name('providers.insert');
+Route::post('/providers-assign', [ProviderController::class, 'assign'])->name('providers.assign');
+
 Route::get('/dinners', [DinnerController::class, 'index'])->name('dinners');
 Route::post('/dinners-excel', [DinnerController::class, 'excel'])->name('dinners.excel');
 Route::post('/dinners', [DinnerController::class, 'store'])->name('dinners.insert');

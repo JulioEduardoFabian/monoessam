@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ingredient extends Model
 {
-         /** @use HasFactory<\Database\Factories\MineFactory> */
+    /** @use HasFactory<\Database\Factories\MineFactory> */
     use HasFactory;
-    protected $fillable = ['name','description','amount','measurement_unit','calories','liquid_waste','solid_waste','ingredient_category_id'];
+    protected $fillable = ['name', 'description', 'amount', 'measurement_unit', 'calories', 'liquid_waste', 'solid_waste', 'ingredient_category_id'];
 
     public function ingredient_category(): BelongsTo
     {
@@ -24,7 +25,7 @@ class Ingredient extends Model
     }
     public function levels(): BelongsToMany
     {
-        return $this->belongsToMany(Level::class,'dish_ingredient_levels', 'ingredient_id', 'level_id');
+        return $this->belongsToMany(Level::class, 'dish_ingredient_levels', 'ingredient_id', 'level_id');
     }
     public function dishes(): BelongsToMany
     {
@@ -32,10 +33,10 @@ class Ingredient extends Model
     }
     public function providers(): BelongsToMany
     {
-        return $this->belongsToMany(Provider::class, 'ingredient_city_provider', 'ingredient_id', 'provider_id');
+        return $this->belongsToMany(Provider::class, 'ingredient_city_providers', 'ingredient_id', 'provider_id')->withPivot('cost_price');
     }
     public function cities(): BelongsToMany
     {
-        return $this->belongsToMany(City::class, 'ingredient_city_provider', 'ingredient_id', 'city_id');
+        return $this->belongsToMany(City::class, 'ingredient_city_providers', 'ingredient_id', 'city_id');
     }
 }

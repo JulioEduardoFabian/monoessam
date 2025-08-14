@@ -20,7 +20,7 @@ class FoodController extends Controller
             'dishes' => Dish::with(['dish_categories', 'ingredients'])->take(6)->get(),
             'ingredient_categories' => Ingredient_category::all(),
             'dish_categories' => Dish_category::all(),
-            'ingredients' => Ingredient::all()
+            'ingredients' => Ingredient::with(['providers', 'providers.cities'])->get()
         ]);
     }
 

@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Service } from '@/types';
+import { Ingredient, Service } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import NewIngredientDialog from '../logistics/NewIngredientDialog.vue';
+import NewProviderDialog from '../logistics/NewProviderDialog.vue';
 
 const props = defineProps<{
     services: Service[];
     providers: any[];
+    ingredients: Ingredient[];
 }>();
 </script>
 
@@ -21,16 +24,8 @@ const props = defineProps<{
                         <p class="mt-1 text-sm text-gray-500">Lista completa de ingredientes y sus proveedores</p>
                     </div>
                     <div class="flex gap-2">
-                        <button class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                            Nuevo Ingrediente
-                        </button>
+                        <NewProviderDialog />
+                        <NewIngredientDialog :providers="providers" :ingredients="ingredients" />
                         <button class="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 transition-colors hover:bg-gray-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path
