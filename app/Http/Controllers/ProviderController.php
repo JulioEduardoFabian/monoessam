@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ingredient_city_provider;
 use App\Models\Provider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProviderController extends Controller
@@ -32,7 +33,9 @@ class ProviderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $provider = Provider::create($request->all());
+
+        return to_route('ingredients');
     }
 
     /**
@@ -65,5 +68,11 @@ class ProviderController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function assign(Request $request)
+    {
+        DB::table('ingredient_city_providers')->insert($request->all());
+        return to_route('ingredients');
     }
 }

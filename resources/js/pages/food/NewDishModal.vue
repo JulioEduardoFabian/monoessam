@@ -2,14 +2,13 @@
 import Button from '@/components/ui/button/Button.vue';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Cafe, Headquarter } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { Plus, Trash } from 'lucide-vue-next';
 import { ref } from 'vue';
+import CalcPopover from './CalcPopover.vue';
 
 const props = defineProps({
     cafes: {
@@ -26,6 +25,13 @@ const props = defineProps({
 });
 
 const optionUnits = ['Mililitros', 'Gramos'];
+
+const totalGrossWeight = ref(0.0);
+const totalSolidWaste = ref(0.0);
+const totalLiquidWaste = ref(0.0);
+const totalCalories = ref(0.0);
+const totalCost = ref(0.0);
+const totalfinalProduct = ref(0.0);
 
 const open = ref(false);
 
@@ -44,6 +50,54 @@ const submit = () => {
             open.value = false;
             form.reset();
         },
+    });
+};
+
+const calcMassiveProperties = (id, calcArray) => {
+    console.log(calcArray);
+
+    const operationTypes = [
+        {
+            property: 'gross_weight',
+            totalProperty: totalGrossWeight,
+            resultCalc: calcArray[0],
+        },
+        {
+            property: 'solid_waste',
+            totalProperty: totalSolidWaste,
+            resultCalc: calcArray[1],
+        },
+        {
+            property: 'liquid_waste',
+            totalProperty: totalLiquidWaste,
+            resultCalc: calcArray[2],
+        },
+        {
+            property: 'calories',
+            totalProperty: totalCalories,
+            resultCalc: calcArray[3],
+        },
+        {
+            property: 'cost',
+            totalProperty: totalCost,
+            resultCalc: calcArray[4],
+        },
+        {
+            property: 'final_product',
+            totalProperty: totalfinalProduct,
+            resultCalc: calcArray[5],
+        },
+    ];
+
+    const ingredientIndex = form.ingredients.findIndex((ing) => ing.id == id);
+
+    operationTypes.forEach((operation) => {
+        if (ingredientIndex !== -1) {
+            form.ingredients[ingredientIndex][operation.property] = operation.resultCalc;
+            operation.totalProperty.value = form.ingredients.reduce((sum, ingredient) => {
+                return sum + (parseFloat(ingredient[operation.property]) || 0);
+            }, 0);
+        }
     });
 };
 
@@ -137,7 +191,7 @@ const updateValues = (ingredientID, e: Event) => {
                                 <TableRow>
                                     <TableHead class="w-[200px]">Nombre</TableHead>
                                     <TableHead class="w-[100px]">Descripción</TableHead>
-                                    <TableHead class="w-[100px]">Unidad</TableHead>
+                                    <TableHead class="w-[100px]">Precio unitario</TableHead>
                                     <TableHead class="text-right">Opciones</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -150,33 +204,16 @@ const updateValues = (ingredientID, e: Event) => {
                                         <Button @click="deleteIngredient(ingredient.id)" size="sm" class="bg-red-500"
                                             ><Trash class="h-4 w-4"
                                         /></Button>
-                                        <Popover>
-                                            <PopoverTrigger> <Button>Valores </Button> </PopoverTrigger>
-                                            <PopoverContent>
-                                                <div class="grid gap-2">
-                                                    <div class="grid grid-cols-3 items-center gap-4">
-                                                        <Label for="width">Cantidad</Label>
-                                                        <Input @keyup="updateValues(ingredient.id, $event)" type="text" class="col-span-2 h-8" />
-                                                    </div>
-                                                    <div class="grid grid-cols-3 items-center gap-4">
-                                                        <Label for="maxWidth">Unidad</Label>
-                                                        <Input v-model="ingredient.measurement_unit" type="text" class="col-span-2 h-8" readonly />
-                                                    </div>
-                                                    <div class="grid grid-cols-3 items-center gap-4">
-                                                        <Label for="maxWidth">Desecho liquido ({{ ingredient.originalValues.liquid_waste }})</Label>
-                                                        <Input v-model="ingredient.liquid_waste" type="text" class="col-span-2 h-8" />
-                                                    </div>
-                                                    <div class="grid grid-cols-3 items-center gap-4">
-                                                        <Label for="height">Desecho sólido ({{ ingredient.originalValues.solid_waste }})</Label>
-                                                        <Input v-model="ingredient.solid_waste" type="text" class="col-span-2 h-8" />
-                                                    </div>
-                                                    <div class="grid grid-cols-3 items-center gap-4">
-                                                        <Label for="maxHeight">Calorias ({{ ingredient.originalValues.calories }})</Label>
-                                                        <Input v-model="ingredient.calories" type="text" class="col-span-2 h-8" />
-                                                    </div>
-                                                </div>
-                                            </PopoverContent>
-                                        </Popover>
+                                        <CalcPopover
+                                            :ingredient="ingredient"
+                                            :totalMateriaPrima="totalGrossWeight"
+                                            :totalSolidWaste="totalSolidWaste"
+                                            :totalLiquidWaste="totalLiquidWaste"
+                                            :totalCalories="totalCalories"
+                                            :totalCost="totalCost"
+                                            :totalfinalProduct="totalfinalProduct"
+                                            @calcMassiveProperties="calcMassiveProperties"
+                                        />
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
@@ -184,7 +221,14 @@ const updateValues = (ingredientID, e: Event) => {
                     </div>
                 </div>
             </div>
-
+            <div class="flex w-full flex-col">
+                <p>Total Materia Prima: {{ totalGrossWeight }} gramos</p>
+                <p>Total Desechos solidos: {{ totalSolidWaste }} gramos</p>
+                <p>Total Desechos liquidos: {{ totalLiquidWaste }} gramos</p>
+                <p>Total Calorias: {{ totalCalories }}</p>
+                <p>Costo total: S./ {{ totalCost }}</p>
+                <p>Producto Final: {{ totalfinalProduct }}</p>
+            </div>
             <DialogFooter @click="submit"> Agregar </DialogFooter>
         </DialogContent>
     </Dialog>
