@@ -1,32 +1,71 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
-import Input from '@/components/ui/input/Input.vue';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Area, Cafe, Headquarter, Permission, Role, User } from '@/types';
+import { Area, Cafe, Headquarter, Mine, Permission, Role, Unit, User } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { Ban, Building, Building2, Coffee, MapPin, Mountain } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import AreaModal from './AreaModal.vue';
+import GuardModal from './GuardModal.vue';
 import Modal from './Modal.vue';
 import PermissionModal from './PermissionModal.vue';
 import RoleModal from './RoleModal.vue';
-import RolePermissionPopover from './RolePermissionPopover.vue';
+import StaffSelectables from './StaffSelectables.vue';
 
 interface Props {
     users: User[];
     roles: Role[];
     permissions: Permission[];
     areas: Area[];
-    cafes: Cafe[];
     headquarters: Headquarter[];
+    mines: Mine[];
+    units: Unit[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const areasSelected = ref([]);
-const usersSelected = ref([]);
 const showNoUsers = ref(false);
+
+const selectedOptions = ref({
+    mine: null,
+    unit: null,
+    cafe: null,
+});
+
+const selectedUnits = ref([]);
+const selectedCafes = ref([]);
+const usersSelected = ref([]);
+
+watch(
+    selectedOptions,
+    (newVal) => {
+        // Cambió la mina
+        if (newVal.mine !== null && newVal.mine !== undefined) {
+            const mineSelected = props.mines.find((mine) => String(mine.id) === String(newVal.mine));
+            selectedUnits.value = mineSelected ? mineSelected.units : [];
+        }
+
+        // Cambió la unidad
+        if (newVal.unit) {
+            const unitSelected = selectedUnits.value.find((unit) => unit.id == newVal.unit);
+            selectedCafes.value = unitSelected ? unitSelected.cafes : [];
+        }
+
+        if (newVal.cafe) {
+            const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == newVal.cafe);
+            if (cafeSelected) {
+                usersSelected.value = cafeSelected.users;
+                console.log(usersSelected.value);
+            } else {
+                areasSelected.value = [];
+            }
+            //usersSelected.value = [];
+            showNoUsers.value = false;
+        }
+    },
+    { deep: true },
+);
 
 const locationLabel = (user: User): string => {
     const area = user.roles?.[0]?.areas?.[0];
@@ -102,10 +141,12 @@ const toBlacklistRoute = () => {
 };
 </script>
 <template>
-    <Head title="Usuarios" />
+    <Head title="Headcount" />
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
-            <!-- Barra de acciones - Mejorada con colores -->
+            <div class="flex">
+                <h1 class="text-2xl font-bold">Puestos</h1>
+            </div>
             <div
                 class="flex h-12 w-full items-center justify-start gap-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 shadow-sm dark:from-gray-700 dark:to-gray-700"
             >
@@ -127,173 +168,54 @@ const toBlacklistRoute = () => {
                     :headquarters="headquarters"
                     class="rounded p-1 text-orange-600 transition-colors hover:bg-orange-100 hover:text-orange-700 dark:text-orange-400 dark:hover:bg-orange-900/30"
                 />
-                <Button @click="toBlacklistRoute"><Ban /></Button>
+                <!-- <Button @click="toBlacklistRoute"><Ban /></Button> -->
+            </div>
+            <div class="flex gap-2">
+                <Select class="w-full" v-model="selectedOptions.mine">
+                    <SelectTrigger class="w-full">
+                        <SelectValue placeholder="Selecciona una mina" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Minas</SelectLabel>
+                            <SelectItem v-for="mine in props.mines" :value="String(mine.id)" :key="mine.id"> {{ mine.name }} </SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+
+                <Select class="w-full" v-model="selectedOptions.unit">
+                    <SelectTrigger class="w-full">
+                        <SelectValue placeholder="Selecciona una unidad minera" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Unidades mineras</SelectLabel>
+                            <SelectItem v-for="unit in selectedUnits" :value="unit.id" :key="unit.id"> {{ unit.name }} </SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+
+                <Select class="w-full" v-model="selectedOptions.cafe">
+                    <SelectTrigger class="w-full">
+                        <SelectValue placeholder="Selecciona un comedor" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Comedores</SelectLabel>
+                            <SelectItem v-for="cafe in selectedCafes" :value="cafe.id" :key="cafe.id"> {{ cafe.name }} </SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+
+                <GuardModal />
+                <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar roles </Button>
+                <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar puesto </Button>
             </div>
 
             <!-- Contenedor principal de tres columnas -->
-            <div class="grid h-full auto-rows-fr gap-6 md:grid-cols-3">
-                <!-- Columna Lugares - Mejorada -->
-                <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
-                        <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Lugares</span>
-                    </h2>
-                    <p>Seleccione una sede o cafetería</p>
-                    <Input
-                        type="text"
-                        class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        placeholder="Buscar lugar..."
-                    />
-                    <div class="space-y-2 overflow-y-auto">
-                        <Tabs default-value="account" class="w-full">
-                            <TabsList class="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-700">
-                                <TabsTrigger value="areas" class="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
-                                    Sedes
-                                </TabsTrigger>
-                                <TabsTrigger value="cafes" class="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
-                                    Cafeterías
-                                </TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="areas">
-                                <div
-                                    v-for="headquarter in headquarters"
-                                    :key="headquarter.id"
-                                    class="my-1 flex h-14 cursor-pointer items-center rounded-lg border border-gray-200 p-3 transition-all hover:bg-blue-50 hover:shadow-md dark:border-gray-600 dark:hover:bg-blue-900/20"
-                                    :class="{
-                                        'border-blue-300 bg-blue-100 dark:bg-blue-900/40': selectedSide?.id === headquarter.id,
-                                    }"
-                                    @click="selectSide(headquarter)"
-                                >
-                                    <div class="flex items-start gap-3 text-gray-700 dark:text-gray-200">
-                                        <!-- Icono de empresa (Lucide) -->
-                                        <Building class="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
 
-                                        <div class="min-w-0 flex-1">
-                                            <!-- Nombre de la empresa (destacado) -->
-                                            <h3 class="truncate font-semibold text-gray-900 dark:text-white">
-                                                {{ headquarter.business.name }}
-                                            </h3>
-
-                                            <!-- Sede (detalle secundario) -->
-                                            <div class="mt-1 flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                                                <MapPin class="h-4 w-4 opacity-70" />
-                                                <span class="max-w-[180px] truncate">{{ headquarter.name }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="cafes">
-                                <div
-                                    v-for="cafe in cafes"
-                                    :key="cafe.id"
-                                    class="my-1 flex h-14 cursor-pointer items-center rounded-lg border border-gray-200 p-3 transition-all hover:bg-purple-50 hover:shadow-md dark:border-gray-600 dark:hover:bg-purple-900/20"
-                                    :class="{
-                                        'border-purple-300 bg-purple-100 dark:bg-purple-900/40': selectedSide?.id === cafe.id,
-                                    }"
-                                    @click="selectSide(cafe)"
-                                >
-                                    <div class="flex items-start gap-3 text-gray-700 dark:text-gray-200">
-                                        <!-- Icono de café (Lucide) -->
-                                        <Coffee class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
-
-                                        <div class="min-w-0 flex-1">
-                                            <!-- Nombre del café (destacado) -->
-                                            <h3 class="truncate font-semibold text-gray-900 dark:text-white">
-                                                {{ cafe.name }}
-                                            </h3>
-
-                                            <!-- Detalles secundarios (unidad y mina) -->
-                                            <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
-                                                <!-- Unidad -->
-                                                <span class="inline-flex items-center gap-1.5">
-                                                    <Building2 class="h-4 w-4 opacity-70" />
-                                                    <span class="max-w-[120px] truncate">{{ cafe.unit.name }}</span>
-                                                </span>
-
-                                                <!-- Mina -->
-                                                <span class="inline-flex items-center gap-1.5">
-                                                    <Mountain class="h-4 w-4 opacity-70" />
-                                                    <span class="max-w-[100px] truncate">{{ cafe.unit.mine.name }}</span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </TabsContent>
-                        </Tabs>
-                    </div>
-                </div>
-
-                <!-- Columna Áreas - Mejorada -->
-                <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
-                        <span class="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">Áreas</span>
-                    </h2>
-                    <div class="space-y-2 overflow-y-auto">
-                        <div
-                            v-for="area in areasSelected"
-                            :key="area.id"
-                            class="flex h-14 cursor-pointer items-center rounded-lg border border-gray-200 p-3 transition-all hover:bg-green-50 hover:shadow-md dark:border-gray-600 dark:hover:bg-green-900/20"
-                            :class="{
-                                'border-green-300 bg-green-100 dark:bg-green-900/40': selectedArea?.id === area.id,
-                            }"
-                            @click="selectArea(area)"
-                        >
-                            <p class="font-medium text-gray-700 dark:text-gray-200">{{ area.name }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Columna Usuarios - Mejorada -->
-                <div class="flex flex-col gap-4 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
-                        <span class="bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">Usuarios</span>
-                    </h2>
-                    <div
-                        v-if="showNoUsers"
-                        class="flex h-14 items-center justify-center rounded-lg bg-red-100 p-3 text-red-600 dark:bg-red-900/30 dark:text-red-300"
-                    >
-                        <p>No se encontraron usuarios en esta área</p>
-                    </div>
-                    <div class="space-y-3 overflow-y-auto" v-else>
-                        <div
-                            v-for="user in usersSelected"
-                            :key="user.id"
-                            class="rounded-lg border border-gray-200 p-3 transition-all hover:shadow-md dark:border-gray-600"
-                            :class="{
-                                'border-indigo-300 bg-indigo-50 dark:bg-indigo-900/30': selectedUser?.id === user.id,
-                            }"
-                            @click="selectUser(user)"
-                        >
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium text-gray-800 dark:text-gray-100">{{ user.name }}</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</p>
-                                </div>
-                                <span
-                                    class="rounded-full px-2 py-1 text-xs font-medium"
-                                    :class="{
-                                        'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': user.roles[0].name === 'Admin',
-                                        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200': user.roles[0].name === 'Manager',
-                                        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': user.roles[0].name === 'Employee',
-                                        'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200': user.roles[0].name === 'Guest',
-                                    }"
-                                >
-                                    {{ user.roles[0].name }}
-                                </span>
-                            </div>
-                            <div class="mt-2 flex justify-end gap-1">
-                                <Button class="bg-red-500" title="Dar de baja" @click="blockUser(user.id)"><Ban /></Button>
-                                <Button @click="toBlacklist(user.id)" title="Pasar a lista negra"><Ban /></Button>
-                                <RolePermissionPopover
-                                    :role="user.roles[0]"
-                                    :permissions="permissions"
-                                    class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="grid h-full auto-rows-fr gap-6 md:grid-cols-4">
+                <StaffSelectables :users="users" />
             </div>
         </div>
     </AppLayout>

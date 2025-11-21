@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Area;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -13,7 +16,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return Inertia::render('roles/Index', ['roles' => Role::all()]);
+        return Inertia::render('roles/Index', ['roles' => Role::all(), 'users' => User::all(), 'areas' => Area::all(), 'permissions' => Permission::all()]);
     }
 
     /**
