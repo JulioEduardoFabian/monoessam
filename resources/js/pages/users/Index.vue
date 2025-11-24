@@ -6,6 +6,7 @@ import { Area, Cafe, Headquarter, Mine, Permission, Role, Unit, User } from '@/t
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import AreaModal from './AreaModal.vue';
+import GuardAreaDroppable from './GuardAreaDroppable.vue';
 import GuardModal from './GuardModal.vue';
 import Modal from './Modal.vue';
 import PermissionModal from './PermissionModal.vue';
@@ -36,6 +37,16 @@ const selectedOptions = ref({
 const selectedUnits = ref([]);
 const selectedCafes = ref([]);
 const usersSelected = ref([]);
+const guardsSelected = ref([] as Cafe[]);
+
+const unassignedUsers = ref([
+    { id: 1, name: 'Alice', type: 1, avatar: null },
+    { id: 2, name: 'Bob', type: 1, avatar: null },
+    { id: 3, name: 'Julius', type: 1, avatar: null },
+    { id: 4, name: 'Micky', type: 1, avatar: null },
+    { id: 5, name: 'Jaime', type: 1, avatar: null },
+]);
+const assignedUsers = ref([]);
 
 watch(
     selectedOptions,
@@ -56,7 +67,9 @@ watch(
             const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == newVal.cafe);
             if (cafeSelected) {
                 usersSelected.value = cafeSelected.users;
-                console.log(usersSelected.value);
+                guardsSelected.value = cafeSelected.guards;
+
+                console.log(guardsSelected);
             } else {
                 areasSelected.value = [];
             }
@@ -139,6 +152,21 @@ const blockUser = (userId: number) => {
 const toBlacklistRoute = () => {
     router.get(route('blacklist'));
 };
+
+const handleUserAssignment = (user) => {
+    console.log('Usuario a asignar:', user);
+
+    // 1. Eliminar el usuario de la lista de origen (Unassigned)
+    unassignedUsers.value = unassignedUsers.value.filter((u) => u.id !== user.id);
+
+    // 2. Añadir el usuario a la lista de destino (Assigned)
+    assignedUsers.value.push(user);
+};
+
+const selectCafe = (value: number | string) => {
+    console.log('Valor seleccionado:', value);
+    console.log('Cafe seleccionado');
+};
 </script>
 <template>
     <Head title="Headcount" />
@@ -206,8 +234,7 @@ const toBlacklistRoute = () => {
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-
-                <GuardModal />
+                <GuardModal :cafeId="selectedOptions.cafe" />
                 <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar roles </Button>
                 <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar puesto </Button>
             </div>
@@ -215,7 +242,15 @@ const toBlacklistRoute = () => {
             <!-- Contenedor principal de tres columnas -->
 
             <div class="grid h-full auto-rows-fr gap-6 md:grid-cols-4">
-                <StaffSelectables :users="users" />
+                <StaffSelectables :users="unassignedUsers" />
+                <GuardAreaDroppable
+                    :users="assignedUsers"
+                    :roles="roles"
+                    :guard="guard"
+                    @dropped="handleUserAssignment"
+                    v-for="guard in guardsSelected"
+                    :key="guard.id"
+                />
             </div>
         </div>
     </AppLayout>

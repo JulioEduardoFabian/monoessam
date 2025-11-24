@@ -8,6 +8,7 @@ use App\Http\Controllers\DinnerController;
 use App\Http\Controllers\DishCategoryController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\GuardController;
 use App\Http\Controllers\IngredientCategoryController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\LogisticController;
@@ -111,6 +112,9 @@ Route::post('ingredient-category', [IngredientCategoryController::class, 'store'
 
 Route::delete('delete-dish-category/{id}', [DishCategoryController::class, 'destroy']);
 Route::delete('delete-ingredient-category/{id}', [IngredientCategoryController::class, 'destroy']);
+
+Route::post('insert-guards', [GuardController::class, 'store'])->name('insert-guards');
+Route::post('insert-guard-roles', [GuardController::class, 'insertGuardRoles'])->name('insert-guard-roles');
 
 Route::get('staff', function () {
     return Inertia::render('staff/Index');

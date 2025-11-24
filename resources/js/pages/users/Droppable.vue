@@ -21,7 +21,7 @@ const { elementRef, isOvered } = useDroppable({
         aria-dropeffect="move"
         class="rounded"
     >
-        PERSONAL
+        GUARDIA 1
         <slot />
     </div>
 </template>

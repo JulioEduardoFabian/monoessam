@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('cafe_id')->nullable();
             $table->foreign('cafe_id')->references('id')->on('cafes')->cascadeOnDelete();
             $table->string('name')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->timestamps();
         });
     }

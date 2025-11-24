@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDraggable } from '@vue-dnd-kit/core';
+import { ref } from 'vue';
 
 interface Props {
     user: {
@@ -10,6 +11,9 @@ interface Props {
         avatar?: string;
     };
 }
+
+const message = ref('Drag the item to the drop zone');
+const isDropped = ref(false);
 
 const props = defineProps<Props>();
 
@@ -30,13 +34,8 @@ const { elementRef, handleDragStart, isDragging } = useDraggable({
     <div
         ref="elementRef"
         @pointerdown="handleDragStart"
-        :class="[
-            'my-2 flex cursor-pointer flex-row items-center gap-3 rounded-md p-3 text-white shadow-sm transition select-none',
-            {
-                dragging: isDragging,
-            },
-            props.user.type == 2 ? 'bg-green-500' : props.user.type == 3 ? 'bg-red-500' : 'bg-gray-600',
-        ]"
+        class="my-2 cursor-pointer rounded bg-green-200 p-3 text-black"
+        :class="{ dragging: isDragging, dropped: isDropped }"
         tabindex="0"
         role="button"
         aria-grabbed="false"

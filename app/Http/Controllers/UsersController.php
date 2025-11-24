@@ -29,9 +29,9 @@ class UsersController extends Controller
             'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users', 'areaRoles'])->get(),
             'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.areaRoles', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'unit', 'unit.mine'])->get(),
             'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.areaRoles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'business'])->get(),
-            'mines' => Mine::with(['units', 'services', 'units.cafes', 'units.cafes.users'])->get(),
+            'mines' => Mine::with(['units', 'services', 'units.cafes', 'units.cafes.users', 'units.cafes.guards', 'units.cafes.guards.roles'])->get(),
             'units' => Unit::with(['mine', 'mine.services', 'services', 'cafes'])->get(),
-            'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services'])->get(),
+            'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services', 'guards'])->get(),
         ]);
     }
 
