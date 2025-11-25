@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { User } from '@/types';
+import { Area, Permission, Role, User } from '@/types';
+import RoleModal from '../users/RoleModal.vue';
+import RolePermissionsModal from './RolePermissionsModal.vue';
 
 interface Props {
     users: User[];
+    roles: Role[];
+    areas: Area[];
+    permissions: Permission[];
 }
 
 defineProps<Props>();
@@ -12,51 +16,35 @@ defineProps<Props>();
 <template>
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                    <Card>
-                        <Table>
-                            <TableCaption>Lista de Usuarios del Sistema.</TableCaption>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead class="w-[100px]">Nombre</TableHead>
-                                    <TableHead>Estado</TableHead>
-                                    <TableHead>Rol</TableHead>
-                                    <TableHead class="text-right">Area</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow v-for="user in users" :key="user.id">
-                                    <TableCell class="font-medium">{{ user.name }}</TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </Card>
-                </div>
-                <div class="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                    <Card>
-                        <Table>
-                            <TableCaption>Lista de Roles del Sistema.</TableCaption>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead class="w-[100px]">Rol</TableHead>
-                                    <TableHead>Estado</TableHead>
-                                    <TableHead class="text-right">Area</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow v-for="user in users" :key="user.id">
-                                    <TableCell class="font-medium">{{ user.name }}</TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell class="text-right"> $250.00 </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </Card>
-                </div>
+            <div
+                class="flex h-12 w-full items-center justify-start gap-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 shadow-sm dark:from-gray-700 dark:to-gray-700"
+            >
+                <RoleModal :areas="areas" />
+            </div>
+            <div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <Card
+                    v-for="role in roles"
+                    :key="role.id"
+                    class="border-sidebar-border/50 dark:border-sidebar-border/70 rounded-2xl border shadow-sm transition hover:shadow-md"
+                >
+                    <div class="flex flex-col gap-3 p-4">
+                        <h3 class="text-foreground text-lg font-semibold">
+                            {{ role.name }}
+                        </h3>
+
+                        <RolePermissionsModal :role="role" :permissions="permissions" />
+
+                        <div class="text-muted-foreground flex items-center justify-between text-sm">
+                            <span class="font-medium">Estado:</span>
+                            <span class="text-green-600 dark:text-green-400">Activo</span>
+                        </div>
+
+                        <div class="text-muted-foreground flex items-center justify-between text-sm">
+                            <span class="font-medium">Área:</span>
+                            <span>{{ role.area ?? '—' }}</span>
+                        </div>
+                    </div>
+                </Card>
             </div>
         </div>
     </AppLayout>

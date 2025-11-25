@@ -8,6 +8,7 @@ use App\Http\Controllers\DinnerController;
 use App\Http\Controllers\DishCategoryController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\GuardController;
 use App\Http\Controllers\IngredientCategoryController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\LogisticController;
@@ -67,8 +68,11 @@ Route::post('/unit-serviceables', [UnitController::class, 'unitServiceables'])->
 Route::post('/cafe-serviceables', [CafeController::class, 'cafeServiceables'])->name('cafeServiceables');
 
 Route::post('users', [UsersController::class, 'store'])->name('users');
+Route::get('roles', [RoleController::class, 'index']);
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('areas', [AreaController::class, 'store'])->name('areas');
+
+Route::get('permissions', [PermissionController::class, 'index']);
 Route::post('permissions', [PermissionController::class, 'store'])->name('permissions');
 
 Route::get('users-ban/{id}', [UsersController::class, 'banUser'])->name('users.ban');
@@ -101,13 +105,20 @@ Route::get('print-test', [CafeController::class, 'printTest']);
 
 Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
 Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');
-
+Route::post('user.permissions.update/{id}', [PermissionController::class, 'userPermissions'])->name('user.permissions.update');
 
 Route::post('dish-category', [DishCategoryController::class, 'store'])->name('dish-category-insert');
 Route::post('ingredient-category', [IngredientCategoryController::class, 'store'])->name('ingredient-category-insert');
 
 Route::delete('delete-dish-category/{id}', [DishCategoryController::class, 'destroy']);
 Route::delete('delete-ingredient-category/{id}', [IngredientCategoryController::class, 'destroy']);
+
+Route::post('insert-guards', [GuardController::class, 'store'])->name('insert-guards');
+Route::post('insert-guard-roles', [GuardController::class, 'insertGuardRoles'])->name('insert-guard-roles');
+
+Route::get('staff', function () {
+    return Inertia::render('staff/Index');
+})->name('staff');
 
 Route::get('/qr/{id}', function ($id) {
     $arrayProducts = [
