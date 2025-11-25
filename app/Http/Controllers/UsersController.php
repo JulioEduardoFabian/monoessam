@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\SessionEnded;
 use App\Models\Area;
 use App\Models\Cafe;
+use App\Models\Guard_role;
 use App\Models\Headquarter;
 use App\Models\Mine;
 use App\Models\Unit;
@@ -29,9 +30,9 @@ class UsersController extends Controller
             'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users', 'areaRoles'])->get(),
             'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.areaRoles', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'unit', 'unit.mine'])->get(),
             'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.areaRoles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'business'])->get(),
-            'mines' => Mine::with(['units', 'services', 'units.cafes', 'units.cafes.users', 'units.cafes.guards', 'units.cafes.guards.roles'])->get(),
+            'mines' => Mine::with(['units', 'services', 'units.cafes', 'units.cafes.users', 'units.cafes.guards', 'units.cafes.guards.roles', 'units.cafes.guards.roles.users'])->get(),
             'units' => Unit::with(['mine', 'mine.services', 'services', 'cafes'])->get(),
-            'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services', 'guards'])->get(),
+            'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services', 'guards'])->get()
         ]);
     }
 
@@ -117,5 +118,12 @@ class UsersController extends Controller
         event(new SessionEnded($id));
 
         return to_route('users');
+    }
+
+    public function assignedUsers($cafeID)
+    {
+        $cafe = Cafe::with('guards', 'guards.roles', 'users')->find($cafeID);
+
+        return $cafe;
     }
 }

@@ -9,8 +9,7 @@ const props = defineProps<Props>();
 </script>
 <template>
     <div>
-        <p>PERSONAL</p>
-
+        <p class="font-bold">Personal</p>
         <Draggable v-for="user in users" :user="user" :key="user.id" />
     </div>
 </template>

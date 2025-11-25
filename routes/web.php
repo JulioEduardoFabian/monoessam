@@ -22,6 +22,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SubdealershipController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UsersController;
+use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,6 +42,8 @@ Route::get('/migrate', function () {
 });
 
 Route::get('/users', [UsersController::class, 'index']);
+Route::post('users', [UsersController::class, 'store'])->name('users');
+
 Route::get('/management', [ManagementController::class, 'index'])->name('management');
 Route::get('/providers', [ProviderController::class, 'index'])->name('providers');
 Route::get('/food', [FoodController::class, 'index'])->middleware(['auth', 'verified'])->name('food');
@@ -67,7 +70,7 @@ Route::post('/mine-serviceables', [MineController::class, 'mineServiceables'])->
 Route::post('/unit-serviceables', [UnitController::class, 'unitServiceables'])->name('unitServiceables');
 Route::post('/cafe-serviceables', [CafeController::class, 'cafeServiceables'])->name('cafeServiceables');
 
-Route::post('users', [UsersController::class, 'store'])->name('users');
+
 Route::get('roles', [RoleController::class, 'index']);
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('areas', [AreaController::class, 'store'])->name('areas');
@@ -115,6 +118,10 @@ Route::delete('delete-ingredient-category/{id}', [IngredientCategoryController::
 
 Route::post('insert-guards', [GuardController::class, 'store'])->name('insert-guards');
 Route::post('insert-guard-roles', [GuardController::class, 'insertGuardRoles'])->name('insert-guard-roles');
+Route::post('guard-roles-user', [GuardController::class, 'insertGuardRolesUser'])->name('insert-guard-roles-user');
+Route::delete('guard-roles/{id}', [GuardController::class, 'deleteGuardRoles'])->name('delete-guard-roles');
+
+Route::get('assigned-users/{id}', [UsersController::class, 'assignedUsers'])->name('assigned-users');
 
 Route::get('staff', function () {
     return Inertia::render('staff/Index');

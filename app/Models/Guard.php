@@ -16,6 +16,8 @@ class Guard extends Model
 
     public function roles(): BelongsToMany
     {
-        return $this->BelongsToMany(Role::class, 'guard_roles');
+        return $this->BelongsToMany(Role::class, 'guard_roles')
+            ->using(Guard_role::class)
+            ->withPivot('id');
     }
 }

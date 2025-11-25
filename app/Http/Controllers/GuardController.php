@@ -6,6 +6,7 @@ use App\Models\Guard;
 use App\Http\Requests\StoreGuardRequest;
 use App\Http\Requests\UpdateGuardRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GuardController extends Controller
 {
@@ -30,16 +31,20 @@ class GuardController extends Controller
      */
     public function store(Request $request)
     {
-        $guards = $request->guards;
+        $createdGuards = [];
 
-        foreach ($guards as $guardData) {
-            Guard::create([
+        $guardsData = $request->guards;
+
+        foreach ($guardsData as $guardData) {
+            $guard = Guard::create([
                 'cafe_id' => $request->cafe_id,
                 'name' => $guardData['name'],
             ]);
+
+            $createdGuards[] = $guard;
         }
 
-        return redirect()->route('users');
+        return redirect()->back()->with('newGuards', $createdGuards);
     }
 
     /**
@@ -78,8 +83,24 @@ class GuardController extends Controller
     {
         $guard = Guard::find($request->guard_id);
 
-        $guard->roles()->sync($request->roles_ids);
+        $guard->roles()->attach($request->roles_ids);
 
-        return redirect()->route('users');
+        return redirect()->back();
+    }
+
+    public function deleteGuardRoles($roleId)
+    {
+        DB::table('guard_roles')->where('id', $roleId)->delete();
+
+        //return redirect()->back();
+    }
+
+    public function insertGuardRolesUser(Request $request)
+    {
+
+        DB::table('guard_roles_user')->insert([
+            'guard_role_id' => $request->role_id,
+            'user_id' => $request->user_id,
+        ]);
     }
 }

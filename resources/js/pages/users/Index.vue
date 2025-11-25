@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Mine, Permission, Role, Unit, User } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
+import axios from 'axios';
 import { ref, watch } from 'vue';
 import AreaModal from './AreaModal.vue';
 import GuardAreaDroppable from './GuardAreaDroppable.vue';
@@ -39,13 +40,7 @@ const selectedCafes = ref([]);
 const usersSelected = ref([]);
 const guardsSelected = ref([] as Cafe[]);
 
-const unassignedUsers = ref([
-    { id: 1, name: 'Alice', type: 1, avatar: null },
-    { id: 2, name: 'Bob', type: 1, avatar: null },
-    { id: 3, name: 'Julius', type: 1, avatar: null },
-    { id: 4, name: 'Micky', type: 1, avatar: null },
-    { id: 5, name: 'Jaime', type: 1, avatar: null },
-]);
+const unassignedUsers = ref([]);
 const assignedUsers = ref([]);
 
 watch(
@@ -66,10 +61,12 @@ watch(
         if (newVal.cafe) {
             const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == newVal.cafe);
             if (cafeSelected) {
-                usersSelected.value = cafeSelected.users;
+                unassignedUsers.value = cafeSelected.users;
                 guardsSelected.value = cafeSelected.guards;
 
-                console.log(guardsSelected);
+                axios.get('/assigned-users/' + cafeSelected.id).then((response) => {
+                    console.log(response.data);
+                });
             } else {
                 areasSelected.value = [];
             }
@@ -153,19 +150,35 @@ const toBlacklistRoute = () => {
     router.get(route('blacklist'));
 };
 
-const handleUserAssignment = (user) => {
-    console.log('Usuario a asignar:', user);
-
-    // 1. Eliminar el usuario de la lista de origen (Unassigned)
-    unassignedUsers.value = unassignedUsers.value.filter((u) => u.id !== user.id);
-
-    // 2. Añadir el usuario a la lista de destino (Assigned)
-    assignedUsers.value.push(user);
+const handleUserAssignment = (userId: number) => {
+    unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== userId);
 };
 
 const selectCafe = (value: number | string) => {
     console.log('Valor seleccionado:', value);
     console.log('Cafe seleccionado');
+};
+
+const assignGuards = (guards: Cafe[]) => {
+    console.log('updating guards', guards);
+    guardsSelected.value = guards;
+};
+
+const asignRolesToGuard = (guardId: number, roles: Role[]) => {
+    console.log(`Asignar roles al guardia ID ${guardId}:`, roles);
+    const guard = guardsSelected.value.find((g) => g.id === guardId);
+
+    if (guard) {
+        guard.roles = roles;
+    }
+};
+
+const deleteGuardRole = (guardId: number, roleId: number) => {
+    const guard = guardsSelected.value.find((g) => g.id === guardId);
+
+    if (guard) {
+        guard.roles = guard.roles.filter((role) => role.id !== roleId);
+    }
 };
 </script>
 <template>
@@ -198,6 +211,7 @@ const selectCafe = (value: number | string) => {
                 />
                 <!-- <Button @click="toBlacklistRoute"><Ban /></Button> -->
             </div>
+            <p>Seleccione una mina, unidad y comedor para asignar guardias y roles</p>
             <div class="flex gap-2">
                 <Select class="w-full" v-model="selectedOptions.mine">
                     <SelectTrigger class="w-full">
@@ -234,23 +248,34 @@ const selectCafe = (value: number | string) => {
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-                <GuardModal :cafeId="selectedOptions.cafe" />
+                <GuardModal :cafeId="selectedOptions.cafe" @assignGuards="assignGuards" />
                 <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar roles </Button>
                 <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar puesto </Button>
             </div>
 
             <!-- Contenedor principal de tres columnas -->
 
-            <div class="grid h-full auto-rows-fr gap-6 md:grid-cols-4">
-                <StaffSelectables :users="unassignedUsers" />
-                <GuardAreaDroppable
-                    :users="assignedUsers"
-                    :roles="roles"
-                    :guard="guard"
-                    @dropped="handleUserAssignment"
-                    v-for="guard in guardsSelected"
-                    :key="guard.id"
-                />
+            <div class="h-full">
+                <div v-if="guardsSelected && guardsSelected.length > 0" class="grid h-full auto-rows-fr gap-6 md:grid-cols-4">
+                    <StaffSelectables :users="unassignedUsers" />
+                    <GuardAreaDroppable
+                        :users="assignedUsers"
+                        :roles="roles"
+                        :guard="guard"
+                        @dropped="handleUserAssignment"
+                        v-for="guard in guardsSelected"
+                        :key="guard.id"
+                        @asignRolesToGuard="asignRolesToGuard"
+                        @deleteGuardRole="deleteGuardRole"
+                    />
+                </div>
+                <div v-else class="flex h-full items-center justify-center p-10 text-center">
+                    <p class="text-xl font-semibold text-gray-500">
+                        ⚠️ Por favor, asigne guardias para continuar.
+                        <br />
+                        (La lista de guardias aparecerá aquí una vez se asignen).
+                    </p>
+                </div>
             </div>
         </div>
     </AppLayout>
