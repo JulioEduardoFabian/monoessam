@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import { Role } from '@/types';
 import axios from 'axios';
-import { Trash } from 'lucide-vue-next';
 import { ref } from 'vue';
 import GuardRolesDropzone from './GuardRolesDropzone.vue';
 import GuardRolesModal from './GuardRolesModal.vue';
 
-// --- Interfaces y Tipos ---
 interface Props {
     users: Array<any>;
     roles: Array<Role>;
@@ -29,6 +27,7 @@ const emit = defineEmits<{
     (e: 'dropped', user: User): void;
     (e: 'asignRolesToGuard', guardId: number, roles: Array<any>): void;
     (e: 'deleteGuardRole', guardId: number, roleId: number): void;
+    (e: 'unassignUser', userId: number): void;
 }>();
 
 const props = defineProps<Props>();
@@ -36,14 +35,14 @@ const props = defineProps<Props>();
 const message = ref('Arrastra el usuario aquí para asignarlo.');
 
 const asignRoles = (roles: Role[]) => {
-    console.log('calling a asignar roles');
+    console.log('calling a asignar roles', roles);
     emit('asignRolesToGuard', props.guard.id, roles);
 };
 
 const deleteRole = (role: Role) => {
     if (confirm('Estás seguro de eliminar este rol?')) {
         axios
-            .delete(`/guard-roles/${role.pivot.id}`)
+            .delete(`/guard-roles/${role.id}`)
             .then(() => {
                 console.log('Rol eliminado con éxito');
             })
@@ -58,46 +57,37 @@ const deleteRole = (role: Role) => {
 const roleAssigned = (userId: number) => {
     emit('dropped', userId);
 };
+
+const unassignUser = (userId: number) => {
+    emit('unassignUser', userId);
+};
 </script>
 
 <template>
     <div class="container">
         <div class="content">
             <div class="dropzone">
-                <!-- Header mejorado -->
                 <div class="header">
                     <h3 class="title">{{ guard.name }}</h3>
                     <GuardRolesModal :roles="roles" :guard="guard" @asignRoles="asignRoles" />
                 </div>
-
-                <!-- Sección de roles asignados -->
-                <div v-if="guard.roles && guard.roles.length > 0" class="roles-section">
+                <div v-if="guard.assigned_roles.length > 0" class="roles-section">
                     <h4 class="section-title">Roles Asignados</h4>
                     <div class="roles-list">
-                        <div v-for="role in guard.roles" :key="role.id" class="role-card">
+                        <div v-for="role in guard.assigned_roles" :key="role.id" class="role-card">
                             <div class="role-info">
-                                <span class="role-name">{{ role.name }}</span>
+                                <span class="role-name">{{ role.role.name }}</span>
                                 <button class="delete-btn" @click="deleteRole(role)" title="Eliminar rol">
                                     <Trash :size="16" />
                                 </button>
                             </div>
-                            <GuardRolesDropzone :role="role" @roleAssigned="roleAssigned" />
+                            <GuardRolesDropzone :role="role" @roleAssigned="roleAssigned" @unassignUser="unassignUser" />
                         </div>
                     </div>
                 </div>
-
-                <!-- Mensaje cuando no hay roles -->
                 <div v-else class="empty-state">
                     <p class="empty-text">No hay roles asignados</p>
                 </div>
-
-                <!-- Sección de usuarios arrastrables -->
-                <!-- <div class="users-section">
-                    <h4 class="section-title">Usuarios Disponibles</h4>
-                    <div class="users-grid">
-                        <Draggable v-for="user in users" :user="user" :key="user.id" />
-                    </div>
-                </div> -->
             </div>
         </div>
     </div>

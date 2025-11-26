@@ -91,6 +91,7 @@ Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->nam
 Route::post('mines', [MineController::class, 'store'])->name('mines');
 Route::post('units', [UnitController::class, 'store'])->name('units');
 Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
+Route::get('cafes/{id}', [CafeController::class, 'show'])->name('cafes.show');
 Route::post('sales', [SaleController::class, 'store'])->name('sales');
 Route::get('sales-pagination/{offset}', [SaleController::class, 'pagination'])->name('sales.pagination');
 Route::get('print-ticket/{ticketId}/{businessId}', [SaleController::class, 'printTest'])->name('sales');
@@ -119,6 +120,7 @@ Route::delete('delete-ingredient-category/{id}', [IngredientCategoryController::
 Route::post('insert-guards', [GuardController::class, 'store'])->name('insert-guards');
 Route::post('insert-guard-roles', [GuardController::class, 'insertGuardRoles'])->name('insert-guard-roles');
 Route::post('guard-roles-user', [GuardController::class, 'insertGuardRolesUser'])->name('insert-guard-roles-user');
+Route::delete('guard-roles-user/{id}', [GuardController::class, 'deleteGuardRolesUser'])->name('delete-guard-roles-user');
 Route::delete('guard-roles/{id}', [GuardController::class, 'deleteGuardRoles'])->name('delete-guard-roles');
 
 Route::get('assigned-users/{id}', [UsersController::class, 'assignedUsers'])->name('assigned-users');

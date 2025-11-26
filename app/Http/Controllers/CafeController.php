@@ -43,9 +43,13 @@ class CafeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Cafe $cafe)
+    public function show($id)
     {
-        //
+        $cafe = Cafe::with(['users', 'guards.assignedRoles.role', 'guards.assignedRoles.user'])->find($id);
+        return response()->json([
+            'users' => $cafe->users,
+            'guards' => $cafe->guards
+        ]);
     }
 
     /**

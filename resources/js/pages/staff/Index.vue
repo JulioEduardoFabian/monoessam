@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Edit3, Eye, Trash2 } from 'lucide-vue-next';
+import FormUser from '../users/FormUser.vue';
 
 interface Personal {
     id: number;
@@ -98,5 +99,6 @@ const personal: Personal[] = [
                 </table>
             </div>
         </div>
+        <FormUser></FormUser>
     </AppLayout>
 </template>

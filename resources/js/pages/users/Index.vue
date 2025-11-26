@@ -3,15 +3,11 @@ import Button from '@/components/ui/button/Button.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Mine, Permission, Role, Unit, User } from '@/types';
-import { Head, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref, watch } from 'vue';
-import AreaModal from './AreaModal.vue';
 import GuardAreaDroppable from './GuardAreaDroppable.vue';
 import GuardModal from './GuardModal.vue';
-import Modal from './Modal.vue';
-import PermissionModal from './PermissionModal.vue';
-import RoleModal from './RoleModal.vue';
 import StaffSelectables from './StaffSelectables.vue';
 
 interface Props {
@@ -59,104 +55,51 @@ watch(
         }
 
         if (newVal.cafe) {
-            const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == newVal.cafe);
-            if (cafeSelected) {
-                unassignedUsers.value = cafeSelected.users;
-                guardsSelected.value = cafeSelected.guards;
+            fetchCafeData(Number(newVal.cafe));
 
-                axios.get('/assigned-users/' + cafeSelected.id).then((response) => {
-                    console.log(response.data);
+            /* const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == newVal.cafe);
+            if (cafeSelected) {
+                const assignedUsers: any[] = [];
+                unassignedUsers.value = cafeSelected.users;
+                cafeSelected.guards.forEach((guard) => {
+                    guard.assigned_roles.forEach((roleAssignment) => {
+                        if (roleAssignment.user_id) {
+                            unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== roleAssignment.user_id);
+                        }
+                    });
                 });
+                guardsSelected.value = cafeSelected.guards;
             } else {
                 areasSelected.value = [];
             }
             //usersSelected.value = [];
-            showNoUsers.value = false;
+            showNoUsers.value = false; */
         }
     },
     { deep: true },
 );
 
-const locationLabel = (user: User): string => {
-    const area = user.roles?.[0]?.areas?.[0];
-    if (!area) return '';
-
-    if (area.headquarter) {
-        return `Sede - ${area.headquarter.name}`;
-    } else if (area.cafe) {
-        return `Cafetería - ${area.cafe.name}`;
-    }
-
-    return '';
-};
-
-const deletePermission = (permissionId: any) => {
-    if (confirm('Estas seguro de eliminar el permiso?')) {
-        router.delete(route('permissions.destroy', permissionId));
-    }
-};
-
-const selectedSide = ref<Cafe | Headquarter | null>(null);
-const selectedArea = ref<Area | null>(null);
-const selectedUser = ref<User | null>(null);
-
-const selectSide = (side: Cafe | Headquarter) => {
-    selectedSide.value = side;
-    selectedArea.value = null;
-    selectedUser.value = null;
-    areasSelected.value = side.areas;
-    usersSelected.value = [];
-    showNoUsers.value = false;
-};
-
-const selectArea = (area: Area) => {
-    selectedArea.value = area;
-    selectedUser.value = null;
-    if (area.users.length !== 0) {
-        usersSelected.value = area.users.filter((user) => user.type != 3);
-        showNoUsers.value = false;
-    } else {
-        usersSelected.value = [];
-        showNoUsers.value = true;
-    }
-};
-
-const selectUser = (user: User) => {
-    selectedUser.value = user;
-};
-
-const toBlacklist = (userId: number) => {
-    if (confirm('¿Estás seguro de que deseas enviar a lista negra a este usuario?')) {
-        router.get(route('blacklist', userId));
-    }
-};
-
-const blockUser = (userId: number) => {
-    if (confirm('¿Estás seguro de que deseas dar de baja a este usuario?')) {
-        router
-            .get(route('users.ban', userId))
-            .then(() => {
-                console.log('Usuario dado de baja');
-                // Aquí podrías agregar lógica adicional si es necesario
-            })
-            .catch((error) => {
-                console.error('Error al dar de baja al usuario:', error);
-                alert('Ocurrió un error al dar de baja al usuario. Por favor, inténtalo de nuevo.');
+const fetchCafeData = async (cafeId: number) => {
+    try {
+        const response = await axios.get(`/cafes/${cafeId}`);
+        const cafeData = response.data;
+        unassignedUsers.value = cafeData.users;
+        guardsSelected.value = cafeData.guards;
+        /* 
+        guardsSelected.value.forEach((guard) => {
+            guard.assigned_roles.forEach((roleAssignment) => {
+                if (roleAssignment.user_id) {
+                    unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== roleAssignment.user_id);
+                }
             });
+        }); */
+    } catch (error) {
+        console.error('Error fetching cafe data:', error);
     }
-};
-
-const toBlacklistRoute = () => {
-    router.get(route('blacklist'));
 };
 
 const handleUserAssignment = (userId: number) => {
     unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== userId);
-};
-
-const selectCafe = (value: number | string) => {
-    console.log('Valor seleccionado:', value);
-    console.log('Cafe seleccionado');
 };
 
 const assignGuards = (guards: Cafe[]) => {
@@ -167,17 +110,38 @@ const assignGuards = (guards: Cafe[]) => {
 const asignRolesToGuard = (guardId: number, roles: Role[]) => {
     console.log(`Asignar roles al guardia ID ${guardId}:`, roles);
     const guard = guardsSelected.value.find((g) => g.id === guardId);
-
     if (guard) {
-        guard.roles = roles;
+        roles.forEach((role) => {
+            const newRole = {
+                role: {
+                    id: role.id,
+                    guard_id: guardId,
+                    role_id: role.id,
+                    name: role.name,
+                },
+            };
+
+            guard.assigned_roles.push(newRole);
+        });
     }
+    console.log(guard);
 };
 
 const deleteGuardRole = (guardId: number, roleId: number) => {
     const guard = guardsSelected.value.find((g) => g.id === guardId);
-
+    console.log(roleId);
     if (guard) {
-        guard.roles = guard.roles.filter((role) => role.id !== roleId);
+        guard.assigned_roles = guard.assigned_roles.filter((role) => role.id !== roleId);
+    }
+};
+
+const unassignUser = (userId: number) => {
+    const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == selectedOptions.value.cafe);
+    if (cafeSelected) {
+        const user = props.users.find((u) => u.id === userId);
+        if (user) {
+            unassignedUsers.value.push(user);
+        }
     }
 };
 </script>
@@ -188,29 +152,7 @@ const deleteGuardRole = (guardId: number, roleId: number) => {
             <div class="flex">
                 <h1 class="text-2xl font-bold">Puestos</h1>
             </div>
-            <div
-                class="flex h-12 w-full items-center justify-start gap-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 shadow-sm dark:from-gray-700 dark:to-gray-700"
-            >
-                <PermissionModal
-                    class="rounded p-1 text-blue-600 transition-colors hover:bg-blue-100 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                />
-                <Modal
-                    :cafes="cafes"
-                    :headquarters="headquarters"
-                    :roles="roles"
-                    class="rounded p-1 text-purple-600 transition-colors hover:bg-purple-100 hover:text-purple-700 dark:text-purple-400 dark:hover:bg-purple-900/30"
-                />
-                <RoleModal
-                    :areas="areas"
-                    class="rounded p-1 text-green-600 transition-colors hover:bg-green-100 hover:text-green-700 dark:text-green-400 dark:hover:bg-green-900/30"
-                />
-                <AreaModal
-                    :cafes="cafes"
-                    :headquarters="headquarters"
-                    class="rounded p-1 text-orange-600 transition-colors hover:bg-orange-100 hover:text-orange-700 dark:text-orange-400 dark:hover:bg-orange-900/30"
-                />
-                <!-- <Button @click="toBlacklistRoute"><Ban /></Button> -->
-            </div>
+
             <p>Seleccione una mina, unidad y comedor para asignar guardias y roles</p>
             <div class="flex gap-2">
                 <Select class="w-full" v-model="selectedOptions.mine">
@@ -267,6 +209,7 @@ const deleteGuardRole = (guardId: number, roleId: number) => {
                         :key="guard.id"
                         @asignRolesToGuard="asignRolesToGuard"
                         @deleteGuardRole="deleteGuardRole"
+                        @unassignUser="unassignUser"
                     />
                 </div>
                 <div v-else class="flex h-full items-center justify-center p-10 text-center">

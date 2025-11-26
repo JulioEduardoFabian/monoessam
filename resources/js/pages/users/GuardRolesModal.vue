@@ -72,16 +72,20 @@ const filteredRoles = computed(() => {
         .slice(0, 7)
         .map((item) => item.role);
 });
-
+const shouldFocusResults = ref(false);
 // Watcher para abrir dropdown automáticamente
-watch(searchTerm, async (newVal) => {
-    if (newVal.length > 0) {
-        isDropdownVisible.value = true;
+watch(searchTerm, async (newVal, oldVal) => {
+    isDropdownVisible.value = newVal.length > 0;
+
+    // Solo mover el focus si antes el usuario presionó ArrowDown
+    if (shouldFocusResults.value && newVal.length > 0) {
         await nextTick();
-        // Enfocar el primer resultado si existe
         const firstResult = document.querySelector('[data-role-result]') as HTMLElement;
         firstResult?.focus();
     }
+
+    // Resetear flag
+    shouldFocusResults.value = false;
 });
 
 // Agregar rol con atajos de teclado mejorados
@@ -193,7 +197,7 @@ watch(open, (isOpen) => {
             searchInputRef.value?.$el?.focus();
         });
 
-        selectedRoles.value = props.guard.roles;
+        selectedRoles.value = [];
     } else {
         document.removeEventListener('click', closeDropdown);
         isDropdownVisible.value = false;

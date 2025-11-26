@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDraggable } from '@vue-dnd-kit/core';
+import axios from 'axios';
+import { X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface Props {
@@ -19,6 +21,7 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
     (e: 'end'): void;
+    (e: 'unassignUser', userId: number): void;
 }>();
 
 const { elementRef, handleDragStart, isDragging } = useDraggable({
@@ -28,6 +31,19 @@ const { elementRef, handleDragStart, isDragging } = useDraggable({
         onEnd: () => emit('end'),
     },
 });
+
+const deleteUser = (userId: number) => {
+    if (confirm('¿Estás seguro de quitar este usuario de este rol?')) {
+        axios
+            .delete(`/guard-roles-user/${userId}`)
+            .then(() => {
+                emit('unassignUser', userId);
+            })
+            .catch(() => {
+                alert('Hubo un error al eliminar el usuario del rol.');
+            });
+    }
+};
 </script>
 
 <template>
@@ -54,7 +70,11 @@ const { elementRef, handleDragStart, isDragging } = useDraggable({
         <div class="user-info">
             <p class="user-name">
                 {{ props.user.name }}
+                <button class="delete-btn" @click="deleteUser(props.user.id)" title="Eliminar usuario">
+                    <X :size="16" />
+                </button>
             </p>
+
             <span class="user-type">
                 {{ props.user.type === 1 ? 'Administrador' : 'Usuario' }}
             </span>
@@ -201,6 +221,25 @@ const { elementRef, handleDragStart, isDragging } = useDraggable({
 
 .user-card:focus::before {
     opacity: 1;
+}
+
+.delete-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+    background: #fef2f2;
+    color: #dc2626;
 }
 
 /* Responsive */

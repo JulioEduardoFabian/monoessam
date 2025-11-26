@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreign('guard_id')->references('id')->on('guards')->cascadeOnDelete();
             $table->unsignedBigInteger('role_id')->nullable();
             $table->foreign('role_id')->references('id')->on('roles')->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

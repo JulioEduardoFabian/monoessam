@@ -3,20 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Spatie\Permission\Models\Role;
 
 class Guard_role extends Pivot
 {
     protected $table = 'guard_roles';
 
-    public function users(): BelongsToMany
+    public function user(): BelongsTo
     {
-        return $this->belongsToMany(
-            User::class,
-            'guard_roles_user', // Tabla pivote final
-            'guard_role_id',    // FK en la tabla pivote (hacia guard_roles)
-            'user_id'           // FK del modelo objetivo (hacia users)
-        )->withPivot('id'); // Puedes añadir más pivotes si es necesario
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 }

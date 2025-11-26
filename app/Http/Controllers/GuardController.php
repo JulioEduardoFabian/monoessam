@@ -97,10 +97,15 @@ class GuardController extends Controller
 
     public function insertGuardRolesUser(Request $request)
     {
+        $guardRole =  DB::table('guard_roles')->where('id', $request->guard_role_id)->update(['user_id' => $request->user_id]);
 
-        DB::table('guard_roles_user')->insert([
-            'guard_role_id' => $request->role_id,
-            'user_id' => $request->user_id,
-        ]);
+        if ($guardRole) {
+            return response()->json(['message' => 'Rol de guardia actualizado correctamente.'], 200);
+        }
+    }
+
+    public function deleteGuardRolesUser($id)
+    {
+        DB::table('guard_roles')->where('user_id', $id)->update(['user_id' => null]);
     }
 }
