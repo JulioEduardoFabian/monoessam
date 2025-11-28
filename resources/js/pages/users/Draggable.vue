@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDraggable } from '@vue-dnd-kit/core';
 import axios from 'axios';
 import { X } from 'lucide-vue-next';
@@ -12,6 +11,7 @@ interface Props {
         type: number;
         avatar?: string;
     };
+    showButtonDelete: boolean;
 }
 
 const message = ref('Drag the item to the drop zone');
@@ -58,21 +58,11 @@ const deleteUser = (userId: number) => {
         :aria-pressed="isDragging"
         :title="`Arrastrar ${props.user.name}`"
     >
-        <div class="user-avatar">
-            <Avatar>
-                <AvatarImage :src="props.user.avatar ?? 'https://github.com/shadcn.png'" :alt="`Avatar de ${props.user.name}`" />
-                <AvatarFallback class="avatar-fallback">
-                    {{ props.user.name.charAt(0).toUpperCase() }}
-                </AvatarFallback>
-            </Avatar>
-        </div>
+        <div class="user-avatar"></div>
 
         <div class="user-info">
             <p class="user-name">
                 {{ props.user.name }}
-                <button class="delete-btn" @click="deleteUser(props.user.id)" title="Eliminar usuario">
-                    <X :size="16" />
-                </button>
             </p>
 
             <span class="user-type">
@@ -80,11 +70,11 @@ const deleteUser = (userId: number) => {
             </span>
         </div>
 
-        <div class="drag-indicator">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M8 6h8M8 12h8M8 18h8" />
-            </svg>
-        </div>
+        <button class="delete-btn" @click.stop="deleteUser(props.user.id)" title="Eliminar usuario" v-if="props.showButtonDelete">
+            <X :size="16" />
+        </button>
+
+        <div class="drag-indicator"></div>
     </div>
 </template>
 

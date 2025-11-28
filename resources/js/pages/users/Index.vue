@@ -5,10 +5,12 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Mine, Permission, Role, Unit, User } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { List } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import GuardAreaDroppable from './GuardAreaDroppable.vue';
 import GuardModal from './GuardModal.vue';
 import StaffSelectables from './StaffSelectables.vue';
+import TableHeadcount from './TableHeadcount.vue';
 
 interface Props {
     users: User[];
@@ -33,8 +35,9 @@ const selectedOptions = ref({
 
 const selectedUnits = ref([]);
 const selectedCafes = ref([]);
-const usersSelected = ref([]);
+const selectedPeriods = ref([]);
 const guardsSelected = ref([] as Cafe[]);
+const changedView = ref(false);
 
 const unassignedUsers = ref([]);
 const assignedUsers = ref([]);
@@ -56,24 +59,6 @@ watch(
 
         if (newVal.cafe) {
             fetchCafeData(Number(newVal.cafe));
-
-            /* const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == newVal.cafe);
-            if (cafeSelected) {
-                const assignedUsers: any[] = [];
-                unassignedUsers.value = cafeSelected.users;
-                cafeSelected.guards.forEach((guard) => {
-                    guard.assigned_roles.forEach((roleAssignment) => {
-                        if (roleAssignment.user_id) {
-                            unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== roleAssignment.user_id);
-                        }
-                    });
-                });
-                guardsSelected.value = cafeSelected.guards;
-            } else {
-                areasSelected.value = [];
-            }
-            //usersSelected.value = [];
-            showNoUsers.value = false; */
         }
     },
     { deep: true },
@@ -83,16 +68,10 @@ const fetchCafeData = async (cafeId: number) => {
     try {
         const response = await axios.get(`/cafes/${cafeId}`);
         const cafeData = response.data;
-        unassignedUsers.value = cafeData.users;
         guardsSelected.value = cafeData.guards;
-        /* 
-        guardsSelected.value.forEach((guard) => {
-            guard.assigned_roles.forEach((roleAssignment) => {
-                if (roleAssignment.user_id) {
-                    unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== roleAssignment.user_id);
-                }
-            });
-        }); */
+        unassignedUsers.value = cafeData.users.unassigned;
+        assignedUsers.value = cafeData.users.assigned;
+        selectedPeriods.value = cafeData.periods;
     } catch (error) {
         console.error('Error fetching cafe data:', error);
     }
@@ -140,9 +119,13 @@ const unassignUser = (userId: number) => {
     if (cafeSelected) {
         const user = props.users.find((u) => u.id === userId);
         if (user) {
-            unassignedUsers.value.push(user);
+            unassignedUsers.value.unshift(user);
         }
     }
+};
+
+const changeView = () => {
+    changedView.value = !changedView.value;
 };
 </script>
 <template>
@@ -154,6 +137,9 @@ const unassignUser = (userId: number) => {
             </div>
 
             <p>Seleccione una mina, unidad y comedor para asignar guardias y roles</p>
+            <div class="flex w-full flex-row">
+                <Button title="Ver en lista" class="cursor-pointer" @click="changeView()"><List></List></Button>
+            </div>
             <div class="flex gap-2">
                 <Select class="w-full" v-model="selectedOptions.mine">
                     <SelectTrigger class="w-full">
@@ -197,20 +183,25 @@ const unassignUser = (userId: number) => {
 
             <!-- Contenedor principal de tres columnas -->
 
-            <div class="h-full">
-                <div v-if="guardsSelected && guardsSelected.length > 0" class="grid h-full auto-rows-fr gap-6 md:grid-cols-4">
-                    <StaffSelectables :users="unassignedUsers" />
-                    <GuardAreaDroppable
-                        :users="assignedUsers"
-                        :roles="roles"
-                        :guard="guard"
-                        @dropped="handleUserAssignment"
-                        v-for="guard in guardsSelected"
-                        :key="guard.id"
-                        @asignRolesToGuard="asignRolesToGuard"
-                        @deleteGuardRole="deleteGuardRole"
-                        @unassignUser="unassignUser"
-                    />
+            <div class="h-full" :hidden="changedView">
+                <div v-if="guardsSelected && guardsSelected.length > 0" class="grid h-full auto-rows-fr gap-6 md:grid-cols-8">
+                    <StaffSelectables :users="unassignedUsers" class="md:col-span-2" />
+                    <div class="md:col-span-6">
+                        <div class="overflow-x-auto" v-for="guard in guardsSelected" :key="guard.id">
+                            <div class="flex h-full gap-6">
+                                <GuardAreaDroppable
+                                    :users="assignedUsers"
+                                    :roles="roles"
+                                    :guard="guard"
+                                    @dropped="handleUserAssignment"
+                                    @asignRolesToGuard="asignRolesToGuard"
+                                    @deleteGuardRole="deleteGuardRole"
+                                    @unassignUser="unassignUser"
+                                    :unassignedUsers="unassignedUsers"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div v-else class="flex h-full items-center justify-center p-10 text-center">
                     <p class="text-xl font-semibold text-gray-500">
@@ -218,6 +209,23 @@ const unassignUser = (userId: number) => {
                         <br />
                         (La lista de guardias aparecerá aquí una vez se asignen).
                     </p>
+                </div>
+            </div>
+            <div class="h-full" :hidden="!changedView">
+                <div class="grid h-full auto-rows-fr gap-6 md:grid-cols-6">
+                    <div class="md:col-span-1">
+                        <p class="font-bold">Guardias</p>
+                        <p class="my-4 rounded bg-green-300 p-3" v-for="guard in guardsSelected" :key="guard.id">{{ guard.name }}</p>
+                    </div>
+                    <div class="md:col-span-5">
+                        <p class="font-bold">Personal y fechas</p>
+                        <TableHeadcount
+                            :users="assignedUsers"
+                            :cafeId="selectedOptions.cafe"
+                            :periods="selectedPeriods"
+                            @fetchCafeData="fetchCafeData"
+                        />
+                    </div>
                 </div>
             </div>
         </div>

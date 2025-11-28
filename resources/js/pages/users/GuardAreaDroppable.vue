@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Role } from '@/types';
 import axios from 'axios';
-import { ref } from 'vue';
+import { Trash } from 'lucide-vue-next';
 import GuardRolesDropzone from './GuardRolesDropzone.vue';
 import GuardRolesModal from './GuardRolesModal.vue';
 
@@ -14,6 +14,7 @@ interface Props {
         roles: Array<Role & { pivot?: { guard_id: number; role_id: number } }>;
         [key: string]: any;
     };
+    unassignedUsers: Array<any>;
 }
 
 interface User {
@@ -31,8 +32,6 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<Props>();
-
-const message = ref('Arrastra el usuario aquí para asignarlo.');
 
 const asignRoles = (roles: Role[]) => {
     console.log('calling a asignar roles', roles);
@@ -71,9 +70,9 @@ const unassignUser = (userId: number) => {
                     <h3 class="title">{{ guard.name }}</h3>
                     <GuardRolesModal :roles="roles" :guard="guard" @asignRoles="asignRoles" />
                 </div>
-                <div v-if="guard.assigned_roles.length > 0" class="roles-section">
+                <div v-if="guard.assigned_roles.length > 0" class="roles-section h-[50vh] overflow-y-auto">
                     <h4 class="section-title">Roles Asignados</h4>
-                    <div class="roles-list">
+                    <div class="grid gap-6 md:grid-cols-4">
                         <div v-for="role in guard.assigned_roles" :key="role.id" class="role-card">
                             <div class="role-info">
                                 <span class="role-name">{{ role.role.name }}</span>
@@ -81,7 +80,7 @@ const unassignUser = (userId: number) => {
                                     <Trash :size="16" />
                                 </button>
                             </div>
-                            <GuardRolesDropzone :role="role" @roleAssigned="roleAssigned" @unassignUser="unassignUser" />
+                            <GuardRolesDropzone :role="role" @roleAssigned="roleAssigned" @unassignUser="unassignUser" :users="unassignedUsers" />
                         </div>
                     </div>
                 </div>

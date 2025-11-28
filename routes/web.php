@@ -14,6 +14,7 @@ use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MineController;
+use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\RoleController;
@@ -124,6 +125,10 @@ Route::delete('guard-roles-user/{id}', [GuardController::class, 'deleteGuardRole
 Route::delete('guard-roles/{id}', [GuardController::class, 'deleteGuardRoles'])->name('delete-guard-roles');
 
 Route::get('assigned-users/{id}', [UsersController::class, 'assignedUsers'])->name('assigned-users');
+
+Route::post('period', [PeriodController::class, 'store']);
+Route::delete('period/{id}', [PeriodController::class, 'destroy']);
+Route::put('period-user/{id}', [PeriodController::class, 'periodUser']);
 
 Route::get('staff', function () {
     return Inertia::render('staff/Index');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cafe;
+use Illuminate\Container\Attributes\DB;
 use Illuminate\Http\Request;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
@@ -45,10 +46,54 @@ class CafeController extends Controller
      */
     public function show($id)
     {
-        $cafe = Cafe::with(['users', 'guards.assignedRoles.role', 'guards.assignedRoles.user'])->find($id);
+        // 1. Cargar el Café y sus relaciones necesarias.
+        // Usamos select(['...']) para obtener solo los campos necesarios de las relaciones anidadas.
+        $cafe = Cafe::with([
+            'users', // Todos los usuarios del café
+            'guards.assignedRoles.role',
+            'guards.assignedRoles.user',
+            'periods.users'
+        ])->find($id);
+
+        // Si el café no existe, devuelve una respuesta adecuada.
+        if (!$cafe) {
+            return response()->json(['message' => 'Café no encontrado'], 404);
+        }
+
+        // --- 2. Extraer IDs de Usuarios Asignados ---
+
+        // Crear una colección plana de todos los AssignedRoles
+        $assignedRoles = $cafe->guards->flatMap(function ($guard) {
+            return $guard->assignedRoles;
+        });
+
+        // Obtener una colección de IDs de usuarios que tienen un rol asignado
+        $assignedUserIds = $assignedRoles
+            ->filter(fn($role) => $role->user) // Filtra solo los que tienen un usuario
+            ->pluck('user.id') // Obtiene solo el ID del usuario
+            ->unique() // Asegura que cada ID aparezca una sola vez
+            ->toArray(); // Convierte a array simple de IDs para la comparación
+
+        // --- 3. Filtrar Usuarios ---
+
+        // Colección de todos los usuarios pertenecientes al café
+        $allUsers = $cafe->users;
+
+        // Usuarios asignados: aquellos cuyos IDs están en la lista $assignedUserIds
+        $assignedUsers = $allUsers->whereIn('id', $assignedUserIds)->values();
+
+        // Usuarios no asignados: aquellos cuyos IDs NO están en la lista $assignedUserIds
+        $unassignedUsers = $allUsers->whereNotIn('id', $assignedUserIds)->values();
+
+        // --- 4. Devolver la Respuesta ---
+
         return response()->json([
-            'users' => $cafe->users,
-            'guards' => $cafe->guards
+            'users' => [
+                'assigned' => $assignedUsers,
+                'unassigned' => $unassignedUsers,
+            ],
+            'guards' => $cafe->guards,
+            'periods' => $cafe->periods
         ]);
     }
 

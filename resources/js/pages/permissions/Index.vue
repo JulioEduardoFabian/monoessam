@@ -34,7 +34,8 @@ defineProps<Props>();
                         </TableHeader>
                         <TableBody>
                             <TableRow v-for="user in users" :key="user.id">
-                                <TableCell class="font-medium">{{ user.name }}</TableCell> <TableCell>{{ user.roles[0].name }}</TableCell>
+                                <TableCell class="font-medium">{{ user.name }}</TableCell>
+                                <TableCell>{{ user.roles[0]?.name }}</TableCell>
                                 <TableCell class="text-right">
                                     <UserPermissionModal :permissions="permissions" :user="user" />
                                 </TableCell>

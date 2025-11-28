@@ -11,7 +11,7 @@ const props = defineProps<Props>();
     <div>
         <p class="font-bold">Personal</p>
         <div class="h-[65vh] overflow-y-auto">
-            <Draggable v-for="user in users" :user="user" :key="user.id" />
+            <Draggable v-for="user in users" :user="user" :key="user.id" :showButtonDelete="false" />
         </div>
     </div>
 </template>
