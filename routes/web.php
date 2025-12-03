@@ -20,6 +20,7 @@ use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SubdealershipController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UsersController;
@@ -130,9 +131,8 @@ Route::post('period', [PeriodController::class, 'store']);
 Route::delete('period/{id}', [PeriodController::class, 'destroy']);
 Route::put('period-user/{id}', [PeriodController::class, 'periodUser']);
 
-Route::get('staff', function () {
-    return Inertia::render('staff/Index');
-})->name('staff');
+Route::get('staff', [StaffController::class, 'index'])->name('staff');
+Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
 
 Route::get('/qr/{id}', function ($id) {
     $arrayProducts = [

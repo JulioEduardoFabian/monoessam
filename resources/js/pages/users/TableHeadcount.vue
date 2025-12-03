@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Badge from '@/components/ui/badge/Badge.vue'; // Asegúrate de importar Badge
+import Badge from '@/components/ui/badge/Badge.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { User } from '@/types';
@@ -19,6 +19,7 @@ interface Props {
     users: User[];
     cafeId: string; // O number, según tu DB
     periods: DateColumn[];
+    guards: any[];
 }
 
 const props = defineProps<Props>();
@@ -57,7 +58,7 @@ const getStatusDetails = (statusId: number | string | undefined) => {
 
 // Obtener el ID del status actual para un usuario en un periodo
 const getCurrentStatusId = (user: User, period: any) => {
-    const userFound = period.users.find((u: any) => u.id === user.id);
+    const userFound = period.users.find((u: any) => u.id === user?.id);
     // Convertimos a String porque el Select Value suele trabajar mejor con strings
     return userFound?.pivot?.status ? String(userFound.pivot.status) : undefined;
 };
@@ -135,7 +136,7 @@ const updateUserStatus = (newStatus: string, userId: number, periodId: number) =
                 <label class="text-sm font-medium text-gray-700">Fecha Fin</label>
                 <input type="date" v-model="newEndDate" class="rounded border px-3 py-2 text-sm" />
             </div>
-            <div class="flex w-48 flex-col gap-1">
+            <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700">Estado Inicial</label>
                 <Select v-model="form.status">
                     <SelectTrigger>
@@ -157,6 +158,7 @@ const updateUserStatus = (newStatus: string, userId: number, periodId: number) =
         <Table>
             <TableHeader>
                 <TableRow>
+                    <TableHead class="w-[150px] font-bold"> Guardia </TableHead>
                     <TableHead class="w-[150px] font-bold"> Personal </TableHead>
                     <TableHead v-for="col in props.periods" :key="col.id" class="min-w-[120px] text-center">
                         <div class="flex flex-col items-center justify-center gap-1">
@@ -179,33 +181,41 @@ const updateUserStatus = (newStatus: string, userId: number, periodId: number) =
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow v-for="user in props.users" :key="user.id">
-                    <TableCell class="font-medium"> {{ user.name }} </TableCell>
+                <template v-for="guard in props.guards" :key="guard.id">
+                    <TableRow v-for="(role, index) in guard.assigned_roles" :key="role.id">
+                        <TableCell v-if="index === 0" class="font-medium" :rowspan="guard.assigned_roles.length">
+                            {{ guard.name }}
+                        </TableCell>
 
-                    <TableCell v-for="col in props.periods" :key="col.id" class="p-2 text-center">
-                        <Select :model-value="getCurrentStatusId(user, col)" @update:model-value="(val) => updateUserStatus(val, user.id, col.id)">
-                            <SelectTrigger class="flex h-auto w-full justify-center border-0 bg-transparent p-0 shadow-none focus:ring-0">
-                                <Badge
-                                    class="cursor-pointer border-0 px-3 py-1 text-white shadow-sm transition-all hover:scale-105"
-                                    :class="getStatusDetails(getCurrentStatusId(user, col)).color"
-                                >
-                                    {{ getStatusDetails(getCurrentStatusId(user, col)).label }}
-                                </Badge>
-                                <span class="sr-only">Toggle menu</span>
-                            </SelectTrigger>
+                        <TableCell class="font-medium"> {{ role.role.name }} - {{ role.user.name }} </TableCell>
+                        <TableCell v-for="period in props.periods" :key="period.id" class="p-2 text-center">
+                            <Select
+                                :model-value="getCurrentStatusId(role.user, period)"
+                                @update:model-value="(val) => updateUserStatus(val, role.user.id, period.id)"
+                            >
+                                <SelectTrigger class="flex h-auto w-full justify-center border-0 bg-transparent p-0 shadow-none focus:ring-0">
+                                    <Badge
+                                        class="cursor-pointer border-0 px-3 py-1 text-white shadow-sm transition-all hover:scale-105"
+                                        :class="getStatusDetails(getCurrentStatusId(role.user, period)).color"
+                                    >
+                                        {{ getStatusDetails(getCurrentStatusId(role.user, period)).label }}
+                                    </Badge>
+                                    <span class="sr-only">Toggle menu</span>
+                                </SelectTrigger>
 
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Cambiar Estado</SelectLabel>
-                                    <SelectItem value="1">Trabajando</SelectItem>
-                                    <SelectItem value="2">Libre</SelectItem>
-                                    <SelectItem value="3">Falta</SelectItem>
-                                    <SelectItem value="4">Nuevo</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </TableCell>
-                </TableRow>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Cambiar Estado</SelectLabel>
+                                        <SelectItem value="1">Trabajando</SelectItem>
+                                        <SelectItem value="2">Libre</SelectItem>
+                                        <SelectItem value="3">Falta</SelectItem>
+                                        <SelectItem value="4">Nuevo</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </TableCell>
+                    </TableRow>
+                </template>
             </TableBody>
         </Table>
     </div>

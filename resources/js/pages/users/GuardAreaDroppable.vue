@@ -70,7 +70,7 @@ const unassignUser = (userId: number) => {
                     <h3 class="title">{{ guard.name }}</h3>
                     <GuardRolesModal :roles="roles" :guard="guard" @asignRoles="asignRoles" />
                 </div>
-                <div v-if="guard.assigned_roles.length > 0" class="roles-section h-[50vh] overflow-y-auto">
+                <div v-if="guard.assigned_roles?.length > 0" class="roles-section h-[50vh] overflow-y-auto">
                     <h4 class="section-title">Roles Asignados</h4>
                     <div class="grid gap-6 md:grid-cols-4">
                         <div v-for="role in guard.assigned_roles" :key="role.id" class="role-card">

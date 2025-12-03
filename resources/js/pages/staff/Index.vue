@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Cafe } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Edit3, Eye, Trash2 } from 'lucide-vue-next';
 import FormUser from '../users/FormUser.vue';
@@ -14,6 +15,12 @@ interface Personal {
     direccion: string;
     estado: 'Activo' | 'Inactivo';
 }
+
+interface Props {
+    cafes: Cafe[];
+}
+
+const props = defineProps<Props>();
 
 const personal: Personal[] = [
     {
@@ -50,7 +57,7 @@ const personal: Personal[] = [
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-semibold tracking-tight">Personal</h1>
 
-                <Button class="bg-blue-500 text-white hover:bg-blue-600"> + Agregar Personal </Button>
+                <FormUser :cafes="props.cafes" />
             </div>
 
             <div class="bg-card rounded-xl border shadow-sm">
@@ -99,6 +106,5 @@ const personal: Personal[] = [
                 </table>
             </div>
         </div>
-        <FormUser></FormUser>
     </AppLayout>
 </template>

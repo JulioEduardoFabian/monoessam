@@ -183,9 +183,7 @@ const closeDropdown = (event: MouseEvent) => {
 };
 
 const openDropdown = () => {
-    if (searchTerm.value.length > 0) {
-        isDropdownVisible.value = true;
-    }
+    isDropdownVisible.value = true;
 };
 
 watch(open, (isOpen) => {

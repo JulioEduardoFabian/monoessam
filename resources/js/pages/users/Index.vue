@@ -24,9 +24,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const areasSelected = ref([]);
-const showNoUsers = ref(false);
-
 const selectedOptions = ref({
     mine: null,
     unit: null,
@@ -79,6 +76,7 @@ const fetchCafeData = async (cafeId: number) => {
 
 const handleUserAssignment = (userId: number) => {
     unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== userId);
+    fetchCafeData(selectedOptions.value.cafe);
 };
 
 const assignGuards = (guards: Cafe[]) => {
@@ -205,27 +203,21 @@ const changeView = () => {
                 </div>
                 <div v-else class="flex h-full items-center justify-center p-10 text-center">
                     <p class="text-xl font-semibold text-gray-500">
-                        ⚠️ Por favor, asigne guardias para continuar.
+                        ⚠️ Por favor seleccione un comedor y asigne guardias para continuar.
                         <br />
                         (La lista de guardias aparecerá aquí una vez se asignen).
                     </p>
                 </div>
             </div>
             <div class="h-full" :hidden="!changedView">
-                <div class="grid h-full auto-rows-fr gap-6 md:grid-cols-6">
-                    <div class="md:col-span-1">
-                        <p class="font-bold">Guardias</p>
-                        <p class="my-4 rounded bg-green-300 p-3" v-for="guard in guardsSelected" :key="guard.id">{{ guard.name }}</p>
-                    </div>
-                    <div class="md:col-span-5">
-                        <p class="font-bold">Personal y fechas</p>
-                        <TableHeadcount
-                            :users="assignedUsers"
-                            :cafeId="selectedOptions.cafe"
-                            :periods="selectedPeriods"
-                            @fetchCafeData="fetchCafeData"
-                        />
-                    </div>
+                <div class="grid h-full">
+                    <TableHeadcount
+                        :guards="guardsSelected"
+                        :users="assignedUsers"
+                        :cafeId="selectedOptions.cafe"
+                        :periods="selectedPeriods"
+                        @fetchCafeData="fetchCafeData"
+                    />
                 </div>
             </div>
         </div>
