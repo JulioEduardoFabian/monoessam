@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Staff extends Model
 {
@@ -22,6 +23,12 @@ class Staff extends Model
         'civilstatus',
         'contactname',
         'contactcell',
+        'status',
         'cafe_id'
     ];
+
+    public function staff_files(): HasMany
+    {
+        return $this->hasMany(Staff_file::class);
+    }
 }

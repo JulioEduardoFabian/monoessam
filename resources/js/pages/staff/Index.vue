@@ -18,6 +18,7 @@ interface Personal {
 
 interface Props {
     cafes: Cafe[];
+    staff: any[];
 }
 
 const props = defineProps<Props>();
@@ -67,22 +68,31 @@ const personal: Personal[] = [
                             <th class="p-4 text-left text-sm font-semibold">Nombre</th>
                             <th class="p-4 text-left text-sm font-semibold">DNI</th>
                             <th class="p-4 text-left text-sm font-semibold">Celular</th>
-                            <th class="p-4 text-left text-sm font-semibold">Dirección</th>
+                            <th class="p-4 text-left text-sm font-semibold">Documentación</th>
                             <th class="p-4 text-left text-sm font-semibold">Estado</th>
                             <th class="p-4 text-center text-sm font-semibold">Opciones</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <tr v-for="p in personal" :key="p.id" class="hover:bg-muted/30 border-t transition">
-                            <td class="p-4">{{ p.nombre }}</td>
+                        <tr v-for="p in staff" :key="p.id" class="hover:bg-muted/30 border-t transition">
+                            <td class="p-4">{{ p.name }}</td>
                             <td class="p-4">{{ p.dni }}</td>
-                            <td class="p-4">{{ p.celular }}</td>
-                            <td class="p-4">{{ p.direccion }}</td>
+                            <td class="p-4">{{ p.cell }}</td>
+                            <td class="p-4">
+                                <a
+                                    class="mx-2 rounded bg-red-400 px-2 text-white"
+                                    :href="'/storage/' + file.file_path"
+                                    target="_blank"
+                                    v-for="file in p.staff_files"
+                                    :key="file.id"
+                                    >{{ file.file_type }}</a
+                                >
+                            </td>
 
                             <td class="p-4">
-                                <Badge :class="p.estado === 'Activo' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'">
-                                    {{ p.estado }}
+                                <Badge :class="p.status === 'Activo' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'">
+                                    {{ p.status }}
                                 </Badge>
                             </td>
 

@@ -41,9 +41,10 @@ const selectUnit = (unitId: number) => {
                     v-for="unit in units"
                     :key="unit.id"
                     @click="selectUnit(unit.id)"
+                    class="mb-2"
                     :class="{
                         'cursor-pointer rounded-lg border p-3 transition-colors': true,
-                        'border-yellow-700 bg-yellow-500 text-white shadow-lg': unit.id === selectedUnitId,
+                        'bg-yellow-500 text-white shadow-lg': unit.id === selectedUnitId,
                         'border-gray-200 hover:bg-gray-100': unit.id !== selectedUnitId,
                     }"
                 >

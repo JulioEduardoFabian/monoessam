@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Cafe } from '@/types';
-import axios from 'axios';
+import { useForm } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import InputSearchSelectable from './InputSearchSelectable.vue';
@@ -25,53 +24,6 @@ const activeTab = ref('personal');
 const fileInput = ref<HTMLInputElement | null>(null);
 const imagePreview = ref<string | null>(null);
 const selectedFile = ref<File | null>(null);
-// Datos del formulario
-const formData = ref({
-    // Personal
-    nombre: '',
-    apellidos: '',
-    documento: '',
-    codColaborador: '',
-    fechaNacimiento: '',
-    edad: 0,
-    email: '',
-    estadoCivil: '',
-    sexo: '',
-    nacionalidad: '',
-    celular: '',
-    lugarNacimiento: { pais: '', dpto: '', prov: '', dist: '' },
-    // Contacto Emergencia
-    emergenciaNombre: '',
-    emergenciaParentesco: '',
-    emergenciaTelefono: '',
-    // Domicilio
-    tipoDomicilio: 'permanente',
-    domicilio: { tipoVia: '', nombreVia: '', numero: '', interior: '', urb: '', ref: '' },
-    contactoDomicilio: { pais: '', dpto: '', prov: '', dist: '' },
-    // Estudios
-    gradoEstudios: '',
-    institucion: '',
-    titulo: '',
-    especialidad: '',
-    colegiatura: '',
-    // Laboral
-    tipoContrato: '',
-    regimenLaboral: '',
-    cargo: '',
-    area: '',
-    sede: '',
-    tipoRegimen: '',
-    operaciones: '',
-    // Control
-    puntosControl: ['VICTOR 3'],
-    prendas: [] as string[],
-    // Adjuntos
-    adjuntos: {},
-    fechaIngreso: '',
-    fechaFinContract: '',
-    children: 0,
-    cafeId: 0,
-});
 
 const prendasFijas = ref([
     { label: 'Chaqueta Blanca', talla: '' },
@@ -88,6 +40,44 @@ const prendasFijas = ref([
     { label: 'Cafarena', talla: '' },
     { label: 'Lentes', talla: '' },
 ]);
+
+const filesRequired = ref([
+    { label: 'CV Documentado', file: {} },
+    { label: 'Certificado Único Laboral (CUL)', file: {} },
+    { label: 'Certificado de Estudios', file: {} },
+    { label: 'Certificados de Trabajo', file: {} },
+    { label: 'DNI escaneado', file: {} },
+    { label: 'Antecedentes Penales y Policiales', file: {} },
+    { label: 'Carné de sanidad', file: {} },
+    { label: 'Carné de vacunación contra el COVID', file: {} },
+    { label: 'Examen Medico Ocupacional (EMO)', file: {} },
+    { label: 'SCTR', file: {} },
+    { label: 'Contrato', file: {} },
+]);
+
+const form = useForm({
+    name: '',
+    dni: '',
+    cell: '',
+    birthdate: '',
+    age: 0,
+    sex: 0,
+    email: '',
+    country: '',
+    civilstatus: 0,
+    contactname: '',
+    contactcell: '',
+    cafeId: 0,
+    files: [],
+    tipoContrato: '',
+    regimenLaboral: '',
+    fechaIngreso: '',
+    fechaFinContract: '',
+    cc: '',
+    cci: '',
+    children: 0,
+    prendas: prendasFijas.value,
+});
 
 const nextTab = () => {
     const tabs = ['personal', 'adjuntos', 'financiero', 'tallas'];
@@ -106,52 +96,17 @@ const prevTab = () => {
 };
 
 const handleSubmit = () => {
-    axios
-        .post('/staff', formData.value)
-        .then((result) => {
-            console.log('Formulario enviado:', formData.value);
-            isOpen.value = false; // Cerrar modal al guardar
-        })
-        .catch((err) => {
-            console.error(err);
-        });
-};
+    /* const formData = new FormData();
+    formData.append('file', form.file); */
 
-const handleCheckboxChange = (prenda, checked) => {
-    if (checked) {
-        // Si se marca, agregar objeto con nombre y talla vacía
-        if (!formData.value.prendas.some((p) => p === prenda)) {
-            formData.value.prendas.push({
-                nombre: prenda,
-                talla: '', // Espacio en blanco para la talla
-            });
-        }
-    } else {
-        // Si se desmarca, eliminar el objeto
-        const index = formData.value.prendas.findIndex((p) => p.nombre === prenda);
-        if (index > -1) {
-            formData.value.prendas.splice(index, 1);
-        }
-    }
-};
-
-const controlCheck = () => {
-    console.log('test');
-};
-
-// Método para actualizar talla específica
-const actualizarTalla = (index, event) => {
-    formData.value.prendas[index].talla = event.target.value;
-};
-
-// Método para eliminar prenda
-const eliminarPrenda = (index) => {
-    formData.value.prendas.splice(index, 1);
-};
-
-// Método para verificar si una prenda está seleccionada (para el checkbox)
-const isPrendaSelected = (nombrePrenda) => {
-    return formData.value.prendas.some((p) => p.nombre === nombrePrenda);
+    form.post(route('staff'), {
+        onSuccess: () => {
+            form.reset();
+        },
+        onError: (errors) => {
+            console.error('Error al subir el archivo:', errors);
+        },
+    });
 };
 
 const triggerFileInput = () => {
@@ -204,21 +159,35 @@ const removeImage = () => {
 };
 
 const selectCafe = (cafe: Cafe) => {
-    formData.value.cafeId = cafe.id;
+    form.cafeId = cafe.id;
 };
 
 const MAX_FILE_SIZE = 9 * 1024 * 1024; // 5MB example
 const showAlert = ref(false);
 const alertMessage = ref('');
-const handleFileUpload = (event: any) => {
+
+const handleFileUpload = (event: any, fileLabel: string) => {
     const files = event.target.files;
     if (files.length > 0) {
-        const file = files[0];
-        if (file.size > MAX_FILE_SIZE) {
+        const newFile = files[0];
+        if (newFile.size > MAX_FILE_SIZE) {
             alertMessage.value = 'El archivo es demasiado grande. El máximo es 9MB.';
             showAlert.value = true;
+            event.target.value = null;
+        } else {
+            const registerFileFound = filesRequired.value.find((file) => file.label == fileLabel);
+            if (registerFileFound) {
+                // Include the label in the filename or use FormData
+                const originalName = newFile.name;
+                const extension = originalName.split('.').pop();
+                // Create a new file with label in name or use a separate field
+                const modifiedFile = new File([newFile], `${fileLabel}_${Date.now()}.${extension}`, {
+                    type: newFile.type,
+                });
+                modifiedFile.label = fileLabel; // Still add label for FormData
 
-            event.target.value = null; // limpiar input
+                form.files.push(modifiedFile);
+            }
         }
     }
 };
@@ -228,11 +197,8 @@ const handleFileUpload = (event: any) => {
     <Dialog v-model:open="isOpen">
         <!-- Botón que abre el Modal -->
         <DialogTrigger as-child>
-            <Button variant="default" class="bg-blue-600 text-white hover:bg-blue-700">Nuevo Personal</Button>
+            <Button variant="default" class="cursor-pointer bg-blue-600 text-white hover:bg-blue-700">Nuevo Personal</Button>
         </DialogTrigger>
-
-        <!-- Contenido del Modal -->
-        <!-- 'max-w-5xl' para hacerlo ancho, 'h-[90vh]' para altura casi completa, 'flex-col' para layout interno -->
         <DialogContent class="flex h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-5xl">
             <!-- Encabezado Fijo -->
             <DialogHeader class="z-10 border-b bg-white px-6 py-4">
@@ -248,7 +214,6 @@ const handleFileUpload = (event: any) => {
                         <TabsTrigger value="personal" class="text-xs md:text-sm">1. Personal</TabsTrigger>
                         <TabsTrigger value="adjuntos" class="text-xs md:text-sm">2. Adjuntos</TabsTrigger>
                         <TabsTrigger value="financiero" class="text-xs md:text-sm">3. Financiero</TabsTrigger>
-                        <!--  <TabsTrigger value="laboral" class="text-xs md:text-sm">4. Laboral</TabsTrigger> -->
                         <TabsTrigger value="tallas" class="text-xs md:text-sm">4. Tallas</TabsTrigger>
                     </TabsList>
 
@@ -282,7 +247,7 @@ const handleFileUpload = (event: any) => {
                                         {{ imagePreview ? 'Cambiar Foto' : 'Subir Foto' }}
                                     </Button>
                                 </div>
-                                <Input placeholder="Cód. Colaborador" v-model="formData.codColaborador" class="text-center" />
+                                <Input placeholder="Cód. Colaborador" class="text-center" />
                                 <InputSearchSelectable :cafes="props.cafes" @selectCafe="selectCafe" />
                             </div>
 
@@ -292,27 +257,27 @@ const handleFileUpload = (event: any) => {
                                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                                     <div class="space-y-1">
                                         <Label for="nombres">Nombre Completo</Label>
-                                        <Input id="nombres" v-model="formData.nombre" />
+                                        <Input id="nombres" v-model="form.name" />
                                     </div>
                                     <div class="space-y-1">
                                         <Label for="doc">DNI / C.E.</Label>
-                                        <Input id="doc" v-model="formData.documento" />
+                                        <Input id="doc" v-model="form.dni" />
                                     </div>
                                     <div class="space-y-1">
                                         <Label for="cel">Celular</Label>
-                                        <Input id="cel" v-model="formData.celular" />
+                                        <Input id="cel" v-model="form.cell" />
                                     </div>
                                     <div class="space-y-1">
                                         <Label>F. Nacimiento</Label>
-                                        <Input type="date" v-model="formData.fechaNacimiento" />
+                                        <Input type="date" v-model="form.birthdate" />
                                     </div>
                                     <div class="space-y-1">
                                         <Label for="age">Edad</Label>
-                                        <Input id="age" v-model="formData.edad" />
+                                        <Input id="age" v-model="form.age" />
                                     </div>
                                     <div class="space-y-1">
                                         <Label>Sexo</Label>
-                                        <Select v-model="formData.sexo">
+                                        <Select v-model="form.sex">
                                             <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="1">Masculino</SelectItem>
@@ -323,15 +288,15 @@ const handleFileUpload = (event: any) => {
 
                                     <div class="space-y-1">
                                         <Label>Email</Label>
-                                        <Input v-model="formData.email" />
+                                        <Input v-model="form.email" />
                                     </div>
                                     <div class="space-y-1">
                                         <Label>Nacionalidad</Label>
-                                        <Input v-model="formData.nacionalidad" />
+                                        <Input v-model="form.country" />
                                     </div>
                                     <div class="space-y-1">
                                         <Label>Estado Civil</Label>
-                                        <Select v-model="formData.estadoCivil">
+                                        <Select v-model="form.civilstatus">
                                             <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="1">Soltero</SelectItem>
@@ -343,214 +308,20 @@ const handleFileUpload = (event: any) => {
                             </div>
                         </div>
 
-                        <!-- Lugar Nacimiento -->
-                        <!-- <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-                            <h3 class="border-b pb-2 text-sm font-semibold tracking-wider text-zinc-500 uppercase">Lugar de Nacimiento</h3>
-                            <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-                                <div class="space-y-1">
-                                    <Label>País</Label>
-                                    <Select v-model="formData.lugarNacimiento.pais">
-                                        <SelectTrigger><SelectValue placeholder="País" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="PE">Perú</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1">
-                                    <Label>Departamento</Label>
-                                    <Select v-model="formData.lugarNacimiento.dpto">
-                                        <SelectTrigger><SelectValue placeholder="Dpto" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="L">Lima</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1">
-                                    <Label>Provincia</Label>
-                                    <Select v-model="formData.lugarNacimiento.prov">
-                                        <SelectTrigger><SelectValue placeholder="Prov" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="L">Lima</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1">
-                                    <Label>Distrito</Label>
-                                    <Select v-model="formData.lugarNacimiento.dist">
-                                        <SelectTrigger><SelectValue placeholder="Dist" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="M">Miraflores</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        </div> -->
-
                         <!-- Emergencia -->
                         <div class="space-y-4 rounded-lg border border-red-100 bg-red-50/50 p-4">
                             <h3 class="border-b border-red-200 pb-2 text-sm font-semibold tracking-wider text-red-700 uppercase">
                                 Contacto Emergencia
                             </h3>
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="space-y-1"><Label>Nombre</Label><Input v-model="formData.emergenciaNombre" class="bg-white" /></div>
+                                <div class="space-y-1"><Label>Nombre</Label><Input v-model="form.contactname" class="bg-white" /></div>
 
-                                <div class="space-y-1"><Label>Celular</Label><Input v-model="formData.emergenciaTelefono" class="bg-white" /></div>
+                                <div class="space-y-1"><Label>Celular</Label><Input v-model="form.contactcell" class="bg-white" /></div>
                             </div>
                         </div>
                     </TabsContent>
 
-                    <!-- PESTAÑA 2: Domicilio -->
-                    <TabsContent value="tallas" class="mt-0 space-y-6">
-                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-                            <div class="mb-4 flex flex-col justify-between border-b pb-2 sm:flex-row sm:items-center">
-                                <h3 class="text-lg font-semibold text-zinc-800">Implementos</h3>
-                            </div>
-
-                            <!-- Lista de checkboxes -->
-                            <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-                                <div
-                                    v-for="(prenda, index) in prendasFijas"
-                                    :key="index"
-                                    class="flex items-start space-x-3 rounded border border-transparent p-2 hover:border-zinc-100 hover:bg-zinc-50"
-                                >
-                                    <div class="space-y-1">
-                                        <Label :for="'prenda-' + index" class="cursor-pointer text-sm font-normal">
-                                            {{ prenda.label }}
-                                        </Label>
-                                        <Input class="text" placeholder="Talla" v-model="prenda.talla" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Prendas seleccionadas con tallas -->
-                            <!-- <div class="mt-6 space-y-4">
-                                <h4 class="font-medium text-zinc-700">Prendas seleccionadas con tallas:</h4>
-                                <div v-if="formData.prendas.length === 0" class="text-sm text-gray-500 italic">
-                                    Selecciona prendas arriba para agregar tallas
-                                </div>
-                                <div
-                                    v-for="(prendaObj, index) in formData.prendas"
-                                    :key="index"
-                                    class="flex items-center justify-between rounded-lg border bg-gray-50 p-3"
-                                >
-                                    <div class="flex-1">
-                                        <span class="font-medium">{{ prendaObj.nombre }}</span>
-                                    </div>
-                                    <div class="mx-4 w-32">
-                                        <input
-                                            type="text"
-                                            v-model="prendaObj.talla"
-                                            placeholder="Talla"
-                                            class="w-full rounded border border-gray-300 px-3 py-1 text-sm focus:border-blue-500 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                    <button @click="eliminarPrenda(index)" class="p-1 text-red-500 hover:text-red-700" title="Eliminar prenda">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div> -->
-                        </div>
-                    </TabsContent>
-
-                    <!-- PESTAÑA 3: Laboral -->
-                    <TabsContent value="laboral" class="mt-0 space-y-6">
-                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-                            <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Información del Puesto</h3>
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="space-y-1">
-                                    <Label>Contrato</Label>
-                                    <Select v-model="formData.tipoContrato">
-                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="I">Indefinido</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1">
-                                    <Label>Régimen Lab.</Label>
-                                    <Select v-model="formData.regimenLaboral">
-                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="G">General</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1">
-                                    <Label>Fecha de ingreso a Unidad</Label>
-                                    <Input type="date" v-model="formData.fechaNacimiento" />
-                                </div>
-                                <div class="space-y-1"><Label>Área</Label><Input v-model="formData.area" /></div>
-                                <div class="space-y-1">
-                                    <Label>Sede</Label>
-                                    <Select v-model="formData.sede">
-                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="Y">Yauricocha</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1"><Label>Régimen (Días)</Label><Input v-model="formData.tipoRegimen" /></div>
-                            </div>
-                        </div>
-
-                        <div class="rounded-lg border bg-white p-4 shadow-sm">
-                            <h3 class="mb-3 border-b pb-2 text-lg font-semibold text-zinc-800">Accesos / Puntos de Control</h3>
-                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <div
-                                    v-for="punto in ['Carolina', 'Lima', 'Yauricocha', 'VICTOR 3 - ENTRADA A UNIDAD YAURICOCHA']"
-                                    :key="punto"
-                                    class="flex items-start space-x-3 rounded border border-transparent p-2 hover:border-zinc-100 hover:bg-zinc-50"
-                                >
-                                    <Checkbox :id="punto" :value="punto" v-model:checked="formData.puntosControl" class="mt-1" />
-                                    <Label :for="punto" class="cursor-pointer text-sm font-normal">
-                                        {{ punto }}
-                                    </Label>
-                                </div>
-                            </div>
-                        </div>
-                    </TabsContent>
-
-                    <TabsContent value="financiero" class="mt-0 space-y-6">
-                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-                            <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Datos financieros</h3>
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="space-y-1">
-                                    <Label>Entidad Bancaria</Label>
-                                    <Select v-model="formData.tipoContrato">
-                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="I">Indefinido</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1"><Label>Número de Cuenta</Label><Input v-model="formData.area" /></div>
-                                <div class="space-y-1"><Label>Número de Cuenta CI</Label><Input v-model="formData.area" /></div>
-                                <div class="space-y-1">
-                                    <Label>Aportación</Label>
-                                    <Select v-model="formData.regimenLaboral">
-                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="G">General</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1">
-                                    <Label>Fecha ingreso a Unidad</Label>
-                                    <Input type="date" v-model="formData.fechaIngreso" />
-                                </div>
-                                <div class="space-y-1">
-                                    <Label>Fecha de Fin de Contrato</Label>
-                                    <Input type="date" v-model="formData.fechaFinContract" />
-                                </div>
-                                <!--  <div class="space-y-1"><Label>Cargo</Label><Input v-model="formData.cargo" /></div>
-
-                                <div class="space-y-1">
-                                    <Label>Sede</Label>
-                                    <Select v-model="formData.sede">
-                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="Y">Yauricocha</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="space-y-1"><Label>Régimen (Días)</Label><Input v-model="formData.tipoRegimen" /></div> -->
-                            </div>
-                        </div>
-                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-                            <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Carga Familiar</h3>
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="space-y-1"><Label>Número de Hijos</Label><Input v-model="formData.children" /></div>
-                                <div class="space-y-1">
-                                    <Label>DNIs en PDF</Label>
-                                    <Input type="file" class="w-[1/3] text-xs file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200" />
-                                </div>
-                            </div>
-                        </div>
-                    </TabsContent>
-
-                    <!-- PESTAÑA 4: Adjuntos -->
+                    <!-- PESTAÑA 2: Adjuntos -->
                     <TabsContent value="adjuntos" class="mt-0 space-y-4">
                         <div class="mb-4 flex items-center rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800" role="alert">
                             <svg
@@ -579,29 +350,87 @@ const handleFileUpload = (event: any) => {
 
                         <div class="grid grid-cols-1 gap-2">
                             <div
-                                v-for="(doc, index) in [
-                                    'CV Documentado',
-                                    'Certificado Único Laboral (CUL)',
-                                    'Certificado de Estudios',
-                                    'Certificados de Trabajo',
-                                    'DNI escaneado',
-                                    'Antecedentes Penales y Policiales',
-                                    'Carné de sanidad',
-                                    'Carné de vacunación contra el COVID',
-                                    'Examen Medico Ocupacional (EMO)',
-                                    'SCTR',
-                                    'Contrato',
-                                ]"
+                                v-for="(file, index) in filesRequired"
                                 :key="index"
                                 class="flex items-center justify-between rounded-lg border bg-white p-3 shadow-sm"
                             >
-                                <span class="text-sm font-medium text-zinc-700">{{ doc }}</span>
+                                <span class="text-sm font-medium text-zinc-700">{{ file.label }}</span>
                                 <Input
                                     type="file"
                                     class="w-[350px] text-xs file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200"
                                     accept="application/pdf, image/jpeg"
-                                    @change="handleFileUpload"
+                                    @change="handleFileUpload($event, file.label)"
                                 />
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <!-- PESTAÑA 3: Financiero -->
+                    <TabsContent value="financiero" class="mt-0 space-y-6">
+                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
+                            <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Datos financieros</h3>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <div class="space-y-1">
+                                    <Label>Entidad Bancaria</Label>
+                                    <Select v-model="form.tipoContrato">
+                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                                        <SelectContent><SelectItem value="I">Indefinido</SelectItem></SelectContent>
+                                    </Select>
+                                </div>
+                                <div class="space-y-1"><Label>Número de Cuenta</Label><Input v-model="form.cc" /></div>
+                                <div class="space-y-1"><Label>Número de Cuenta CI</Label><Input v-model="form.cci" /></div>
+                                <div class="space-y-1">
+                                    <Label>Aportación</Label>
+                                    <Select v-model="form.regimenLaboral">
+                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                                        <SelectContent><SelectItem value="G">General</SelectItem></SelectContent>
+                                    </Select>
+                                </div>
+                                <div class="space-y-1">
+                                    <Label>Fecha ingreso a Unidad</Label>
+                                    <Input type="date" v-model="form.fechaIngreso" />
+                                </div>
+                                <div class="space-y-1">
+                                    <Label>Fecha de Fin de Contrato</Label>
+                                    <Input type="date" v-model="form.fechaFinContract" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
+                            <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Carga Familiar</h3>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <div class="space-y-1"><Label>Número de Hijos</Label><Input v-model="form.children" /></div>
+                                <div class="space-y-1">
+                                    <Label>DNIs en PDF</Label>
+                                    <Input
+                                        type="file"
+                                        class="w-[350px] text-xs file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200"
+                                        accept="application/pdf, image/jpeg"
+                                        @change="handleFileUpload($event, 'DNIs hijos')"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </TabsContent>
+                    <!-- PESTAÑA 4: Tallas -->
+                    <TabsContent value="tallas" class="mt-0 space-y-6">
+                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
+                            <div class="mb-4 flex flex-col justify-between border-b pb-2 sm:flex-row sm:items-center">
+                                <h3 class="text-lg font-semibold text-zinc-800">Implementos</h3>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+                                <div
+                                    v-for="(prenda, index) in prendasFijas"
+                                    :key="index"
+                                    class="flex items-start space-x-3 rounded border border-transparent p-2 hover:border-zinc-100 hover:bg-zinc-50"
+                                >
+                                    <div class="space-y-1">
+                                        <Label :for="'prenda-' + index" class="cursor-pointer text-sm font-normal">
+                                            {{ prenda.label }}
+                                        </Label>
+                                        <Input class="text" placeholder="Talla" v-model="prenda.talla" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </TabsContent>

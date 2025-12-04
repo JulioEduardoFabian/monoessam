@@ -24,6 +24,7 @@ return new class extends Migration
             $table->tinyInteger('civilstatus')->nullable();
             $table->string('contactname')->nullable();
             $table->string('contactcell')->nullable();
+            $table->tinyInteger('status')->nullable();
             $table->unsignedBigInteger('cafe_id')->nullable();
             $table->foreign('cafe_id')->references('id')->on('cafes')->cascadeOnDelete();
             $table->timestamps();
