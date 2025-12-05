@@ -6,14 +6,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cafe } from '@/types';
+import { Cafe, Role } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
 import { ref } from 'vue';
+import InputSearchRole from './InputSearchRole.vue';
 import InputSearchSelectable from './InputSearchSelectable.vue';
 
 interface Props {
     cafes: Cafe[];
+    roles: Role[];
 }
 
 const props = defineProps<Props>();
@@ -77,6 +79,20 @@ const form = useForm({
     cci: '',
     children: 0,
     prendas: prendasFijas.value,
+    district: '',
+    province: '',
+    department: '',
+    afp: '',
+    onp: '',
+    position: '',
+    address: '',
+    workSystem: '',
+    replacement: '',
+    unitId: 0,
+    salary: 0.0,
+    observations: '',
+    fondo: 0,
+    roleId: 0,
 });
 
 const nextTab = () => {
@@ -96,9 +112,6 @@ const prevTab = () => {
 };
 
 const handleSubmit = () => {
-    /* const formData = new FormData();
-    formData.append('file', form.file); */
-
     form.post(route('staff'), {
         onSuccess: () => {
             form.reset();
@@ -160,6 +173,10 @@ const removeImage = () => {
 
 const selectCafe = (cafe: Cafe) => {
     form.cafeId = cafe.id;
+};
+
+const selectRole = (role: Role) => {
+    form.roleId = role.id;
 };
 
 const MAX_FILE_SIZE = 9 * 1024 * 1024; // 5MB example
@@ -248,7 +265,8 @@ const handleFileUpload = (event: any, fileLabel: string) => {
                                     </Button>
                                 </div>
                                 <Input placeholder="Cód. Colaborador" class="text-center" />
-                                <InputSearchSelectable :cafes="props.cafes" @selectCafe="selectCafe" />
+
+                                <InputSearchSelectable :cafes="props.cafes" @selectCafe="selectCafe" :cafeSelected="form.cafeId" />
                             </div>
 
                             <!-- Datos Texto -->
@@ -368,13 +386,43 @@ const handleFileUpload = (event: any, fileLabel: string) => {
                     <!-- PESTAÑA 3: Financiero -->
                     <TabsContent value="financiero" class="mt-0 space-y-6">
                         <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
+                            <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Datos del colaborador</h3>
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <div class="space-y-1"><Label>Distrito</Label><Input v-model="form.district" /></div>
+                                <div class="space-y-1"><Label>Provincia</Label><Input v-model="form.province" /></div>
+                                <div class="space-y-1"><Label>Departamento</Label><Input v-model="form.department" /></div>
+                                <div class="space-y-1">
+                                    <Label>Fondo de pensiones</Label>
+                                    <Select v-model="form.fondo">
+                                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1">AFP</SelectItem>
+                                            <SelectItem value="2">ONP</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div class="space-y-1" v-if="form.fondo == 1"><Label>Nombre de AFP</Label><Input v-model="form.afp" /></div>
+
+                                <div class="space-y-1">
+                                    <Label>Rol</Label>
+                                    <InputSearchRole @selectRole="selectRole" :roles="props.roles" :roleSelected="form.roleId" />
+                                </div>
+                                <div class="space-y-1"><Label>Dirección</Label><Input v-model="form.address" /></div>
+                                <div class="space-y-1"><Label>Sistema de Trabajo</Label><Input v-model="form.workSystem" /></div>
+                                <div class="space-y-1"><Label>Reemplazo</Label><Input v-model="form.replacement" /></div>
+                                <div class="space-y-1"><Label>Unidad</Label><Input v-model="form.unitId" /></div>
+                                <div class="space-y-1"><Label>Sueldo</Label><Input v-model="form.salary" /></div>
+                                <div class="space-y-1"><Label>Observaciones</Label><Input v-model="form.observations" /></div>
+                            </div>
+                        </div>
+                        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
                             <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Datos financieros</h3>
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                                 <div class="space-y-1">
                                     <Label>Entidad Bancaria</Label>
                                     <Select v-model="form.tipoContrato">
                                         <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                                        <SelectContent><SelectItem value="I">Indefinido</SelectItem></SelectContent>
+                                        <SelectContent><SelectItem value="1">BBVA</SelectItem><SelectItem value="2">BCP</SelectItem></SelectContent>
                                     </Select>
                                 </div>
                                 <div class="space-y-1"><Label>Número de Cuenta</Label><Input v-model="form.cc" /></div>
@@ -387,7 +435,7 @@ const handleFileUpload = (event: any, fileLabel: string) => {
                                     </Select>
                                 </div>
                                 <div class="space-y-1">
-                                    <Label>Fecha ingreso a Unidad</Label>
+                                    <Label>Fecha de ingreso</Label>
                                     <Input type="date" v-model="form.fechaIngreso" />
                                 </div>
                                 <div class="space-y-1">
