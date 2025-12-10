@@ -10,6 +10,7 @@ import { Cafe, Role } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
 import { ref } from 'vue';
+import AlertErrors from './AlertErrors.vue';
 import InputSearchRole from './InputSearchRole.vue';
 import InputSearchSelectable from './InputSearchSelectable.vue';
 
@@ -28,18 +29,18 @@ const imagePreview = ref<string | null>(null);
 const selectedFile = ref<File | null>(null);
 
 const prendasFijas = ref([
+    { label: 'Polo', talla: '' },
+    { label: 'Cafarena', talla: '' },
+    { label: 'Overall', talla: '' },
+    { label: 'Casaca', talla: '' },
+    { label: 'Chaleco', talla: '' },
     { label: 'Chaqueta Blanca', talla: '' },
     { label: 'Pantalón', talla: '' },
     { label: 'Camisa/Blusa', talla: '' },
-    { label: 'Zapato', talla: '' },
-    { label: 'Botas Blancas', talla: '' },
-    { label: 'Overall', talla: '' },
-    { label: 'Casaca', talla: '' },
-    { label: 'Guantes', talla: '' },
     { label: 'Guardapolvo', talla: '' },
-    { label: 'Chaleco', talla: '' },
-    { label: 'Polo', talla: '' },
-    { label: 'Cafarena', talla: '' },
+    { label: 'Guantes', talla: '' },
+    { label: 'Botas Blancas', talla: '' },
+    { label: 'Zapatos', talla: '' },
     { label: 'Lentes', talla: '' },
 ]);
 
@@ -69,7 +70,7 @@ const form = useForm({
     civilstatus: 0,
     contactname: '',
     contactcell: '',
-    cafeId: 0,
+    cafeId: null,
     files: [],
     tipoContrato: '',
     regimenLaboral: '',
@@ -78,7 +79,7 @@ const form = useForm({
     cc: '',
     cci: '',
     children: 0,
-    prendas: prendasFijas.value,
+    prendas: [],
     district: '',
     province: '',
     department: '',
@@ -93,7 +94,11 @@ const form = useForm({
     observations: '',
     fondo: 0,
     roleId: 0,
+    unitSelectedText: '',
 });
+
+const errorsSend = ref([]);
+const showErrors = ref(false);
 
 const nextTab = () => {
     const tabs = ['personal', 'adjuntos', 'financiero', 'tallas'];
@@ -112,11 +117,17 @@ const prevTab = () => {
 };
 
 const handleSubmit = () => {
+    form.prendas = prendasFijas.value;
+
     form.post(route('staff'), {
-        onSuccess: () => {
+        onSuccess: (res) => {
             form.reset();
+            isOpen.value = false;
+            activeTab.value = 'personal';
         },
         onError: (errors) => {
+            showErrors.value = true;
+            errorsSend.value = errors;
             console.error('Error al subir el archivo:', errors);
         },
     });
@@ -173,6 +184,8 @@ const removeImage = () => {
 
 const selectCafe = (cafe: Cafe) => {
     form.cafeId = cafe.id;
+    form.unitId = cafe.unit_id;
+    form.unitSelectedText = cafe.unit.name;
 };
 
 const selectRole = (role: Role) => {
@@ -221,6 +234,7 @@ const handleFileUpload = (event: any, fileLabel: string) => {
             <DialogHeader class="z-10 border-b bg-white px-6 py-4">
                 <DialogTitle class="text-xl font-bold text-zinc-800 md:text-2xl"> Ficha de Registro de Colaborador </DialogTitle>
                 <DialogDescription> Complete los datos del proceso de alta en las secciones a continuación. </DialogDescription>
+                <AlertErrors :show="showErrors" :errors="errorsSend" />
             </DialogHeader>
 
             <!-- Cuerpo Scrolleable (Aquí va el formulario pesado) -->
@@ -274,15 +288,15 @@ const handleFileUpload = (event: any, fileLabel: string) => {
                                 <h3 class="border-b pb-2 text-lg font-semibold text-zinc-700">Datos Generales</h3>
                                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                                     <div class="space-y-1">
-                                        <Label for="nombres">Nombre Completo</Label>
+                                        <Label for="nombres">Nombre Completo *</Label>
                                         <Input id="nombres" v-model="form.name" />
                                     </div>
                                     <div class="space-y-1">
-                                        <Label for="doc">DNI / C.E.</Label>
+                                        <Label for="doc">DNI / C.E. *</Label>
                                         <Input id="doc" v-model="form.dni" />
                                     </div>
                                     <div class="space-y-1">
-                                        <Label for="cel">Celular</Label>
+                                        <Label for="cel">Celular *</Label>
                                         <Input id="cel" v-model="form.cell" />
                                     </div>
                                     <div class="space-y-1">
@@ -410,7 +424,7 @@ const handleFileUpload = (event: any, fileLabel: string) => {
                                 <div class="space-y-1"><Label>Dirección</Label><Input v-model="form.address" /></div>
                                 <div class="space-y-1"><Label>Sistema de Trabajo</Label><Input v-model="form.workSystem" /></div>
                                 <div class="space-y-1"><Label>Reemplazo</Label><Input v-model="form.replacement" /></div>
-                                <div class="space-y-1"><Label>Unidad</Label><Input v-model="form.unitId" /></div>
+                                <div class="space-y-1"><Label>Unidad</Label><Input v-model="form.unitSelectedText" readonly /></div>
                                 <div class="space-y-1"><Label>Sueldo</Label><Input v-model="form.salary" /></div>
                                 <div class="space-y-1"><Label>Observaciones</Label><Input v-model="form.observations" /></div>
                             </div>
@@ -476,7 +490,19 @@ const handleFileUpload = (event: any, fileLabel: string) => {
                                         <Label :for="'prenda-' + index" class="cursor-pointer text-sm font-normal">
                                             {{ prenda.label }}
                                         </Label>
-                                        <Input class="text" placeholder="Talla" v-model="prenda.talla" />
+                                        <Select v-model="prenda.talla" v-if="index < 9">
+                                            <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                                            <SelectContent
+                                                ><SelectItem value="s">S</SelectItem><SelectItem value="m">M</SelectItem
+                                                ><SelectItem value="l">L</SelectItem><SelectItem value="xl">XL</SelectItem
+                                                ><SelectItem value="xxl">XXL</SelectItem></SelectContent
+                                            >
+                                        </Select>
+                                        <Select v-model="prenda.talla" v-else-if="index == 9">
+                                            <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                                            <SelectContent><SelectItem value="8">8</SelectItem><SelectItem value="9">9</SelectItem></SelectContent>
+                                        </Select>
+                                        <Input class="text" placeholder="Talla" v-model="prenda.talla" v-else />
                                     </div>
                                 </div>
                             </div>

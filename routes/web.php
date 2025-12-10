@@ -133,6 +133,7 @@ Route::put('period-user/{id}', [PeriodController::class, 'periodUser']);
 
 Route::get('staff', [StaffController::class, 'index'])->name('staff');
 Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
+Route::delete('staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
 
 Route::get('/qr/{id}', function ($id) {
     $arrayProducts = [

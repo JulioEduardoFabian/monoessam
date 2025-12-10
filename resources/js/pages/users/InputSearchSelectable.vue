@@ -86,7 +86,7 @@ const clearSelection = () => {
     selectedCafe.value = null;
     searchTerm.value = '';
     isDropdownVisible.value = false;
-    searchInputRef.value?.$el?.focus();
+    //searchInputRef.value?.$el?.focus();
 };
 
 const handleKeydown = (event: Event, cafe?: Cafe) => {

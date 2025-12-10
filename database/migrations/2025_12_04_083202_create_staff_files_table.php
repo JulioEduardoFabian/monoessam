@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('staff_id')->nullable();
             $table->foreign('staff_id')->references('id')->on('staff')->cascadeOnDelete();
-            $table->string('file_type');
-            $table->text('file_path');
+            $table->string('file_type')->nullable();
+            $table->text('file_path')->nullable();
             $table->timestamps();
         });
     }

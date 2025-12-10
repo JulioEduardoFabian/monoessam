@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cafe;
 use App\Models\Staff;
+use App\Models\Staff_clothes;
 use App\Models\Staff_file;
 use App\Models\Staff_financial;
 use Illuminate\Http\Request;
@@ -38,6 +39,13 @@ class StaffController extends Controller
     public function store(Request $request)
     {
 
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'dni' => 'required|unique:staff',
+            'cell' => 'required'
+        ]);
+
+
         $staff = Staff::create([
             'name' => $request->name,
             'dni' => $request->dni,
@@ -51,21 +59,19 @@ class StaffController extends Controller
             'contactname' => $request->contactname,
             'contactcell' => $request->contactcell,
             'status' => 0,
-            'cafe_id' => $request->cafeId
+            'cafe_id' => $request->cafeId,
+            'role_id' => $request->roleId
         ]);
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $index => $file) {
-                // Get the original filename to extract label
                 $originalName = $file->getClientOriginalName();
                 $chunksName = explode("_", $originalName);
 
-                // Generate a unique filename
+
                 $fileName = time() . '_' . $originalName;
                 $filePath = $file->storeAs('files', $fileName, 'public');
 
-                // Extract label from filename or use another method
-                // If label is included in filename like "label_originalname.ext"
                 $label = 'default'; // Default or extract from filename
 
                 $staff_file = Staff_file::create([
@@ -85,18 +91,27 @@ class StaffController extends Controller
             'children' => $request->children,
             'afp' => $request->afp,
             'onp' => $request->onp,
-            'position' => $request->position,
             'address' => $request->address,
             'account_number' => $request->account_number,
             'system_work' => $request->workSystem,
             'replacement' => $request->replacement,
-            'unit_id' => $request->unitId,
             'salary' => $request->salary,
             'observations' => $request->observations,
             'account_number' => $request->cc
         ]);
 
-        return $staff;
+
+        foreach ($request->prendas as $clothe) {
+            if ($clothe['talla']) {
+                $staff_clothes = Staff_clothes::create([
+                    'staff_id' => $staff->id,
+                    'clothe_name' => $clothe['label'],
+                    'clothing_size' => $clothe['talla']
+                ]);
+            }
+        }
+
+        return redirect()->route('staff');
     }
 
     /**
@@ -128,6 +143,8 @@ class StaffController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $staff = Staff::find($id);
+
+        $staff->delete();
     }
 }
