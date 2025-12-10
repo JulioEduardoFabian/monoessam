@@ -29,6 +29,10 @@ const props = defineProps({
     },
 });
 
+const emit = defineEmits<{
+    (e: 'assignGuards', guards: Guardia[]): void;
+}>();
+
 const open = ref(false);
 
 // 1. Estado para el número de guardias seleccionado (2, 3 o 4)
@@ -37,9 +41,7 @@ const numberOfGuards = ref<number | null>(null);
 // 2. Definición del formulario de Inertia
 const form = useForm({
     cafe_id: 0,
-
-    // 3. Array de guardias, cada una con un nombre
-    guards: [] as Guardia[],
+    guards: [],
 });
 
 // 4. Array de opciones para el select (de 2 a 4)
@@ -88,10 +90,11 @@ const submit = () => {
 
     // Envío del formulario con Inertia
     form.post(route('insert-guards'), {
-        onSuccess: () => {
+        onSuccess: (page) => {
             open.value = false;
+            emit('assignGuards', page.props.flash.newGuards);
             form.reset();
-            numberOfGuards.value = null; // Reiniciar el selector
+            numberOfGuards.value = null;
         },
         onError: (errors) => {
             console.error('Error al enviar el formulario:', errors);

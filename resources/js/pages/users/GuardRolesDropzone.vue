@@ -1,52 +1,115 @@
 <script setup lang="ts">
-import { Role } from '@/types'; // Asegúrate de que esta importación sea correcta
+import { Role } from '@/types';
 import { useDroppable } from '@vue-dnd-kit/core';
-import { ref } from 'vue';
+import axios from 'axios';
+import { nextTick, ref } from 'vue'; // Importa nextTick
+import { ClickOutside as vClickOutside } from 'vue-click-outside';
+import Draggable from './Draggable.vue';
 
-// --- Interfaces y Tipos ---
-interface Guardia {
-    id: number;
-    name: string;
-    // La estructura de roles obtenida del backend
-    roles: Array<Role & { pivot?: { guard_id: number; role_id: number } }>;
+interface Props {
+    role: Role;
+    users: User[];
 }
 
 interface User {
     id: number;
     name: string;
-    // Añade otras propiedades que tu draggable pueda tener
-    [key: string]: any;
+    type: number;
+    avatar?: string;
 }
-
-interface DroppableProps {
-    // La guardia cuyos roles queremos mostrar y a la que asignaremos nuevos roles
-    guard: Guardia;
-}
-
-const props = defineProps<DroppableProps>();
-
-// 1. Definición del evento 'dropped' que emitirá el usuario que fue arrastrado
 const emit = defineEmits<{
-    (e: 'roleDropped', payload: { user: User; guardId: number }): void;
+    (e: 'roleAssigned', userId: number): void;
+    (e: 'unassignUser', userId: number): void;
 }>();
 
-const message = ref('Arrastra un usuario aquí para asignarlo.');
-const isDropped = ref(false);
+const props = defineProps<Props>();
 
-const { elementRef: dropzoneRef, isOvered } = useDroppable({
-    // Usamos la ID de la guardia para que cada zona sea única
-    id: `guard-dropzone-${props.guard.id}`,
+// --- Estados Reactivos ---
+const userDropped = ref<User | null>(null);
+const isEditing = ref(false);
+const searchText = ref('');
+const searchResults = ref<User[]>([]);
+const inputRef = ref<HTMLInputElement | null>(null); // Referencia al input
+
+if (props.role?.user) {
+    userDropped.value = props.role.user as User;
+}
+
+// --- Métodos de Lógica ---
+// ... (unassignUser, assignUserToRole, searchUsers, closeEditing, selectUser sin cambios)
+
+// Lógica de Desasignación
+const unassignUser = (userId: number) => {
+    userDropped.value = null;
+    emit('unassignUser', userId);
+};
+
+// Lógica de Asignación a través de la API (Común para Drag & Drop y Click/Search)
+const assignUserToRole = (user: User) => {
+    userDropped.value = user;
+    isEditing.value = false;
+    searchText.value = '';
+    searchResults.value = [];
+
+    axios
+        .post('/guard-roles-user', {
+            user_id: user.id,
+            guard_role_id: props.role.id,
+        })
+        .then((response) => {
+            emit('roleAssigned', user.id);
+        })
+        .catch((error) => {
+            console.error('Error al asignar el rol:', error);
+            userDropped.value = props.role?.user ? (props.role.user as User) : null;
+        });
+};
+
+// Lógica de Búsqueda
+const searchUsers = async () => {
+    if (searchText.value.length < 3) {
+        searchResults.value = [];
+        return;
+    }
+    const allUsers: User[] = props.users;
+
+    searchResults.value = allUsers.filter((user) => user.name.toLowerCase().includes(searchText.value.toLowerCase())).slice(0, 5);
+};
+
+// Iniciar el modo de edición (al hacer clic en "Sin asignar")
+const startEditing = () => {
+    if (!userDropped.value) {
+        isEditing.value = true;
+
+        // Utilizar nextTick para enfocar el input después del renderizado
+        nextTick(() => {
+            if (inputRef.value) {
+                inputRef.value.focus();
+            }
+        });
+    }
+};
+
+// Salir del modo de edición (al hacer clic fuera)
+const closeEditing = () => {
+    isEditing.value = false;
+    searchText.value = '';
+    searchResults.value = [];
+};
+
+// Asignación al seleccionar un usuario de la lista de búsqueda
+const selectUser = (user: User) => {
+    assignUserToRole(user);
+};
+
+// --- Lógica de Drag and Drop (DND) ---
+const { elementRef: guardRolesDropzoneRef, isOvered } = useDroppable({
+    id: 'guard-roles-dropzone',
     events: {
         onDrop: (store, payload) => {
-            isDropped.value = true;
-            // Acceder al usuario arrastrado desde el payload
-            const droppedUser = payload.items[0].data.user;
-
+            const droppedUser = payload.items[0].data?.user;
             if (droppedUser) {
-                message.value = `Usuario ${droppedUser.name} listo para asignar rol.`;
-
-                // 2. Emitir el evento con el usuario arrastrado y la ID de la guardia
-                emit('roleDropped', { user: droppedUser as User, guardId: props.guard.id });
+                assignUserToRole(droppedUser);
             }
         },
     },
@@ -54,17 +117,49 @@ const { elementRef: dropzoneRef, isOvered } = useDroppable({
 </script>
 
 <template>
-    <div
-        ref="dropzoneRef"
-        :class="{ 'border-blue-500 bg-blue-100': isOvered, 'border-green-500': isDropped }"
-        class="dropzone h-full w-full rounded-lg border-4 border-dashed bg-zinc-300 p-5 shadow-inner transition-colors"
-    >
-        <h3 class="mb-4 text-center text-xl font-bold text-zinc-800">{{ guard.name }}</h3>
+    <div v-click-outside="closeEditing" ref="guardRolesDropzoneRef" class="relative min-h-[6rem] w-full">
+        <div v-if="userDropped && userDropped.id">
+            <Draggable :user="userDropped" @unassignUser="unassignUser" :showButtonDelete="true" />
+        </div>
 
-        <GuardRolesDropzone />
+        <div v-else>
+            <div v-if="isEditing" class="relative">
+                <input
+                    type="text"
+                    v-model="searchText"
+                    @input="searchUsers"
+                    placeholder="Buscar y asignar usuario..."
+                    class="w-full rounded border border-blue-500 p-2 focus:ring-2 focus:ring-blue-500"
+                    @keyup.esc="closeEditing"
+                    ref="inputRef"
+                />
 
-        <p class="mt-4 text-center text-sm font-medium text-zinc-500">{{ message }}</p>
+                <ul v-if="searchResults.length" class="absolute z-10 mt-1 w-full rounded border border-zinc-300 bg-white shadow-lg">
+                    <li v-for="user in searchResults" :key="user.id" @click="selectUser(user)" class="cursor-pointer p-2 hover:bg-blue-100">
+                        {{ user.name }}
+                    </li>
+                </ul>
+                <div v-else-if="searchText.length >= 3" class="p-2 text-sm text-zinc-500">No se encontraron usuarios.</div>
+            </div>
 
-        <slot />
+            <div
+                v-else
+                @click="startEditing"
+                :class="{
+                    'cursor-pointer rounded border-2 border-dashed p-5 transition-colors': true,
+                    'border-zinc-600': !isOvered,
+                    'border-green-500 bg-green-50 dark:bg-zinc-800': isOvered, // Feedback visual DND
+                }"
+            >
+                Haga clic o arrastre para asignar
+            </div>
+        </div>
     </div>
 </template>
+
+<style scoped>
+/* Estilos necesarios para v-click-outside (si no lo maneja tu librería) */
+.min-h-\[6rem\] {
+    min-height: 6rem;
+}
+</style>

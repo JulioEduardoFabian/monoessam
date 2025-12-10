@@ -121,6 +121,7 @@ class SaleController extends Controller
 
         $cafe = Cafe::find($request->cafe_id);
         $cafe->load(['businesses']);
+
         $services = json_decode($request->services, true);
 
         $total = array_reduce($services, function ($carry, $service) {

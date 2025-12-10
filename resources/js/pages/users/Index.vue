@@ -3,15 +3,14 @@ import Button from '@/components/ui/button/Button.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Mine, Permission, Role, Unit, User } from '@/types';
-import { Head, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+import axios from 'axios';
+import { List } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
-import AreaModal from './AreaModal.vue';
 import GuardAreaDroppable from './GuardAreaDroppable.vue';
 import GuardModal from './GuardModal.vue';
-import Modal from './Modal.vue';
-import PermissionModal from './PermissionModal.vue';
-import RoleModal from './RoleModal.vue';
 import StaffSelectables from './StaffSelectables.vue';
+import TableHeadcount from './TableHeadcount.vue';
 
 interface Props {
     users: User[];
@@ -25,9 +24,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const areasSelected = ref([]);
-const showNoUsers = ref(false);
-
 const selectedOptions = ref({
     mine: null,
     unit: null,
@@ -36,16 +32,11 @@ const selectedOptions = ref({
 
 const selectedUnits = ref([]);
 const selectedCafes = ref([]);
-const usersSelected = ref([]);
+const selectedPeriods = ref([]);
 const guardsSelected = ref([] as Cafe[]);
+const changedView = ref(false);
 
-const unassignedUsers = ref([
-    { id: 1, name: 'Alice', type: 1, avatar: null },
-    { id: 2, name: 'Bob', type: 1, avatar: null },
-    { id: 3, name: 'Julius', type: 1, avatar: null },
-    { id: 4, name: 'Micky', type: 1, avatar: null },
-    { id: 5, name: 'Jaime', type: 1, avatar: null },
-]);
+const unassignedUsers = ref([]);
 const assignedUsers = ref([]);
 
 watch(
@@ -64,108 +55,75 @@ watch(
         }
 
         if (newVal.cafe) {
-            const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == newVal.cafe);
-            if (cafeSelected) {
-                usersSelected.value = cafeSelected.users;
-                guardsSelected.value = cafeSelected.guards;
-
-                console.log(guardsSelected);
-            } else {
-                areasSelected.value = [];
-            }
-            //usersSelected.value = [];
-            showNoUsers.value = false;
+            fetchCafeData(Number(newVal.cafe));
         }
     },
     { deep: true },
 );
 
-const locationLabel = (user: User): string => {
-    const area = user.roles?.[0]?.areas?.[0];
-    if (!area) return '';
-
-    if (area.headquarter) {
-        return `Sede - ${area.headquarter.name}`;
-    } else if (area.cafe) {
-        return `Cafetería - ${area.cafe.name}`;
-    }
-
-    return '';
-};
-
-const deletePermission = (permissionId: any) => {
-    if (confirm('Estas seguro de eliminar el permiso?')) {
-        router.delete(route('permissions.destroy', permissionId));
+const fetchCafeData = async (cafeId: number) => {
+    try {
+        const response = await axios.get(`/cafes/${cafeId}`);
+        const cafeData = response.data;
+        guardsSelected.value = cafeData.guards;
+        unassignedUsers.value = cafeData.users.unassigned;
+        assignedUsers.value = cafeData.users.assigned;
+        selectedPeriods.value = cafeData.periods;
+    } catch (error) {
+        console.error('Error fetching cafe data:', error);
     }
 };
 
-const selectedSide = ref<Cafe | Headquarter | null>(null);
-const selectedArea = ref<Area | null>(null);
-const selectedUser = ref<User | null>(null);
-
-const selectSide = (side: Cafe | Headquarter) => {
-    selectedSide.value = side;
-    selectedArea.value = null;
-    selectedUser.value = null;
-    areasSelected.value = side.areas;
-    usersSelected.value = [];
-    showNoUsers.value = false;
+const handleUserAssignment = (userId: number) => {
+    unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== userId);
+    fetchCafeData(selectedOptions.value.cafe);
 };
 
-const selectArea = (area: Area) => {
-    selectedArea.value = area;
-    selectedUser.value = null;
-    if (area.users.length !== 0) {
-        usersSelected.value = area.users.filter((user) => user.type != 3);
-        showNoUsers.value = false;
-    } else {
-        usersSelected.value = [];
-        showNoUsers.value = true;
+const assignGuards = (guards: Cafe[]) => {
+    console.log('updating guards', guards);
+    guardsSelected.value = guards;
+};
+
+const asignRolesToGuard = (guardId: number, roles: Role[]) => {
+    console.log(`Asignar roles al guardia ID ${guardId}:`, roles);
+    const guard = guardsSelected.value.find((g) => g.id === guardId);
+    if (guard) {
+        roles.forEach((role) => {
+            const newRole = {
+                role: {
+                    id: role.id,
+                    guard_id: guardId,
+                    role_id: role.id,
+                    name: role.name,
+                },
+            };
+
+            guard.assigned_roles.push(newRole);
+        });
+    }
+    console.log(guard);
+};
+
+const deleteGuardRole = (guardId: number, roleId: number) => {
+    const guard = guardsSelected.value.find((g) => g.id === guardId);
+    console.log(roleId);
+    if (guard) {
+        guard.assigned_roles = guard.assigned_roles.filter((role) => role.id !== roleId);
     }
 };
 
-const selectUser = (user: User) => {
-    selectedUser.value = user;
-};
-
-const toBlacklist = (userId: number) => {
-    if (confirm('¿Estás seguro de que deseas enviar a lista negra a este usuario?')) {
-        router.get(route('blacklist', userId));
+const unassignUser = (userId: number) => {
+    const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == selectedOptions.value.cafe);
+    if (cafeSelected) {
+        const user = props.users.find((u) => u.id === userId);
+        if (user) {
+            unassignedUsers.value.unshift(user);
+        }
     }
 };
 
-const blockUser = (userId: number) => {
-    if (confirm('¿Estás seguro de que deseas dar de baja a este usuario?')) {
-        router
-            .get(route('users.ban', userId))
-            .then(() => {
-                console.log('Usuario dado de baja');
-                // Aquí podrías agregar lógica adicional si es necesario
-            })
-            .catch((error) => {
-                console.error('Error al dar de baja al usuario:', error);
-                alert('Ocurrió un error al dar de baja al usuario. Por favor, inténtalo de nuevo.');
-            });
-    }
-};
-
-const toBlacklistRoute = () => {
-    router.get(route('blacklist'));
-};
-
-const handleUserAssignment = (user) => {
-    console.log('Usuario a asignar:', user);
-
-    // 1. Eliminar el usuario de la lista de origen (Unassigned)
-    unassignedUsers.value = unassignedUsers.value.filter((u) => u.id !== user.id);
-
-    // 2. Añadir el usuario a la lista de destino (Assigned)
-    assignedUsers.value.push(user);
-};
-
-const selectCafe = (value: number | string) => {
-    console.log('Valor seleccionado:', value);
-    console.log('Cafe seleccionado');
+const changeView = () => {
+    changedView.value = !changedView.value;
 };
 </script>
 <template>
@@ -175,28 +133,10 @@ const selectCafe = (value: number | string) => {
             <div class="flex">
                 <h1 class="text-2xl font-bold">Puestos</h1>
             </div>
-            <div
-                class="flex h-12 w-full items-center justify-start gap-3 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 shadow-sm dark:from-gray-700 dark:to-gray-700"
-            >
-                <PermissionModal
-                    class="rounded p-1 text-blue-600 transition-colors hover:bg-blue-100 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                />
-                <Modal
-                    :cafes="cafes"
-                    :headquarters="headquarters"
-                    :roles="roles"
-                    class="rounded p-1 text-purple-600 transition-colors hover:bg-purple-100 hover:text-purple-700 dark:text-purple-400 dark:hover:bg-purple-900/30"
-                />
-                <RoleModal
-                    :areas="areas"
-                    class="rounded p-1 text-green-600 transition-colors hover:bg-green-100 hover:text-green-700 dark:text-green-400 dark:hover:bg-green-900/30"
-                />
-                <AreaModal
-                    :cafes="cafes"
-                    :headquarters="headquarters"
-                    class="rounded p-1 text-orange-600 transition-colors hover:bg-orange-100 hover:text-orange-700 dark:text-orange-400 dark:hover:bg-orange-900/30"
-                />
-                <!-- <Button @click="toBlacklistRoute"><Ban /></Button> -->
+
+            <p>Seleccione una mina, unidad y comedor para asignar guardias y roles</p>
+            <div class="flex w-full flex-row">
+                <Button title="Ver en lista" class="cursor-pointer" @click="changeView()"><List></List></Button>
             </div>
             <div class="flex gap-2">
                 <Select class="w-full" v-model="selectedOptions.mine">
@@ -234,23 +174,51 @@ const selectCafe = (value: number | string) => {
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-                <GuardModal :cafeId="selectedOptions.cafe" />
+                <GuardModal :cafeId="selectedOptions.cafe" @assignGuards="assignGuards" />
                 <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar roles </Button>
                 <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar puesto </Button>
             </div>
 
             <!-- Contenedor principal de tres columnas -->
 
-            <div class="grid h-full auto-rows-fr gap-6 md:grid-cols-4">
-                <StaffSelectables :users="unassignedUsers" />
-                <GuardAreaDroppable
-                    :users="assignedUsers"
-                    :roles="roles"
-                    :guard="guard"
-                    @dropped="handleUserAssignment"
-                    v-for="guard in guardsSelected"
-                    :key="guard.id"
-                />
+            <div class="h-full" :hidden="changedView">
+                <div v-if="guardsSelected && guardsSelected.length > 0" class="grid h-full auto-rows-fr gap-6 md:grid-cols-8">
+                    <StaffSelectables :users="unassignedUsers" class="md:col-span-2" />
+                    <div class="md:col-span-6">
+                        <div class="overflow-x-auto" v-for="guard in guardsSelected" :key="guard.id">
+                            <div class="flex h-full gap-6">
+                                <GuardAreaDroppable
+                                    :users="assignedUsers"
+                                    :roles="roles"
+                                    :guard="guard"
+                                    @dropped="handleUserAssignment"
+                                    @asignRolesToGuard="asignRolesToGuard"
+                                    @deleteGuardRole="deleteGuardRole"
+                                    @unassignUser="unassignUser"
+                                    :unassignedUsers="unassignedUsers"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="flex h-full items-center justify-center p-10 text-center">
+                    <p class="text-xl font-semibold text-gray-500">
+                        ⚠️ Por favor seleccione un comedor y asigne guardias para continuar.
+                        <br />
+                        (La lista de guardias aparecerá aquí una vez se asignen).
+                    </p>
+                </div>
+            </div>
+            <div class="h-full" :hidden="!changedView">
+                <div class="grid h-full">
+                    <TableHeadcount
+                        :guards="guardsSelected"
+                        :users="assignedUsers"
+                        :cafeId="selectedOptions.cafe"
+                        :periods="selectedPeriods"
+                        @fetchCafeData="fetchCafeData"
+                    />
+                </div>
             </div>
         </div>
     </AppLayout>

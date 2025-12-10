@@ -15,7 +15,49 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        return Inertia::render('permissions/Index', ['permissions' => Permission::all(), 'roles' => Role::all(), 'users' => User::with('roles', 'roles.permissions', 'permissions')->get()]);
+        // 1. Obtener todas las tablas necesarias
+        $permissions = Permission::all();
+        $roles = Role::all();
+
+        // 2. Obtener usuarios con sus relaciones
+        $users = User::with('roles', 'roles.permissions', 'permissions')->get();
+
+        // 3. Mapear la colección de usuarios para fusionar los permisos
+        $users = $users->map(function ($user) {
+
+            // Inicializar una colección para todos los permisos
+            $allPermissions = collect();
+
+            // 3a. Agregar permisos directos
+            // Los permisos directos ya son una colección, simplemente los agregamos.
+            $allPermissions = $allPermissions->merge($user->permissions);
+
+            // 3b. Agregar permisos de roles
+            // Iteramos sobre los roles del usuario para obtener sus permisos
+            foreach ($user->roles as $role) {
+                $allPermissions = $allPermissions->merge($role->permissions);
+            }
+
+            // 3c. Eliminar duplicados
+            // Usamos unique() por el 'id' para evitar permisos duplicados 
+            // (por si un permiso está asignado directamente y a través de un rol)
+            $uniquePermissions = $allPermissions->unique('id')->values();
+
+            // 3d. Agregar el nuevo atributo al objeto usuario
+            $user->all_permissions = $uniquePermissions;
+
+            // Opcional: Si no quieres enviar las relaciones anidadas originales (roles, permissions)
+            // podrías ocultarlas o eliminarlas, pero las mantendremos por defecto.
+
+            return $user;
+        });
+
+        // 4. Retornar la respuesta con la colección modificada
+        return Inertia::render('permissions/Index', [
+            'permissions' => $permissions,
+            'roles' => $roles,
+            'users' => $users
+        ]);
     }
 
     /**

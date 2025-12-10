@@ -14,13 +14,10 @@ interface Props {
 const props = defineProps<Props>();
 
 const open = ref(false);
-
-console.log(props.user);
-
 // Lista de IDs seleccionados
 const form = useForm({
     userId: props.user?.id,
-    permissions: props.user?.permissions.map((p) => p.id), // Marca los permisos existentes
+    permissions: props.user?.all_permissions.map((p) => p.id), // Marca los permisos existentes
 });
 
 // Enviar

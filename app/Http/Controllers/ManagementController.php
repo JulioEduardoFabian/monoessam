@@ -18,7 +18,7 @@ class ManagementController extends Controller
     public function index()
     {
         return Inertia::render('management/Index', [
-            'mines' => Mine::with(['units', 'services'])->get(),
+            'mines' => Mine::with(['units', 'units.cafes', 'services'])->get(),
             'units' => Unit::with(['mine', 'mine.services', 'services'])->get(),
             'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services'])->get(),
             'services' => Service::all(),

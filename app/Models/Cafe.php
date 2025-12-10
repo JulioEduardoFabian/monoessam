@@ -47,4 +47,8 @@ class Cafe extends Model
     {
         return $this->hasMany(Guard::class);
     }
+    public function periods(): HasMany
+    {
+        return $this->hasMany(Period::class);
+    }
 }

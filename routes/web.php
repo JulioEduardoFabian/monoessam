@@ -14,14 +14,17 @@ use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\LogisticController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MineController;
+use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SubdealershipController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UsersController;
+use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,6 +44,8 @@ Route::get('/migrate', function () {
 });
 
 Route::get('/users', [UsersController::class, 'index']);
+Route::post('users', [UsersController::class, 'store'])->name('users');
+
 Route::get('/management', [ManagementController::class, 'index'])->name('management');
 Route::get('/providers', [ProviderController::class, 'index'])->name('providers');
 Route::get('/food', [FoodController::class, 'index'])->middleware(['auth', 'verified'])->name('food');
@@ -67,7 +72,7 @@ Route::post('/mine-serviceables', [MineController::class, 'mineServiceables'])->
 Route::post('/unit-serviceables', [UnitController::class, 'unitServiceables'])->name('unitServiceables');
 Route::post('/cafe-serviceables', [CafeController::class, 'cafeServiceables'])->name('cafeServiceables');
 
-Route::post('users', [UsersController::class, 'store'])->name('users');
+
 Route::get('roles', [RoleController::class, 'index']);
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('areas', [AreaController::class, 'store'])->name('areas');
@@ -88,6 +93,7 @@ Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->nam
 Route::post('mines', [MineController::class, 'store'])->name('mines');
 Route::post('units', [UnitController::class, 'store'])->name('units');
 Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
+Route::get('cafes/{id}', [CafeController::class, 'show'])->name('cafes.show');
 Route::post('sales', [SaleController::class, 'store'])->name('sales');
 Route::get('sales-pagination/{offset}', [SaleController::class, 'pagination'])->name('sales.pagination');
 Route::get('print-ticket/{ticketId}/{businessId}', [SaleController::class, 'printTest'])->name('sales');
@@ -115,10 +121,18 @@ Route::delete('delete-ingredient-category/{id}', [IngredientCategoryController::
 
 Route::post('insert-guards', [GuardController::class, 'store'])->name('insert-guards');
 Route::post('insert-guard-roles', [GuardController::class, 'insertGuardRoles'])->name('insert-guard-roles');
+Route::post('guard-roles-user', [GuardController::class, 'insertGuardRolesUser'])->name('insert-guard-roles-user');
+Route::delete('guard-roles-user/{id}', [GuardController::class, 'deleteGuardRolesUser'])->name('delete-guard-roles-user');
+Route::delete('guard-roles/{id}', [GuardController::class, 'deleteGuardRoles'])->name('delete-guard-roles');
 
-Route::get('staff', function () {
-    return Inertia::render('staff/Index');
-})->name('staff');
+Route::get('assigned-users/{id}', [UsersController::class, 'assignedUsers'])->name('assigned-users');
+
+Route::post('period', [PeriodController::class, 'store']);
+Route::delete('period/{id}', [PeriodController::class, 'destroy']);
+Route::put('period-user/{id}', [PeriodController::class, 'periodUser']);
+
+Route::get('staff', [StaffController::class, 'index'])->name('staff');
+Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
 
 Route::get('/qr/{id}', function ($id) {
     $arrayProducts = [
