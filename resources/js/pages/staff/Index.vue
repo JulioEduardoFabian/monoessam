@@ -5,7 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Role } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Edit3, Eye, Trash2 } from 'lucide-vue-next';
+import { Ban, Edit3, Eye, Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import FormUser from '../users/FormUser.vue';
 
@@ -29,6 +29,23 @@ const deleteStaff = async (staffId: string) => {
         staffComplete.value = staffComplete.value.filter((s) => s.id !== staffId);
     } catch (err) {
         console.error('Error al eliminar personal:', err);
+    }
+};
+
+const banStaff = async (staffId: string) => {
+    if (!confirm('Estás seguro de enviar a lista negra a este personal? Se perderán sus archivos y datos, excepto telefono, nombre y dni')) return;
+
+    try {
+        await axios
+            .get('/staff-ban/' + staffId)
+            .then((result) => {
+                staffComplete.value = result.data.staff;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    } catch (error) {
+        console.log(error);
     }
 };
 
@@ -76,7 +93,7 @@ watch(props, (newVal) => {
                             </td>
 
                             <td class="p-4">
-                                <Badge :class="p.status === 'Activo' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'">
+                                <Badge :class="p.status == 1 ? 'bg-green-500 text-white' : 'bg-zinc-500 text-white'">
                                     {{ p.status }}
                                 </Badge>
                             </td>
@@ -93,6 +110,15 @@ watch(props, (newVal) => {
 
                                     <Button variant="ghost" size="icon" class="text-red-600 hover:text-red-800" @click="deleteStaff(p.id)">
                                         <Trash2 class="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        class="text-zinc-600 hover:text-zinc-800"
+                                        @click="banStaff(p.id)"
+                                        v-if="p.status != 0"
+                                    >
+                                        <Ban class="h-4 w-4" />
                                     </Button>
                                 </div>
                             </td>

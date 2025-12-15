@@ -8,6 +8,7 @@ use App\Models\Staff_clothes;
 use App\Models\Staff_file;
 use App\Models\Staff_financial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
@@ -58,7 +59,7 @@ class StaffController extends Controller
             'civilstatus' => $request->civilstatus,
             'contactname' => $request->contactname,
             'contactcell' => $request->contactcell,
-            'status' => 0,
+            'status' => 1,
             'cafe_id' => $request->cafeId,
             'role_id' => $request->roleId
         ]);
@@ -144,7 +145,37 @@ class StaffController extends Controller
     public function destroy(string $id)
     {
         $staff = Staff::find($id);
-
+        $staff_files = Staff_file::where('staff_id', $id)->get();
+        foreach ($staff_files as $file) {
+            Storage::disk('public')->delete($file->file_path);
+        }
+        $staff_files->each->delete();
         $staff->delete();
+    }
+
+    public function banStaff(string $id)
+    {
+        $staff_files = Staff_file::where('staff_id', $id)->get();
+        $staff_financial = Staff_financial::where('staff_id', $id)->first();
+        $staff_clothes = Staff_clothes::where('staff_id', $id)->get();
+
+        foreach ($staff_files as $file) {
+            Storage::disk('public')->delete($file->file_path);
+        }
+
+        $staff_files->each->delete();
+        $staff_financial->delete();
+        $staff_clothes->each->delete();
+
+        $staff = Staff::find($id);
+        $staff->update([
+            'status' => 0
+        ]);
+
+        return response()->json([
+            'cafes' => Cafe::with('unit')->get(),
+            'staff' => Staff::with('staff_files')->get(),
+            'roles' => Role::all()
+        ]);
     }
 }

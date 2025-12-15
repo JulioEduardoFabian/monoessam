@@ -34,14 +34,14 @@ Route::get('/', function () {
     return Inertia::render('auth/Login');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::get('/migrate', function () {
     Artisan::call('migrate');
     dd('migrated!');
 });
+
+Route::get('dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/users', [UsersController::class, 'index']);
 Route::post('users', [UsersController::class, 'store'])->name('users');
@@ -77,7 +77,7 @@ Route::get('roles', [RoleController::class, 'index']);
 Route::post('roles', [RoleController::class, 'store'])->name('roles');
 Route::post('areas', [AreaController::class, 'store'])->name('areas');
 
-Route::get('permissions', [PermissionController::class, 'index']);
+Route::get('permissions', [PermissionController::class, 'index'])->middleware(['auth', 'verified']);
 Route::post('permissions', [PermissionController::class, 'store'])->name('permissions');
 
 Route::get('users-ban/{id}', [UsersController::class, 'banUser'])->name('users.ban');
@@ -134,6 +134,7 @@ Route::put('period-user/{id}', [PeriodController::class, 'periodUser']);
 Route::get('staff', [StaffController::class, 'index'])->name('staff');
 Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
 Route::delete('staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+Route::get('staff-ban/{id}', [StaffController::class, 'banStaff'])->name('staff.ban');
 
 Route::get('/qr/{id}', function ($id) {
     $arrayProducts = [
