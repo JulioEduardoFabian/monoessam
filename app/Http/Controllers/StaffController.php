@@ -197,11 +197,13 @@ class StaffController extends Controller
             'status' => $request->status
         ]);
 
-        $observation = Observation::create([
-            'staff_id' => $request->staff_id,
-            'user_id' => $request->user_id,
-            'observation' => $request->observation,
-            'date' => date('Y-m-d')
-        ]);
+        if ($staff->observation != '') {
+            $observation = Observation::create([
+                'staff_id' => $request->staff_id,
+                'user_id' => $request->user_id,
+                'observation' => $request->observation,
+                'date' => date('Y-m-d')
+            ]);
+        }
     }
 }

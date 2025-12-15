@@ -45,7 +45,7 @@ const statusesStaff = {
 
 const form = useForm({
     staff_id: props.staff.id,
-    status: props.staff.current_status,
+    status: props.staff.status,
     observation: '',
     user_id: page.props.auth.user?.id,
 });
@@ -55,6 +55,7 @@ const saveStatusChange = () => {
         onSuccess: () => {
             emit('save');
             form.reset();
+            form.status = props.staff.status;
             //open.value = false;
         },
     });
