@@ -88,6 +88,7 @@ const asignRolesToGuard = (guardId: number, roles: Role[]) => {
     console.log(`Asignar roles al guardia ID ${guardId}:`, roles);
     const guard = guardsSelected.value.find((g) => g.id === guardId);
     if (guard) {
+        guard.assigned_roles = [];
         roles.forEach((role) => {
             const newRole = {
                 role: {
