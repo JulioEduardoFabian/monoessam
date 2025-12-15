@@ -93,7 +93,7 @@ const form = useForm({
     salary: 0.0,
     observations: '',
     fondo: 0,
-    roleId: 0,
+    roleId: null,
     unitSelectedText: '',
 });
 
@@ -119,7 +119,7 @@ const prevTab = () => {
 const handleSubmit = () => {
     form.prendas = prendasFijas.value;
 
-    form.post(route('staff'), {
+    form.post(route('staff.store'), {
         onSuccess: (res) => {
             form.reset();
             isOpen.value = false;

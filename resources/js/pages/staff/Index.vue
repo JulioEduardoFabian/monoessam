@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Ban, Edit3, Eye, Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import FormUser from '../users/FormUser.vue';
+import ChangeStatusModal from './ChangeStatusModal.vue';
 
 interface Props {
     cafes: Cafe[];
@@ -37,7 +38,7 @@ const banStaff = async (staffId: string) => {
 
     try {
         await axios
-            .get('/staff-ban/' + staffId)
+            .get('/staff/ban/' + staffId)
             .then((result) => {
                 staffComplete.value = result.data.staff;
             })
@@ -48,6 +49,36 @@ const banStaff = async (staffId: string) => {
         console.log(error);
     }
 };
+
+const showStatus = (statusId: number) => {
+    const statusesStaff = {
+        0: 'Lista negra',
+        1: 'En proceso',
+        2: 'Contratado',
+        3: 'Cesado',
+        4: 'Retirado',
+        5: 'Abandono',
+        6: 'Cumplió Contrato',
+    };
+
+    return statusesStaff[statusId];
+};
+
+const showColor = (statusId: number) => {
+    const statusesStaffColor = {
+        0: 'bg-zinc-500 text-white',
+        1: 'bg-green-500 text-white',
+        2: 'bg-green-500 text-white',
+        3: 'bg-red-500 text-white',
+        4: 'bg-red-500 text-white',
+        5: 'bg-red-500 text-white',
+        6: 'bg-blue-500 text-white',
+    };
+
+    return statusesStaffColor[statusId];
+};
+
+const changeStatus = () => {};
 
 watch(props, (newVal) => {
     staffComplete.value = props.staff;
@@ -93,22 +124,29 @@ watch(props, (newVal) => {
                             </td>
 
                             <td class="p-4">
-                                <Badge :class="p.status == 1 ? 'bg-green-500 text-white' : 'bg-zinc-500 text-white'">
-                                    {{ p.status }}
+                                <Badge :class="showColor(p.status)" class="cursor-pointer" @click="changeStatus()">
+                                    {{ showStatus(p.status) }}
                                 </Badge>
                             </td>
 
                             <td class="p-4 text-center">
                                 <div class="flex items-center justify-center gap-3">
-                                    <Button variant="ghost" size="icon" class="text-blue-600 hover:text-blue-800">
+                                    <ChangeStatusModal :staff="p" />
+
+                                    <Button variant="ghost" size="icon" class="cursor-pointer text-blue-600 hover:text-blue-800">
                                         <Eye class="h-4 w-4" />
                                     </Button>
 
-                                    <Button variant="ghost" size="icon" class="text-yellow-600 hover:text-yellow-800">
+                                    <Button variant="ghost" size="icon" class="cursor-pointer text-yellow-600 hover:text-yellow-800">
                                         <Edit3 class="h-4 w-4" />
                                     </Button>
 
-                                    <Button variant="ghost" size="icon" class="text-red-600 hover:text-red-800" @click="deleteStaff(p.id)">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        class="cursor-pointer text-red-600 hover:text-red-800"
+                                        @click="deleteStaff(p.id)"
+                                    >
                                         <Trash2 class="h-4 w-4" />
                                     </Button>
                                     <Button

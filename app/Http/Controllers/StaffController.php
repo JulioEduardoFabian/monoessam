@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cafe;
+use App\Models\Observation;
 use App\Models\Staff;
 use App\Models\Staff_clothes;
 use App\Models\Staff_file;
@@ -21,7 +22,13 @@ class StaffController extends Controller
     {
         return Inertia::render('staff/Index', [
             'cafes' => Cafe::with('unit')->get(),
-            'staff' => Staff::with('staff_files')->get(),
+            'staff' => Staff::with([
+                'staff_files',
+                'observations' => function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                },
+                'observations.user'
+            ])->where('status', '!=', 0)->get(),
             'roles' => Role::all()
         ]);
     }
@@ -112,7 +119,7 @@ class StaffController extends Controller
             }
         }
 
-        return redirect()->route('staff');
+        return redirect()->route('staff.index');
     }
 
     /**
@@ -164,7 +171,11 @@ class StaffController extends Controller
         }
 
         $staff_files->each->delete();
-        $staff_financial->delete();
+
+        if ($staff_financial) {
+            $staff_financial->delete();
+        }
+
         $staff_clothes->each->delete();
 
         $staff = Staff::find($id);
@@ -174,8 +185,23 @@ class StaffController extends Controller
 
         return response()->json([
             'cafes' => Cafe::with('unit')->get(),
-            'staff' => Staff::with('staff_files')->get(),
+            Staff::with(['staff_files', 'observations', 'observations.user'])->where('status', '!=', 0)->get(),
             'roles' => Role::all()
+        ]);
+    }
+
+    public function updateStatusStaff(Request $request)
+    {
+        $staff = Staff::find($request->staff_id);
+        $staff->update([
+            'status' => $request->status
+        ]);
+
+        $observation = Observation::create([
+            'staff_id' => $request->staff_id,
+            'user_id' => $request->user_id,
+            'observation' => $request->observation,
+            'date' => date('Y-m-d')
         ]);
     }
 }

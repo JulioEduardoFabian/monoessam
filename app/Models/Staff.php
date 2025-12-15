@@ -32,4 +32,9 @@ class Staff extends Model
     {
         return $this->hasMany(Staff_file::class);
     }
+
+    public function observations(): HasMany
+    {
+        return $this->hasMany(Observation::class);
+    }
 }

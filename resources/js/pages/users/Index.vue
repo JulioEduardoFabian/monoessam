@@ -44,13 +44,13 @@ watch(
     (newVal) => {
         // Cambió la mina
         if (newVal.mine !== null && newVal.mine !== undefined) {
-            const mineSelected = props.mines.find((mine) => String(mine.id) === String(newVal.mine));
+            const mineSelected: any = props.mines.find((mine) => String(mine.id) === String(newVal.mine));
             selectedUnits.value = mineSelected ? mineSelected.units : [];
         }
 
         // Cambió la unidad
         if (newVal.unit) {
-            const unitSelected = selectedUnits.value.find((unit) => unit.id == newVal.unit);
+            const unitSelected: any = selectedUnits.value.find((unit) => unit.id == newVal.unit);
             selectedCafes.value = unitSelected ? unitSelected.cafes : [];
         }
 
@@ -85,7 +85,6 @@ const assignGuards = (guards: Cafe[]) => {
 };
 
 const asignRolesToGuard = (guardId: number, roles: Role[]) => {
-    console.log(`Asignar roles al guardia ID ${guardId}:`, roles);
     const guard = guardsSelected.value.find((g) => g.id === guardId);
     if (guard) {
         guard.assigned_roles = [];
@@ -102,7 +101,6 @@ const asignRolesToGuard = (guardId: number, roles: Role[]) => {
             guard.assigned_roles.push(newRole);
         });
     }
-    console.log(guard);
 };
 
 const deleteGuardRole = (guardId: number, roleId: number) => {

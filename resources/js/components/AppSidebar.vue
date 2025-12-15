@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Building2, ClipboardList, House, User, Utensils } from 'lucide-vue-next';
+import { Building2, ClipboardList, HandHelping, House, User, Users, Utensils } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const iconMap = {
@@ -14,6 +14,8 @@ const iconMap = {
     Utensils,
     ClipboardList,
     Building2,
+    HandHelping,
+    Users,
 };
 
 const page = usePage();
