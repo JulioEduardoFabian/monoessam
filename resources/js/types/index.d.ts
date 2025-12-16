@@ -72,7 +72,11 @@ export interface Unit {
 export interface Cafe {
     id: number;
     name: string;
-    cafe_id: number;
+    unit_id: number;
+    unit: {
+        id: number;
+        name: string;
+    };
 }
 
 export interface Dish {

@@ -44,29 +44,6 @@ defineProps<Props>();
                     </Table>
                 </Card>
             </div>
-            <div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Card
-                    v-for="permission in permissions"
-                    :key="permission.id"
-                    class="border-sidebar-border/50 dark:border-sidebar-border/70 rounded-2xl border shadow-sm transition hover:shadow-md"
-                >
-                    <div class="flex flex-col gap-3 p-4">
-                        <h3 class="text-foreground text-lg font-semibold">
-                            {{ permission.name }}
-                        </h3>
-
-                        <div class="text-muted-foreground flex items-center justify-between text-sm">
-                            <span class="font-medium">Estado:</span>
-                            <span class="text-green-600 dark:text-green-400">Activo</span>
-                        </div>
-
-                        <div class="text-muted-foreground flex items-center justify-between text-sm">
-                            <span class="font-medium">Área:</span>
-                            <span>{{ permission.roles ?? '—' }}</span>
-                        </div>
-                    </div>
-                </Card>
-            </div>
         </div>
     </AppLayout>
 </template>

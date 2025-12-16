@@ -41,7 +41,7 @@ class RoleController extends Controller
 
         $role->areas()->sync($request->area_id);
 
-        return to_route('users');
+        return to_route('roles');
     }
 
     /**

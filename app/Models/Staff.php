@@ -24,11 +24,17 @@ class Staff extends Model
         'contactname',
         'contactcell',
         'status',
-        'cafe_id'
+        'cafe_id',
+        'role_id'
     ];
 
     public function staff_files(): HasMany
     {
         return $this->hasMany(Staff_file::class);
+    }
+
+    public function observations(): HasMany
+    {
+        return $this->hasMany(Observation::class);
     }
 }

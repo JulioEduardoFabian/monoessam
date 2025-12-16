@@ -48,7 +48,7 @@ onMounted(() => {
 // Obtener todos los servicios
 const fetchServices = async () => {
     try {
-        const response = await axios.get('services-list');
+        const response = await axios.get('services/list');
         services.value = response.data;
     } catch (error) {
         console.error('Error fetching services:', error);

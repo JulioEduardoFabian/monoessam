@@ -19,7 +19,7 @@ const searchDish = (e) => {
     }
 
     axios
-        .get('/search-dish/' + e.target.value)
+        .get('/dishes/search/' + e.target.value)
         .then((result) => {
             dishesSearched.value = result.data;
         })

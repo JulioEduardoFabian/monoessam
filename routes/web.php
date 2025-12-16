@@ -24,139 +24,229 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SubdealershipController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UsersController;
-use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
+// ============================================================================
+// RUTAS PÚBLICAS
+// ============================================================================
 Route::get('/', function () {
     return Inertia::render('auth/Login');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+// Utilidad de desarrollo (considerar remover en producción)
 Route::get('/migrate', function () {
     Artisan::call('migrate');
     dd('migrated!');
 });
 
-Route::get('/users', [UsersController::class, 'index']);
-Route::post('users', [UsersController::class, 'store'])->name('users');
+// ============================================================================
+// RUTAS AUTENTICADAS
+// ============================================================================
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::get('/management', [ManagementController::class, 'index'])->name('management');
-Route::get('/providers', [ProviderController::class, 'index'])->name('providers');
-Route::get('/food', [FoodController::class, 'index'])->middleware(['auth', 'verified'])->name('food');
-Route::get('/businesses', [BusinessController::class, 'index'])->name('businesses');
-Route::post('/business-services', [BusinessController::class, 'businessServices'])->name('businessServices');
-Route::get('/structure-menu', [FoodController::class, 'structure'])->name('structure-menu');
-Route::get('/logistics', [LogisticController::class, 'index'])->name('logistics');
-Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients');
-//Route::get('/sales', [SaleController::class, 'index'])->name('sales');
+    // Dashboard
+    Route::get('dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 
-Route::post('/providers', [ProviderController::class, 'store'])->name('providers.insert');
-Route::post('/providers-assign', [ProviderController::class, 'assign'])->name('providers.assign');
+    // ========================================================================
+    // GESTIÓN DE USUARIOS Y PERMISOS
+    // ========================================================================
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::post('/', [UsersController::class, 'store'])->name('store');
+        Route::get('ban/{id}', [UsersController::class, 'banUser'])->name('ban');
+        Route::get('blacklist/{id}', [UsersController::class, 'blacklist'])->name('blacklist');
+        Route::get('assigned/{id}', [UsersController::class, 'assignedUsers'])->name('assigned');
+    });
 
-Route::get('/dinners', [DinnerController::class, 'index'])->name('dinners');
-Route::post('/dinners-excel', [DinnerController::class, 'excel'])->name('dinners.excel');
-Route::post('/dinners', [DinnerController::class, 'store'])->name('dinners.insert');
-Route::get('/services', [ServiceController::class, 'index'])->name('services');
-Route::get('/services-list', [ServiceController::class, 'list']);
-Route::post('/services', [ServiceController::class, 'store'])->name('services.insert');
-Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
-Route::put('/services-prices', [ServiceController::class, 'updatePrices'])->name('services.update-prices');
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('index');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::post('permissions', [PermissionController::class, 'rolePermissions'])->name('permissions');
+        Route::post('user', [PermissionController::class, 'roleUser'])->name('user');
+    });
 
-Route::post('/mine-serviceables', [MineController::class, 'mineServiceables'])->name('mineServiceables');
-Route::post('/unit-serviceables', [UnitController::class, 'unitServiceables'])->name('unitServiceables');
-Route::post('/cafe-serviceables', [CafeController::class, 'cafeServiceables'])->name('cafeServiceables');
+    Route::prefix('permissions')->name('permissions.')->group(function () {
+        Route::get('/', [PermissionController::class, 'index'])->name('index');
+        Route::post('/', [PermissionController::class, 'store'])->name('store');
+        Route::delete('{id}', [PermissionController::class, 'destroy'])->name('destroy');
+        Route::post('user/{id}', [PermissionController::class, 'userPermissions'])->name('user.update');
+    });
 
+    // ========================================================================
+    // GUARDIAS Y ROLES DE GUARDIA
+    // ========================================================================
+    Route::prefix('guards')->name('guards.')->group(function () {
+        Route::post('/', [GuardController::class, 'store'])->name('store');
+        Route::post('roles', [GuardController::class, 'insertGuardRoles'])->name('roles.store');
+        Route::delete('roles/{id}', [GuardController::class, 'deleteGuardRoles'])->name('roles.destroy');
+        Route::post('roles/user', [GuardController::class, 'insertGuardRolesUser'])->name('roles.user.store');
+        Route::delete('roles/user/{id}', [GuardController::class, 'deleteGuardRolesUser'])->name('roles.user.destroy');
+    });
 
-Route::get('roles', [RoleController::class, 'index']);
-Route::post('roles', [RoleController::class, 'store'])->name('roles');
-Route::post('areas', [AreaController::class, 'store'])->name('areas');
+    // ========================================================================
+    // PERSONAL
+    // ========================================================================
+    Route::prefix('staff')->name('staff.')->group(function () {
+        Route::get('/', [StaffController::class, 'index'])->name('index');
+        Route::post('/', [StaffController::class, 'store'])->name('store');
+        Route::delete('{id}', [StaffController::class, 'destroy'])->name('destroy');
+        Route::get('ban/{id}', [StaffController::class, 'banStaff'])->name('ban');
+        Route::post('/update-status', [StaffController::class, 'updateStatusStaff'])->name('update-status');
+    });
 
-Route::get('permissions', [PermissionController::class, 'index']);
-Route::post('permissions', [PermissionController::class, 'store'])->name('permissions');
+    // ========================================================================
+    // ÁREAS Y UBICACIONES
+    // ========================================================================
+    Route::prefix('areas')->name('areas.')->group(function () {
+        Route::post('/', [AreaController::class, 'store'])->name('store');
+        Route::delete('{id}', [AreaController::class, 'destroy'])->name('destroy');
+    });
 
-Route::get('users-ban/{id}', [UsersController::class, 'banUser'])->name('users.ban');
+    Route::prefix('mines')->name('mines.')->group(function () {
+        Route::post('/', [MineController::class, 'store'])->name('store');
+        Route::get('search/{word}', [MineController::class, 'search'])->name('search');
+        Route::post('serviceables', [MineController::class, 'mineServiceables'])->name('serviceables');
+    });
 
-Route::get('blacklist/{id}', [UsersController::class, 'blacklist'])->name('blacklist');
+    Route::prefix('units')->name('units.')->group(function () {
+        Route::post('/', [UnitController::class, 'store'])->name('store');
+        Route::get('search/{word}', [UnitController::class, 'search'])->name('search');
+        Route::post('serviceables', [UnitController::class, 'unitServiceables'])->name('serviceables');
+    });
 
-Route::delete('areas/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
+    Route::prefix('cafes')->name('cafes.')->group(function () {
+        Route::post('/', [CafeController::class, 'store'])->name('store');
+        Route::get('{id}', [CafeController::class, 'show'])->name('show');
+        Route::post('serviceables', [CafeController::class, 'cafeServiceables'])->name('serviceables');
+    });
 
-Route::get('sales-report/{dateInitial}/{datFinal}', [SaleController::class, 'report']);
+    Route::prefix('dealerships')->name('dealerships.')->group(function () {
+        Route::get('/', [DealershipController::class, 'index'])->name('index');
+        Route::post('/', [DealershipController::class, 'store'])->name('store');
+    });
 
-Route::delete('permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+    Route::prefix('subdealerships')->name('subdealerships.')->group(function () {
+        Route::post('/', [SubdealershipController::class, 'store'])->name('store');
+    });
 
-Route::post('mines', [MineController::class, 'store'])->name('mines');
-Route::post('units', [UnitController::class, 'store'])->name('units');
-Route::post('cafes', [CafeController::class, 'store'])->name('cafes');
-Route::get('cafes/{id}', [CafeController::class, 'show'])->name('cafes.show');
-Route::post('sales', [SaleController::class, 'store'])->name('sales');
-Route::get('sales-pagination/{offset}', [SaleController::class, 'pagination'])->name('sales.pagination');
-Route::get('print-ticket/{ticketId}/{businessId}', [SaleController::class, 'printTest'])->name('sales');
+    // ========================================================================
+    // GESTIÓN DE ALIMENTOS
+    // ========================================================================
+    Route::prefix('food')->name('food.')->group(function () {
+        Route::get('/', [FoodController::class, 'index'])->name('index');
+        Route::get('structure-menu', [FoodController::class, 'structure'])->name('structure');
+    });
 
-Route::get('dealerships', [DealershipController::class, 'index']);
-Route::post('dealerships', [DealershipController::class, 'store'])->name('dealerships');
-Route::post('subdealerships', [SubdealershipController::class, 'store'])->name('subdealerships');
+    Route::prefix('dishes')->name('dishes.')->group(function () {
+        Route::get('search/{word}', [DishController::class, 'search'])->name('search');
+    });
 
-Route::get('search-mine/{word}', [MineController::class, 'search'])->name('mines.search');
-Route::get('search-unit/{word}', [UnitController::class, 'search'])->name('units.search');
-Route::get('search-dish/{word}', [DishController::class, 'search'])->name('units.search');
-Route::get('search-dinner/{word}/{id}', [DinnerController::class, 'search'])->name('units.search');
+    Route::prefix('dish-categories')->name('dish-categories.')->group(function () {
+        Route::post('/', [DishCategoryController::class, 'store'])->name('store');
+        Route::delete('{id}', [DishCategoryController::class, 'destroy'])->name('destroy');
+    });
 
-Route::get('print-test', [CafeController::class, 'printTest']);
+    Route::prefix('ingredients')->name('ingredients.')->group(function () {
+        Route::get('/', [IngredientController::class, 'index'])->name('index');
+    });
 
-Route::post('role-permissions', [PermissionController::class, 'rolePermissions'])->name('role-permissions');
-Route::post('role-user', [PermissionController::class, 'roleUser'])->name('role-user');
-Route::post('user.permissions.update/{id}', [PermissionController::class, 'userPermissions'])->name('user.permissions.update');
+    Route::prefix('ingredient-categories')->name('ingredient-categories.')->group(function () {
+        Route::post('/', [IngredientCategoryController::class, 'store'])->name('store');
+        Route::delete('{id}', [IngredientCategoryController::class, 'destroy'])->name('destroy');
+    });
 
-Route::post('dish-category', [DishCategoryController::class, 'store'])->name('dish-category-insert');
-Route::post('ingredient-category', [IngredientCategoryController::class, 'store'])->name('ingredient-category-insert');
+    // ========================================================================
+    // CENAS Y COMIDAS
+    // ========================================================================
+    Route::prefix('dinners')->name('dinners.')->group(function () {
+        Route::get('/', [DinnerController::class, 'index'])->name('index');
+        Route::post('/', [DinnerController::class, 'store'])->name('store');
+        Route::post('excel', [DinnerController::class, 'excel'])->name('excel');
+        Route::get('search/{word}/{id}', [DinnerController::class, 'search'])->name('search');
+    });
 
-Route::delete('delete-dish-category/{id}', [DishCategoryController::class, 'destroy']);
-Route::delete('delete-ingredient-category/{id}', [IngredientCategoryController::class, 'destroy']);
+    // ========================================================================
+    // SERVICIOS
+    // ========================================================================
+    Route::prefix('services')->name('services.')->group(function () {
+        Route::get('/', [ServiceController::class, 'index'])->name('index');
+        Route::get('list', [ServiceController::class, 'list'])->name('list');
+        Route::post('/', [ServiceController::class, 'store'])->name('store');
+        Route::delete('{id}', [ServiceController::class, 'destroy'])->name('destroy');
+        Route::put('prices', [ServiceController::class, 'updatePrices'])->name('update-prices');
+    });
 
-Route::post('insert-guards', [GuardController::class, 'store'])->name('insert-guards');
-Route::post('insert-guard-roles', [GuardController::class, 'insertGuardRoles'])->name('insert-guard-roles');
-Route::post('guard-roles-user', [GuardController::class, 'insertGuardRolesUser'])->name('insert-guard-roles-user');
-Route::delete('guard-roles-user/{id}', [GuardController::class, 'deleteGuardRolesUser'])->name('delete-guard-roles-user');
-Route::delete('guard-roles/{id}', [GuardController::class, 'deleteGuardRoles'])->name('delete-guard-roles');
+    // ========================================================================
+    // PROVEEDORES
+    // ========================================================================
+    Route::prefix('providers')->name('providers.')->group(function () {
+        Route::get('/', [ProviderController::class, 'index'])->name('index');
+        Route::post('/', [ProviderController::class, 'store'])->name('store');
+        Route::post('assign', [ProviderController::class, 'assign'])->name('assign');
+    });
 
-Route::get('assigned-users/{id}', [UsersController::class, 'assignedUsers'])->name('assigned-users');
+    // ========================================================================
+    // NEGOCIOS
+    // ========================================================================
+    Route::prefix('businesses')->name('businesses.')->group(function () {
+        Route::get('/', [BusinessController::class, 'index'])->name('index');
+        Route::post('services', [BusinessController::class, 'businessServices'])->name('services');
+    });
 
-Route::post('period', [PeriodController::class, 'store']);
-Route::delete('period/{id}', [PeriodController::class, 'destroy']);
-Route::put('period-user/{id}', [PeriodController::class, 'periodUser']);
+    // ========================================================================
+    // VENTAS
+    // ========================================================================
+    Route::prefix('sales')->name('sales.')->group(function () {
+        Route::post('/', [SaleController::class, 'store'])->name('store');
+        Route::get('pagination/{offset}', [SaleController::class, 'pagination'])->name('pagination');
+        Route::get('report/{dateInitial}/{datFinal}', [SaleController::class, 'report'])->name('report');
+        Route::get('print-ticket/{ticketId}/{businessId}', [SaleController::class, 'printTest'])->name('print-ticket');
+    });
 
-Route::get('staff', [StaffController::class, 'index'])->name('staff');
-Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
+    // ========================================================================
+    // PERÍODOS
+    // ========================================================================
+    Route::prefix('periods')->name('periods.')->group(function () {
+        Route::post('/', [PeriodController::class, 'store'])->name('store');
+        Route::delete('{id}', [PeriodController::class, 'destroy'])->name('destroy');
+        Route::put('user/{id}', [PeriodController::class, 'periodUser'])->name('user');
+    });
 
-Route::get('/qr/{id}', function ($id) {
-    $arrayProducts = [
-        1 => ['id' => 1, 'name' => 'Laptop Dell XPS 13', 'url' => '/products/1'],
-        2 => ['id' => 2, 'name' => 'Proyector Epson', 'url' => '/products/2'],
-        3 => ['id' => 3, 'name' => 'Impresora HP LaserJet', 'url' => '/products/3'],
-        4 => ['id' => 4, 'name' => 'Monitor Samsung 24"', 'url' => '/products/4'],
-        5 => ['id' => 5, 'name' => 'Teclado Mecánico Logitech', 'url' => '/products/5'],
-        6 => ['id' => 6, 'name' => 'Mouse Inalámbrico Logitech', 'url' => '/products/6'],
-        7 => ['id' => 7, 'name' => 'Disco Duro Externo Seagate', 'url' => '/products/7'],
-        8 => ['id' => 8, 'name' => 'Router TP-Link Archer C6', 'url' => '/products/8'],
-    ];
+    // ========================================================================
+    // OTRAS PÁGINAS
+    // ========================================================================
+    Route::get('management', [ManagementController::class, 'index'])->name('management');
+    Route::get('logistics', [LogisticController::class, 'index'])->name('logistics');
 
-    // Verificar si el producto existe
-    if (!array_key_exists($id, $arrayProducts)) {
-        return response()->json(['error' => 'Product not found'], 404);
-    }
+    // ========================================================================
+    // UTILIDADES
+    // ========================================================================
+    Route::get('qr/{id}', function ($id) {
+        $arrayProducts = [
+            1 => ['id' => 1, 'name' => 'Laptop Dell XPS 13', 'url' => '/products/1'],
+            2 => ['id' => 2, 'name' => 'Proyector Epson', 'url' => '/products/2'],
+            3 => ['id' => 3, 'name' => 'Impresora HP LaserJet', 'url' => '/products/3'],
+            4 => ['id' => 4, 'name' => 'Monitor Samsung 24"', 'url' => '/products/4'],
+            5 => ['id' => 5, 'name' => 'Teclado Mecánico Logitech', 'url' => '/products/5'],
+            6 => ['id' => 6, 'name' => 'Mouse Inalámbrico Logitech', 'url' => '/products/6'],
+            7 => ['id' => 7, 'name' => 'Disco Duro Externo Seagate', 'url' => '/products/7'],
+            8 => ['id' => 8, 'name' => 'Router TP-Link Archer C6', 'url' => '/products/8'],
+        ];
 
-    // Redirigir a la URL del producto
-    //return redirect()->to($arrayProducts[$id]['url']);
+        if (!array_key_exists($id, $arrayProducts)) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
 
-    // Alternativa: Devolver los datos del producto como JSON
-    return response()->json($arrayProducts[$id]);
+        return response()->json($arrayProducts[$id]);
+    })->name('qr.show');
 });
 
+// ============================================================================
+// ARCHIVOS DE RUTAS ADICIONALES
+// ============================================================================
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

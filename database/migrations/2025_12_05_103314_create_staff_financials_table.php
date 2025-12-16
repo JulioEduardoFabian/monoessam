@@ -15,23 +15,22 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('staff_id')->nullable();
             $table->foreign('staff_id')->references('id')->on('staff')->cascadeOnDelete();
-            $table->string('district');
-            $table->string('province');
-            $table->string('department');
+            $table->string('district')->nullable();
+            $table->string('province')->nullable();
+            $table->string('department')->nullable();
             $table->date('start_date')->nullable();
-            $table->tinyInteger('children');
+            $table->tinyInteger('children')->nullable();
             $table->string('afp')->nullable();
             $table->string('onp')->nullable();
-            $table->text('position');
-            $table->string('address');
-            $table->string('account_number');
-            $table->string('system_work');
-            $table->string('replacement');
+            $table->string('address')->nullable();
+            $table->string('account_number')->nullable();
+            $table->string('system_work')->nullable();
+            $table->string('replacement')->nullable();
             $table->unsignedBigInteger('unit_id')->nullable();
             $table->foreign('unit_id')->references('id')->on('units')->cascadeOnDelete();
+            $table->double('salary')->nullable();
+            $table->text('observations')->nullable();
             $table->timestamps();
-            $table->double('salary');
-            $table->text('observations');
         });
     }
 

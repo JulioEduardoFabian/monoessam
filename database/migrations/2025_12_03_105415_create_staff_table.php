@@ -27,6 +27,8 @@ return new class extends Migration
             $table->tinyInteger('status')->nullable();
             $table->unsignedBigInteger('cafe_id')->nullable();
             $table->foreign('cafe_id')->references('id')->on('cafes')->cascadeOnDelete();
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->foreign('role_id')->references('id')->on('roles')->cascadeOnDelete();
             $table->timestamps();
         });
     }
