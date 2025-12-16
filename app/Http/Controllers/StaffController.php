@@ -53,7 +53,6 @@ class StaffController extends Controller
             'cell' => 'required'
         ]);
 
-
         $staff = Staff::create([
             'name' => $request->name,
             'dni' => $request->dni,
@@ -67,15 +66,14 @@ class StaffController extends Controller
             'contactname' => $request->contactname,
             'contactcell' => $request->contactcell,
             'status' => 1,
-            'cafe_id' => $request->cafeId,
-            'role_id' => $request->roleId
+            'cafe_id' => $request->cafeId == 0 ? null : $request->cafeId,
+            'role_id' => $request->roleId == 0 ? null : $request->roleId
         ]);
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $index => $file) {
                 $originalName = $file->getClientOriginalName();
                 $chunksName = explode("_", $originalName);
-
 
                 $fileName = time() . '_' . $originalName;
                 $filePath = $file->storeAs('files', $fileName, 'public');
@@ -85,7 +83,8 @@ class StaffController extends Controller
                 $staff_file = Staff_file::create([
                     'staff_id' => $staff->id,
                     'file_type' => $chunksName[0], // You need to determine this differently
-                    'file_path' => $filePath
+                    'file_path' => $filePath,
+                    'expiration_date' => $request->filesData[$index]['expirationDate'] == '-' ? null : $request->filesData[$index]['expirationDate']
                 ]);
             }
         }

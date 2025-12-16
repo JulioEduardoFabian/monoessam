@@ -7,8 +7,8 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Ban, Edit3, Eye, Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
-import FormUser from '../users/FormUser.vue';
 import ChangeStatusModal from './ChangeStatusModal.vue';
+import StaffRegistrationDialog from './StaffRegistrationDialog.vue';
 
 interface Props {
     cafes: Cafe[];
@@ -91,7 +91,7 @@ watch(props, (newVal) => {
         <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-semibold tracking-tight">Personal</h1>
-                <FormUser :cafes="props.cafes" :roles="props.roles" />
+                <StaffRegistrationDialog :cafes="props.cafes" :roles="props.roles" />
             </div>
 
             <div class="bg-card rounded-xl border shadow-sm">

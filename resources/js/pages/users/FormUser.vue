@@ -120,7 +120,7 @@ const handleSubmit = () => {
     form.prendas = prendasFijas.value;
 
     form.post(route('staff.store'), {
-        onSuccess: (res) => {
+        onSuccess: () => {
             form.reset();
             isOpen.value = false;
             activeTab.value = 'personal';
