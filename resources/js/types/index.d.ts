@@ -142,4 +142,30 @@ export interface TimePeriod {
     statusColor: string; // Ejemplo para el color de la insignia
 }
 
+export interface Staff {
+    id: number;
+    name: string;
+    dni: string;
+    cell: string;
+    birthdate: Date;
+    age: number;
+    sex: number;
+    email: string;
+    country: string;
+    civilstatus: number;
+    contactname: string;
+    contactcell: string;
+    status: number;
+    cafe_id: number;
+    role_id: number;
+    staff_files?: StaffFile[];
+}
+
+export interface StaffFile {
+    id: number;
+    file_path: string;
+    file_type: string;
+    expiration_data: Date;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Staff extends Model
@@ -36,5 +37,10 @@ class Staff extends Model
     public function observations(): HasMany
     {
         return $this->hasMany(Observation::class);
+    }
+
+    public function cafe(): BelongsTo
+    {
+        return $this->belongsTo(Cafe::class);
     }
 }

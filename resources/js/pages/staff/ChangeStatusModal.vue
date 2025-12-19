@@ -16,7 +16,7 @@ interface StatusHistory {
 interface Staff {
     id: number;
     name: string;
-    current_status: number;
+    status: number;
     status_history?: StatusHistory[];
 }
 
