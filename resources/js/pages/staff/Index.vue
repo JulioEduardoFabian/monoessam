@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import Input from '@/components/ui/input/Input.vue';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Role, Staff } from '@/types';
@@ -77,7 +76,7 @@ watch(props, () => {
                 <StaffRegistrationDialog :cafes="props.cafes" :roles="props.roles" />
             </div>
 
-            <div class="flex items-center">
+            <!-- <div class="flex items-center">
                 <Input type="text" placeholder="Buscar personal por dni o nombre"></Input>
                 <select
                     id="status"
@@ -88,7 +87,7 @@ watch(props, () => {
                     </option>
                 </select>
                 <Button variant="default" class="ms-2 cursor-pointer bg-blue-600 text-white hover:bg-blue-700">Buscar</Button>
-            </div>
+            </div> -->
 
             <div class="bg-card rounded-xl border shadow-sm">
                 <table class="w-full border-collapse">
