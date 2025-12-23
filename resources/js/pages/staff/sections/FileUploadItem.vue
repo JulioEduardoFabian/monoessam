@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input';
+import { ref } from 'vue';
 
 interface Props {
     file: {
@@ -15,7 +16,15 @@ interface Emits {
 }
 
 defineProps<Props>();
+
 const emit = defineEmits<Emits>();
+
+const nameFile = ref(null);
+
+const manageFile = (event: Event) => {
+    nameFile.value = (event.target as HTMLInputElement).files[0]?.name || '';
+    emit('upload', event, props.file.label);
+};
 </script>
 
 <template>
@@ -36,19 +45,13 @@ const emit = defineEmits<Emits>();
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                 <!-- Input File con feedback visual -->
                 <div class="relative">
-                    <Input
-                        type="file"
-                        :id="`file-${index}`"
-                        class="hidden"
-                        accept="application/pdf, image/jpeg"
-                        @change="emit('upload', $event, file.label)"
-                    />
+                    <Input type="file" :id="`file-${index}`" class="hidden" accept="application/pdf, image/jpeg" @change="manageFile($event)" />
                     <label
                         :for="`file-${index}`"
                         class="flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 hover:shadow-sm active:scale-95"
                     >
                         <i class="ri-upload-line"></i>
-                        <span>Seleccionar archivo</span>
+                        <span>{{ nameFile == null ? 'Seleccionar archivo' : nameFile }}</span>
                     </label>
                 </div>
 

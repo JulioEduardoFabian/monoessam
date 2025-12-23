@@ -9,6 +9,7 @@ import axios from 'axios';
 import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import ChangeStatusModal from './ChangeStatusModal.vue';
+import StaffInfoModal from './StaffInfoModal.vue';
 import StaffRegistrationDialog from './StaffRegistrationDialog.vue';
 
 interface Props {
@@ -38,9 +39,9 @@ const STATUSES = ['Lista negra', 'En proceso', 'Contratado', 'Cesado', 'Retirado
 
 const STATUS_COLORS = [
     'bg-zinc-500 text-white',
+    'bg-yellow-500 text-white',
     'bg-green-500 text-white',
-    'bg-green-500 text-white',
-    'bg-red-500 text-white',
+    'bg-gray-500 text-white',
     'bg-red-500 text-white',
     'bg-red-500 text-white',
     'bg-blue-500 text-white',
@@ -90,63 +91,141 @@ watch(props, () => {
             </div> -->
 
             <div class="bg-card rounded-xl border shadow-sm">
-                <table class="w-full border-collapse">
-                    <thead class="bg-muted/50">
-                        <tr>
-                            <th class="p-4 text-left text-sm font-semibold">Nombre</th>
-                            <th class="p-4 text-left text-sm font-semibold">DNI</th>
-                            <th class="p-4 text-left text-sm font-semibold">Celular</th>
-                            <th class="p-4 text-left text-sm font-semibold">Comedor</th>
-                            <th class="p-4 text-left text-sm font-semibold">Documentación</th>
-                            <th class="p-4 text-left text-sm font-semibold">Estado</th>
-                            <th class="p-4 text-center text-sm font-semibold">Opciones</th>
-                        </tr>
-                    </thead>
+                <div class="hidden overflow-x-auto md:block">
+                    <table class="w-full table-auto border-collapse">
+                        <thead class="bg-muted/50">
+                            <tr>
+                                <th class="p-4 text-left text-sm font-semibold">Nombre</th>
+                                <th class="p-4 text-left text-sm font-semibold">DNI</th>
+                                <th class="p-4 text-left text-sm font-semibold">Celular</th>
+                                <th class="p-4 text-left text-sm font-semibold">Comedor</th>
+                                <th class="p-4 text-left text-sm font-semibold">Documentación</th>
+                                <th class="p-4 text-left text-sm font-semibold">Estado</th>
+                                <th class="p-4 text-center text-sm font-semibold">Opciones</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        <tr v-for="staff in staffComplete" :key="staff.id" class="hover:bg-muted/30 border-t transition">
-                            <td class="p-4">{{ staff.name }}</td>
-                            <td class="p-4">{{ staff.dni }}</td>
-                            <td class="p-4">{{ staff.cell }}</td>
-                            <td class="p-4">
-                                <p>{{ staff.cafe?.name ?? 'Sin asignar' }} - {{ staff.cafe?.unit?.name }}</p>
-                            </td>
-                            <td class="p-4">
-                                <TooltipProvider v-for="file in staff.staff_files" :key="file.id">
-                                    <Tooltip>
-                                        <TooltipTrigger as-child>
-                                            <a class="text-md rounded-sm text-white" :href="'/storage/' + file.file_path" target="_blank"> 📄 </a>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{{ file.file_type }}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </td>
+                        <tbody>
+                            <tr v-for="staff in staffComplete" :key="staff.id" class="hover:bg-muted/30 border-t transition">
+                                <td class="p-4">{{ staff.name }}</td>
+                                <td class="p-4">{{ staff.dni }}</td>
+                                <td class="p-4">{{ staff.cell }}</td>
+                                <td class="p-4">
+                                    <p>{{ staff.cafe?.name ?? 'Sin asignar' }} - {{ staff.cafe?.unit?.name }}</p>
+                                </td>
+                                <td class="p-4">
+                                    <TooltipProvider v-for="file in staff.staff_files" :key="file.id">
+                                        <Tooltip>
+                                            <TooltipTrigger as-child>
+                                                <a class="text-md rounded-sm text-white" :href="'/storage/' + file.file_path" target="_blank"> 📄 </a>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{{ file.file_type }}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </td>
 
-                            <td class="p-4">
-                                <Badge :class="showColor(staff.status)" class="cursor-pointer rounded-sm" @click="changeStatus()">
+                                <td class="p-4">
+                                    <Badge :class="showColor(staff.status)" class="cursor-pointer rounded-sm" @click="changeStatus()">
+                                        {{ showStatus(staff.status) }}
+                                    </Badge>
+                                </td>
+
+                                <td class="p-4 text-center">
+                                    <div class="flex items-center justify-center gap-3">
+                                        <ChangeStatusModal :staff="staff" />
+
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="cursor-pointer text-red-600 hover:text-red-800"
+                                            @click="deleteStaff(staff.id)"
+                                        >
+                                            <Trash2 class="h-4 w-4" />
+                                        </Button>
+
+                                        <StaffInfoModal :staff="staff" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Vista Mobile: Cards -->
+                <div class="space-y-4 md:hidden">
+                    <div v-for="staff in staffComplete" :key="staff.id" class="rounded-lg border bg-white p-4 shadow-sm transition hover:shadow-md">
+                        <!-- Header con nombre y estado -->
+                        <div class="mb-3 flex items-start justify-between border-b pb-3">
+                            <div class="flex-1">
+                                <h3 class="mb-1 text-base font-semibold">{{ staff.name }}</h3>
+                                <Badge :class="showColor(staff.status)" class="cursor-pointer rounded-sm text-xs" @click="changeStatus()">
                                     {{ showStatus(staff.status) }}
                                 </Badge>
-                            </td>
+                            </div>
+                        </div>
 
-                            <td class="p-4 text-center">
-                                <div class="flex items-center justify-center gap-3">
-                                    <ChangeStatusModal :staff="staff" />
+                        <!-- Información en grid -->
+                        <div class="mb-4 space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">DNI:</span>
+                                <span class="text-sm">{{ staff.dni }}</span>
+                            </div>
 
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="cursor-pointer text-red-600 hover:text-red-800"
-                                        @click="deleteStaff(staff.id)"
-                                    >
-                                        <Trash2 class="h-4 w-4" />
-                                    </Button>
+                            <div class="flex items-center gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">Celular:</span>
+                                <span class="text-sm">{{ staff.cell }}</span>
+                            </div>
+
+                            <div class="flex items-start gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">Comedor:</span>
+                                <span class="flex-1 text-sm"> {{ staff.cafe?.name ?? 'Sin asignar' }} - {{ staff.cafe?.unit?.name }} </span>
+                            </div>
+
+                            <div class="flex items-start gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">Documentos:</span>
+                                <div class="flex flex-wrap gap-2">
+                                    <TooltipProvider v-for="file in staff.staff_files" :key="file.id">
+                                        <Tooltip>
+                                            <TooltipTrigger as-child>
+                                                <a
+                                                    class="inline-block rounded-sm text-lg transition hover:scale-110"
+                                                    :href="'/storage/' + file.file_path"
+                                                    target="_blank"
+                                                >
+                                                    📄
+                                                </a>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{{ file.file_type }}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                    <span v-if="!staff.staff_files || staff.staff_files.length === 0" class="text-muted-foreground text-sm">
+                                        Sin documentos
+                                    </span>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="flex items-center justify-end gap-2 border-t pt-3">
+                            <ChangeStatusModal :staff="staff" />
+
+                            <Button variant="ghost" size="icon" class="cursor-pointer text-red-600 hover:text-red-800" @click="deleteStaff(staff.id)">
+                                <Trash2 class="h-4 w-4" />
+                            </Button>
+
+                            <StaffInfoModal :staff="staff" />
+                        </div>
+                    </div>
+
+                    <!-- Mensaje cuando no hay datos -->
+                    <div v-if="!staffComplete || staffComplete.length === 0" class="py-12 text-center">
+                        <p class="text-muted-foreground">No hay personal registrado</p>
+                    </div>
+                </div>
             </div>
         </div>
     </AppLayout>
