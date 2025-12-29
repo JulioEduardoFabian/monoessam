@@ -108,6 +108,7 @@ const { elementRef: guardRolesDropzoneRef, isOvered } = useDroppable({
     events: {
         onDrop: (store, payload) => {
             const droppedUser = payload.items[0].data?.user;
+            console.log(droppedUser);
             if (droppedUser) {
                 assignUserToRole(droppedUser);
             }

@@ -117,12 +117,13 @@ const deleteGuard = (guardId: number) => {
 
 const unassignUser = (userId: number) => {
     const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == selectedOptions.value.cafe);
-    if (cafeSelected) {
-        const user = props.users.find((u) => u.id === userId);
+    /* if (cafeSelected) {
+        console.log(cafeSelected);
+        const user = cafeSelected.staff.find((u) => u.id === userId);
         if (user) {
             unassignedUsers.value.unshift(user);
         }
-    }
+    } */
 };
 
 const changeView = () => {

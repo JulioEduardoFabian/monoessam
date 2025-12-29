@@ -39,7 +39,8 @@ const deleteUser = (userId: number) => {
             .then(() => {
                 emit('unassignUser', userId);
             })
-            .catch(() => {
+            .catch((error) => {
+                console.log(error);
                 alert('Hubo un error al eliminar el usuario del rol.');
             });
     }

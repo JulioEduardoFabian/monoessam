@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import Input from '@/components/ui/input/Input.vue';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Cafe, Role, Staff } from '@/types';
@@ -63,6 +64,18 @@ const statusesStaff = {
     6: 'Cumplió Contrato',
 };
 
+const onChangeSearchInput = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const query = target.value.toLowerCase().trim();
+
+    if (!query) {
+        staffComplete.value = props.staff;
+        return;
+    }
+
+    staffComplete.value = props.staff.filter((staff) => staff.name.toLowerCase().includes(query) || staff.dni.toLowerCase().includes(query));
+};
+
 watch(props, () => {
     staffComplete.value = props.staff;
 });
@@ -77,18 +90,18 @@ watch(props, () => {
                 <StaffRegistrationDialog :cafes="props.cafes" :roles="props.roles" />
             </div>
 
-            <!-- <div class="flex items-center">
-                <Input type="text" placeholder="Buscar personal por dni o nombre"></Input>
-                <select
+            <div class="flex items-center">
+                <Input type="text" placeholder="Buscar personal por dni o nombre" @change="onChangeSearchInput"></Input>
+                <!-- <select
                     id="status"
                     class="ms-2 rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 >
                     <option v-for="(label, value) in statusesStaff" :key="value" :value="value">
                         {{ label }}
                     </option>
-                </select>
+                </select> -->
                 <Button variant="default" class="ms-2 cursor-pointer bg-blue-600 text-white hover:bg-blue-700">Buscar</Button>
-            </div> -->
+            </div>
 
             <div class="bg-card rounded-xl border shadow-sm">
                 <div class="hidden overflow-x-auto md:block">
