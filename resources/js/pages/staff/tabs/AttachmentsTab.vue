@@ -11,6 +11,7 @@ interface Props {
 
 interface Emits {
     (e: 'upload-file', event: Event, label: string, files: any[]): void;
+    (e: 'date-upload', selectedDate: string, index: number): void;
 }
 
 const props = defineProps<Props>();
@@ -18,6 +19,10 @@ const emit = defineEmits<Emits>();
 
 const handleUpload = (event: Event, label: string) => {
     emit('upload-file', event, label, props.form.files);
+};
+
+const dateUpload = (selectedDate: string, index: number) => {
+    emit('date-upload', selectedDate, index);
 };
 </script>
 
@@ -52,7 +57,14 @@ const handleUpload = (event: Event, label: string) => {
 
         <!-- Lista de archivos -->
         <div class="space-y-4">
-            <FileUploadItem v-for="(file, index) in filesRequired" :key="index" :file="file" :index="index" @upload="handleUpload" />
+            <FileUploadItem
+                v-for="(file, index) in filesRequired"
+                :key="index"
+                :file="file"
+                :index="index"
+                @upload="handleUpload"
+                @uploadDate="dateUpload"
+            />
         </div>
     </div>
 </template>

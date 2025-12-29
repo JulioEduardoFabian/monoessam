@@ -13,9 +13,10 @@ interface Props {
 
 interface Emits {
     (e: 'upload', event: Event, label: string): void;
+    (e: 'uploadDate', selectedDate: string): void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<Emits>();
 
@@ -24,6 +25,11 @@ const nameFile = ref(null);
 const manageFile = (event: Event) => {
     nameFile.value = (event.target as HTMLInputElement).files[0]?.name || '';
     emit('upload', event, props.file.label);
+};
+
+const manageFileDate = (event: Event) => {
+    const selectedDate = (event.target as HTMLInputElement).value;
+    emit('uploadDate', selectedDate, props.index);
 };
 </script>
 
@@ -61,6 +67,7 @@ const manageFile = (event: Event) => {
                     <Input
                         type="date"
                         class="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        @change="manageFileDate($event)"
                     />
                 </div>
                 <div v-else class="min-w-[180px]">

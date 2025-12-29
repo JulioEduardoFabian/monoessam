@@ -47,6 +47,7 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
+        return $request->all();
 
         $validatedData = $request->validate([
             'name' => 'required',

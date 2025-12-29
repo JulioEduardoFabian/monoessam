@@ -37,7 +37,9 @@ export function useFileUpload() {
                         file: modifiedFile,
                         label: fileLabel,
                     });
+                    registerFileFound.file = newFile;
                 }
+                console.log(registerFileFound);
             }
         }
     };

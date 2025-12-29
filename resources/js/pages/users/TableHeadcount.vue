@@ -85,7 +85,7 @@ const addColumn = () => {
     form.users = props.users;
 
     axios
-        .post('/period', form) // Ajusta la ruta a tu API
+        .post('/periods', form) // Ajusta la ruta a tu API
         .then(() => {
             emit('fetchCafeData', props.cafeId);
             newStartDate.value = '';
@@ -98,7 +98,7 @@ const addColumn = () => {
 const deletePeriod = (periodId: string) => {
     if (confirm('¿Está seguro de eliminar este periodo?')) {
         axios
-            .delete('/period/' + periodId)
+            .delete('/periods/' + periodId)
             .then(() => emit('fetchCafeData', props.cafeId))
             .catch((err) => console.error(err));
     }
@@ -107,16 +107,13 @@ const deletePeriod = (periodId: string) => {
 // --- NUEVA FUNCIÓN: Actualizar celda individual ---
 const updateUserStatus = (newStatus: string, userId: number, periodId: number) => {
     axios
-        .put(`/period-user/${periodId}`, {
+        .put(`/periods/user/${periodId}`, {
             user_id: userId,
             period_id: periodId,
             status: newStatus,
         })
         .then(() => {
-            // Opción A: Refrescar toda la data (más lento pero seguro)
             emit('fetchCafeData', props.cafeId);
-
-            // Opción B (Optimista): Podrías actualizar props.periods localmente aquí si quisieras respuesta instantánea visual sin recargar
         })
         .catch((err) => {
             console.error('Error actualizando estado:', err);
