@@ -11,7 +11,7 @@ interface Props {
 
 interface Emits {
     (e: 'upload-file', event: Event, label: string, files: any[]): void;
-    (e: 'date-upload', selectedDate: string, index: number): void;
+    (e: 'upload-date', selectedDate: string, index: number): void;
 }
 
 const props = defineProps<Props>();
@@ -22,7 +22,7 @@ const handleUpload = (event: Event, label: string) => {
 };
 
 const dateUpload = (selectedDate: string, index: number) => {
-    emit('date-upload', selectedDate, index);
+    emit('upload-date', selectedDate, index);
 };
 </script>
 

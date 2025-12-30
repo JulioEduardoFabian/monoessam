@@ -22,11 +22,11 @@ const props = defineProps<Props>();
 const isOpen = ref(false);
 const activeTab = ref('personal');
 
-const { form, errorsSend, showErrors, prendasFijas, handleSubmit, selectCafe, selectRole, handleDateFile: dateUpload } = useStaffForm();
+const { form, errorsSend, showErrors, prendasFijas, handleSubmit, selectCafe, selectRole } = useStaffForm();
 
 const { fileInput, imagePreview, triggerFileInput, handleImageUpload, removeImage } = useImageUpload();
 
-const { filesRequired, showAlert, alertMessage, handleFileUpload: uploadFile } = useFileUpload();
+const { filesRequired, showAlert, alertMessage, handleFileUpload: uploadFile, handleDateFile: dateUpload } = useFileUpload();
 
 const nextTab = () => {
     const tabs = ['personal', 'adjuntos', 'financiero', 'tallas'];
@@ -45,8 +45,6 @@ const prevTab = () => {
 };
 
 const onSubmit = () => {
-    console.log(filesRequired);
-
     handleSubmit(() => {
         isOpen.value = false;
         activeTab.value = 'personal';

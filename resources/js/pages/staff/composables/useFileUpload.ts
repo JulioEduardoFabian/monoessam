@@ -37,11 +37,14 @@ export function useFileUpload() {
                         file: modifiedFile,
                         label: fileLabel,
                     });
-                    registerFileFound.file = newFile;
+                    registerFileFound.file = modifiedFile;
                 }
-                console.log(registerFileFound);
             }
         }
+    };
+
+    const handleDateFile = (dateString: string, index: number) => {
+        filesRequired.value[index].expirationDate = dateString;
     };
 
     return {
@@ -49,5 +52,6 @@ export function useFileUpload() {
         showAlert,
         alertMessage,
         handleFileUpload,
+        handleDateFile,
     };
 }

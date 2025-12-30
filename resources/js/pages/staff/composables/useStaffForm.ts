@@ -74,6 +74,14 @@ export function useStaffForm() {
             filesArray = [];
         }
 
+        filesArray.forEach((newFile) => {
+            if (newFile && newFile.expirationDate === null) {
+                form.filesData.push({ expirationDate: '-' });
+            } else {
+                form.filesData.push({ expirationDate: newFile.expirationDate });
+            }
+        });
+
         console.log('filesArray:', filesArray);
 
         // Extraer solo los objetos File del array
