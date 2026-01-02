@@ -51,4 +51,8 @@ class Cafe extends Model
     {
         return $this->hasMany(Period::class);
     }
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class);
+    }
 }

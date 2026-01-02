@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import Input from '@/components/ui/input/Input.vue';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Cafe, Role } from '@/types';
+import { Cafe, Role, Staff } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Ban, Edit3, Eye, Trash2 } from 'lucide-vue-next';
+import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import ChangeStatusModal from './ChangeStatusModal.vue';
+import StaffInfoModal from './StaffInfoModal.vue';
 import StaffRegistrationDialog from './StaffRegistrationDialog.vue';
 
 interface Props {
     cafes: Cafe[];
-    staff: any[];
+    staff: Staff[];
     roles: Role[];
 }
 
@@ -21,7 +24,7 @@ const props = defineProps<Props>();
 // Usar ref para reactividad
 const staffComplete = ref(props.staff);
 
-const deleteStaff = async (staffId: string) => {
+const deleteStaff = async (staffId: number) => {
     if (!confirm('Estás seguro de eliminar a este personal?')) return;
 
     try {
@@ -33,54 +36,47 @@ const deleteStaff = async (staffId: string) => {
     }
 };
 
-const banStaff = async (staffId: string) => {
-    if (!confirm('Estás seguro de enviar a lista negra a este personal? Se perderán sus archivos y datos, excepto telefono, nombre y dni')) return;
+const STATUSES = ['Lista negra', 'En proceso', 'Contratado', 'Cesado', 'Retirado', 'Abandono', 'Cumplió Contrato'] as const;
 
-    try {
-        await axios
-            .get('/staff/ban/' + staffId)
-            .then((result) => {
-                staffComplete.value = result.data.staff;
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    } catch (error) {
-        console.log(error);
-    }
-};
+const STATUS_COLORS = [
+    'bg-zinc-500 text-white',
+    'bg-yellow-500 text-white',
+    'bg-green-500 text-white',
+    'bg-gray-500 text-white',
+    'bg-red-500 text-white',
+    'bg-red-500 text-white',
+    'bg-blue-500 text-white',
+] as const;
 
-const showStatus = (statusId: number) => {
-    const statusesStaff = {
-        0: 'Lista negra',
-        1: 'En proceso',
-        2: 'Contratado',
-        3: 'Cesado',
-        4: 'Retirado',
-        5: 'Abandono',
-        6: 'Cumplió Contrato',
-    };
+const showStatus = (statusId: number) => STATUSES[statusId] ?? 'Desconocido';
 
-    return statusesStaff[statusId];
-};
-
-const showColor = (statusId: number) => {
-    const statusesStaffColor = {
-        0: 'bg-zinc-500 text-white',
-        1: 'bg-green-500 text-white',
-        2: 'bg-green-500 text-white',
-        3: 'bg-red-500 text-white',
-        4: 'bg-red-500 text-white',
-        5: 'bg-red-500 text-white',
-        6: 'bg-blue-500 text-white',
-    };
-
-    return statusesStaffColor[statusId];
-};
+const showColor = (statusId: number) => STATUS_COLORS[statusId] ?? '';
 
 const changeStatus = () => {};
 
-watch(props, (newVal) => {
+const statusesStaff = {
+    0: 'Lista negra',
+    1: 'En proceso',
+    2: 'Contratado',
+    3: 'Cesado',
+    4: 'Retirado',
+    5: 'Abandono',
+    6: 'Cumplió Contrato',
+};
+
+const onChangeSearchInput = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const query = target.value.toLowerCase().trim();
+
+    if (!query) {
+        staffComplete.value = props.staff;
+        return;
+    }
+
+    staffComplete.value = props.staff.filter((staff) => staff.name.toLowerCase().includes(query) || staff.dni.toLowerCase().includes(query));
+};
+
+watch(props, () => {
     staffComplete.value = props.staff;
 });
 </script>
@@ -94,75 +90,155 @@ watch(props, (newVal) => {
                 <StaffRegistrationDialog :cafes="props.cafes" :roles="props.roles" />
             </div>
 
+            <div class="flex items-center">
+                <Input type="text" placeholder="Buscar personal por dni o nombre" @change="onChangeSearchInput"></Input>
+                <!-- <select
+                    id="status"
+                    class="ms-2 rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                >
+                    <option v-for="(label, value) in statusesStaff" :key="value" :value="value">
+                        {{ label }}
+                    </option>
+                </select> -->
+                <Button variant="default" class="ms-2 cursor-pointer bg-blue-600 text-white hover:bg-blue-700">Buscar</Button>
+            </div>
+
             <div class="bg-card rounded-xl border shadow-sm">
-                <table class="w-full border-collapse">
-                    <thead class="bg-muted/50">
-                        <tr>
-                            <th class="p-4 text-left text-sm font-semibold">Nombre</th>
-                            <th class="p-4 text-left text-sm font-semibold">DNI</th>
-                            <th class="p-4 text-left text-sm font-semibold">Celular</th>
-                            <th class="p-4 text-left text-sm font-semibold">Documentación</th>
-                            <th class="p-4 text-left text-sm font-semibold">Estado</th>
-                            <th class="p-4 text-center text-sm font-semibold">Opciones</th>
-                        </tr>
-                    </thead>
+                <div class="hidden overflow-x-auto md:block">
+                    <table class="w-full table-auto border-collapse">
+                        <thead class="bg-muted/50">
+                            <tr>
+                                <th class="p-4 text-left text-sm font-semibold">Nombre</th>
+                                <th class="p-4 text-left text-sm font-semibold">DNI</th>
+                                <th class="p-4 text-left text-sm font-semibold">Celular</th>
+                                <th class="p-4 text-left text-sm font-semibold">Comedor</th>
+                                <th class="p-4 text-left text-sm font-semibold">Documentación</th>
+                                <th class="p-4 text-left text-sm font-semibold">Estado</th>
+                                <th class="p-4 text-center text-sm font-semibold">Opciones</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        <tr v-for="p in staffComplete" :key="p.id" class="hover:bg-muted/30 border-t transition">
-                            <td class="p-4">{{ p.name }}</td>
-                            <td class="p-4">{{ p.dni }}</td>
-                            <td class="p-4">{{ p.cell }}</td>
-                            <td class="p-4">
-                                <a
-                                    class="mx-2 rounded bg-red-400 px-2 text-white"
-                                    :href="'/storage/' + file.file_path"
-                                    target="_blank"
-                                    v-for="file in p.staff_files"
-                                    :key="file.id"
-                                    >{{ file.file_type }}</a
-                                >
-                            </td>
+                        <tbody>
+                            <tr v-for="staff in staffComplete" :key="staff.id" class="hover:bg-muted/30 border-t transition">
+                                <td class="p-4">{{ staff.name }}</td>
+                                <td class="p-4">{{ staff.dni }}</td>
+                                <td class="p-4">{{ staff.cell }}</td>
+                                <td class="p-4">
+                                    <p>{{ staff.cafe?.name ?? 'Sin asignar' }} - {{ staff.cafe?.unit?.name }}</p>
+                                </td>
+                                <td class="p-4">
+                                    <TooltipProvider v-for="file in staff.staff_files" :key="file.id">
+                                        <Tooltip>
+                                            <TooltipTrigger as-child>
+                                                <a class="text-md rounded-sm text-white" :href="'/storage/' + file.file_path" target="_blank"> 📄 </a>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{{ file.file_type }}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </td>
 
-                            <td class="p-4">
-                                <Badge :class="showColor(p.status)" class="cursor-pointer" @click="changeStatus()">
-                                    {{ showStatus(p.status) }}
+                                <td class="p-4">
+                                    <Badge :class="showColor(staff.status)" class="cursor-pointer rounded-sm" @click="changeStatus()">
+                                        {{ showStatus(staff.status) }}
+                                    </Badge>
+                                </td>
+
+                                <td class="p-4 text-center">
+                                    <div class="flex items-center justify-center gap-3">
+                                        <ChangeStatusModal :staff="staff" />
+
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="cursor-pointer text-red-600 hover:text-red-800"
+                                            @click="deleteStaff(staff.id)"
+                                        >
+                                            <Trash2 class="h-4 w-4" />
+                                        </Button>
+
+                                        <StaffInfoModal :staff="staff" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Vista Mobile: Cards -->
+                <div class="space-y-4 md:hidden">
+                    <div v-for="staff in staffComplete" :key="staff.id" class="rounded-lg border bg-white p-4 shadow-sm transition hover:shadow-md">
+                        <!-- Header con nombre y estado -->
+                        <div class="mb-3 flex items-start justify-between border-b pb-3">
+                            <div class="flex-1">
+                                <h3 class="mb-1 text-base font-semibold">{{ staff.name }}</h3>
+                                <Badge :class="showColor(staff.status)" class="cursor-pointer rounded-sm text-xs" @click="changeStatus()">
+                                    {{ showStatus(staff.status) }}
                                 </Badge>
-                            </td>
+                            </div>
+                        </div>
 
-                            <td class="p-4 text-center">
-                                <div class="flex items-center justify-center gap-3">
-                                    <ChangeStatusModal :staff="p" />
+                        <!-- Información en grid -->
+                        <div class="mb-4 space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">DNI:</span>
+                                <span class="text-sm">{{ staff.dni }}</span>
+                            </div>
 
-                                    <Button variant="ghost" size="icon" class="cursor-pointer text-blue-600 hover:text-blue-800">
-                                        <Eye class="h-4 w-4" />
-                                    </Button>
+                            <div class="flex items-center gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">Celular:</span>
+                                <span class="text-sm">{{ staff.cell }}</span>
+                            </div>
 
-                                    <Button variant="ghost" size="icon" class="cursor-pointer text-yellow-600 hover:text-yellow-800">
-                                        <Edit3 class="h-4 w-4" />
-                                    </Button>
+                            <div class="flex items-start gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">Comedor:</span>
+                                <span class="flex-1 text-sm"> {{ staff.cafe?.name ?? 'Sin asignar' }} - {{ staff.cafe?.unit?.name }} </span>
+                            </div>
 
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="cursor-pointer text-red-600 hover:text-red-800"
-                                        @click="deleteStaff(p.id)"
-                                    >
-                                        <Trash2 class="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="text-zinc-600 hover:text-zinc-800"
-                                        @click="banStaff(p.id)"
-                                        v-if="p.status != 0"
-                                    >
-                                        <Ban class="h-4 w-4" />
-                                    </Button>
+                            <div class="flex items-start gap-2">
+                                <span class="text-muted-foreground min-w-[80px] text-xs font-medium">Documentos:</span>
+                                <div class="flex flex-wrap gap-2">
+                                    <TooltipProvider v-for="file in staff.staff_files" :key="file.id">
+                                        <Tooltip>
+                                            <TooltipTrigger as-child>
+                                                <a
+                                                    class="inline-block rounded-sm text-lg transition hover:scale-110"
+                                                    :href="'/storage/' + file.file_path"
+                                                    target="_blank"
+                                                >
+                                                    📄
+                                                </a>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{{ file.file_type }}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                    <span v-if="!staff.staff_files || staff.staff_files.length === 0" class="text-muted-foreground text-sm">
+                                        Sin documentos
+                                    </span>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="flex items-center justify-end gap-2 border-t pt-3">
+                            <ChangeStatusModal :staff="staff" />
+
+                            <Button variant="ghost" size="icon" class="cursor-pointer text-red-600 hover:text-red-800" @click="deleteStaff(staff.id)">
+                                <Trash2 class="h-4 w-4" />
+                            </Button>
+
+                            <StaffInfoModal :staff="staff" />
+                        </div>
+                    </div>
+
+                    <!-- Mensaje cuando no hay datos -->
+                    <div v-if="!staffComplete || staffComplete.length === 0" class="py-12 text-center">
+                        <p class="text-muted-foreground">No hay personal registrado</p>
+                    </div>
+                </div>
             </div>
         </div>
     </AppLayout>

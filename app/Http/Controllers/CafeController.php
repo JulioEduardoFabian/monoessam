@@ -51,7 +51,6 @@ class CafeController extends Controller
         $cafe = Cafe::with([
             'users', // Todos los usuarios del café
             'guards.assignedRoles.role',
-            'guards.assignedRoles.user',
             'periods.users'
         ])->find($id);
 
@@ -77,7 +76,7 @@ class CafeController extends Controller
         // --- 3. Filtrar Usuarios ---
 
         // Colección de todos los usuarios pertenecientes al café
-        $allUsers = $cafe->users;
+        $allUsers = $cafe->staff;
 
         // Usuarios asignados: aquellos cuyos IDs están en la lista $assignedUserIds
         $assignedUsers = $allUsers->whereIn('id', $assignedUserIds)->values();
@@ -93,7 +92,8 @@ class CafeController extends Controller
                 'unassigned' => $unassignedUsers,
             ],
             'guards' => $cafe->guards,
-            'periods' => $cafe->periods
+            'periods' => $cafe->periods,
+            'staff' => $cafe->staff,
         ]);
     }
 

@@ -52,7 +52,7 @@ const assignUserToRole = (user: User) => {
     searchResults.value = [];
 
     axios
-        .post('/guard-roles-user', {
+        .post('guards/roles/user', {
             user_id: user.id,
             guard_role_id: props.role.id,
         })
@@ -108,6 +108,7 @@ const { elementRef: guardRolesDropzoneRef, isOvered } = useDroppable({
     events: {
         onDrop: (store, payload) => {
             const droppedUser = payload.items[0].data?.user;
+            console.log(droppedUser);
             if (droppedUser) {
                 assignUserToRole(droppedUser);
             }

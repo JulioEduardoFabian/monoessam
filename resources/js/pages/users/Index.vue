@@ -50,7 +50,7 @@ watch(
 
         // Cambió la unidad
         if (newVal.unit) {
-            const unitSelected: any = selectedUnits.value.find((unit) => unit.id == newVal.unit);
+            const unitSelected: any = selectedUnits.value.find((unit: Unit) => unit.id == newVal.unit);
             selectedCafes.value = unitSelected ? unitSelected.cafes : [];
         }
 
@@ -75,7 +75,7 @@ const fetchCafeData = async (cafeId: number) => {
 };
 
 const handleUserAssignment = (userId: number) => {
-    unassignedUsers.value = unassignedUsers.value.filter((user) => user.id !== userId);
+    unassignedUsers.value = unassignedUsers.value.filter((user: User) => user.id !== userId);
     fetchCafeData(selectedOptions.value.cafe);
 };
 
@@ -111,14 +111,19 @@ const deleteGuardRole = (guardId: number, roleId: number) => {
     }
 };
 
+const deleteGuard = (guardId: number) => {
+    guardsSelected.value = guardsSelected.value.filter((guard) => guard.id !== guardId);
+};
+
 const unassignUser = (userId: number) => {
     const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == selectedOptions.value.cafe);
-    if (cafeSelected) {
-        const user = props.users.find((u) => u.id === userId);
+    /* if (cafeSelected) {
+        console.log(cafeSelected);
+        const user = cafeSelected.staff.find((u) => u.id === userId);
         if (user) {
             unassignedUsers.value.unshift(user);
         }
-    }
+    } */
 };
 
 const changeView = () => {
@@ -193,6 +198,7 @@ const changeView = () => {
                                     @dropped="handleUserAssignment"
                                     @asignRolesToGuard="asignRolesToGuard"
                                     @deleteGuardRole="deleteGuardRole"
+                                    @deleteGuard="deleteGuard"
                                     @unassignUser="unassignUser"
                                     :unassignedUsers="unassignedUsers"
                                 />

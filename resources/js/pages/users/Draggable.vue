@@ -35,11 +35,12 @@ const { elementRef, handleDragStart, isDragging } = useDraggable({
 const deleteUser = (userId: number) => {
     if (confirm('¿Estás seguro de quitar este usuario de este rol?')) {
         axios
-            .delete(`/guard-roles-user/${userId}`)
+            .delete(`guards/roles/user/${userId}`)
             .then(() => {
                 emit('unassignUser', userId);
             })
-            .catch(() => {
+            .catch((error) => {
+                console.log(error);
                 alert('Hubo un error al eliminar el usuario del rol.');
             });
     }

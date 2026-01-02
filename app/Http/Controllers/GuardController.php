@@ -74,9 +74,14 @@ class GuardController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Guard $guard)
+    public function destroy($id)
     {
-        //
+        $guard = Guard::find($id);
+
+        if ($guard) {
+            $guard->roles()->detach();
+            $guard->delete();
+        }
     }
 
     public function insertGuardRoles(Request $request)

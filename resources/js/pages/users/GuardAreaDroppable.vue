@@ -29,6 +29,7 @@ const emit = defineEmits<{
     (e: 'asignRolesToGuard', guardId: number, roles: Array<any>): void;
     (e: 'deleteGuardRole', guardId: number, roleId: number): void;
     (e: 'unassignUser', userId: number): void;
+    (e: 'deleteGuard', guardId: number): void;
 }>();
 
 const props = defineProps<Props>();
@@ -60,6 +61,20 @@ const roleAssigned = (userId: number) => {
 const unassignUser = (userId: number) => {
     emit('unassignUser', userId);
 };
+
+const deleteGuard = (guardId: number) => {
+    if (confirm('Estás seguro de eliminar este guardia, si lo hace se eliminarán todos los roles y usuarios asignados?')) {
+        axios
+            .delete(`/guards/${guardId}`)
+            .then(() => {
+                console.log('Guardia eliminado con éxito');
+                emit('deleteGuard', guardId);
+            })
+            .catch((error) => {
+                console.error('Error al eliminar el guardia:', error);
+            });
+    }
+};
 </script>
 
 <template>
@@ -68,7 +83,12 @@ const unassignUser = (userId: number) => {
             <div class="dropzone">
                 <div class="header">
                     <h3 class="title">{{ guard.name }}</h3>
-                    <GuardRolesModal :roles="roles" :guard="guard" @asignRoles="asignRoles" />
+                    <div class="flex items-center gap-4">
+                        <GuardRolesModal :roles="roles" :guard="guard" @asignRoles="asignRoles" />
+                        <button class="delete-btn" @click="deleteGuard(guard.id)" title="Eliminar rol">
+                            <Trash :size="16" />
+                        </button>
+                    </div>
                 </div>
                 <div v-if="guard.assigned_roles?.length > 0" class="roles-section h-[50vh] overflow-y-auto">
                     <h4 class="section-title">Roles Asignados</h4>

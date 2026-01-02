@@ -27,7 +27,8 @@ class StaffController extends Controller
                 'observations' => function ($query) {
                     $query->orderBy('created_at', 'desc');
                 },
-                'observations.user'
+                'observations.user',
+                'cafe.unit'
             ])->where('status', '!=', 0)->get(),
             'roles' => Role::all()
         ]);
