@@ -123,6 +123,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [CafeController::class, 'store'])->name('store');
         Route::get('{id}', [CafeController::class, 'show'])->name('show');
         Route::post('serviceables', [CafeController::class, 'cafeServiceables'])->name('serviceables');
+        Route::get('{id}/export-headcount', [CafeController::class, 'exportHeadcount'])->name('export-headcount');
     });
 
     Route::prefix('dealerships')->name('dealerships.')->group(function () {

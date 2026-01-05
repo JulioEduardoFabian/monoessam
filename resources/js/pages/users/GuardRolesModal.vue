@@ -151,7 +151,7 @@ const submit = async () => {
     isSubmitting.value = true;
 
     try {
-        await form.post(route('insert-guard-roles'));
+        await form.post(route('guards.roles.user.store'));
 
         showSuccess.value = true;
         setTimeout(() => {

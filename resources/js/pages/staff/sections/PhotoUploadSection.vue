@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import InputSearchRole from '@/pages/users/InputSearchRole.vue';
 import InputSearchSelectable from '@/pages/users/InputSearchSelectable.vue';
+import { Role, Unit } from '@/types';
 import { X } from 'lucide-vue-next';
+import InputSelectableUnit from '../InputSelectableUnit.vue';
 
 interface Props {
     imagePreview: string | null;
     cafeId: number | null;
     cafes: any[];
+    units: Unit[];
+    unitId: number;
+    roleId: number;
+    roles: Role[];
 }
 
 interface Emits {
     (e: 'trigger-upload'): void;
     (e: 'remove-image'): void;
     (e: 'select-cafe', cafe: any): void;
+    (e: 'select-unit', unit: Unit): void;
+    (e: 'select-role', role: Role): void;
 }
 
 defineProps<Props>();
@@ -42,8 +50,10 @@ const emit = defineEmits<Emits>();
             {{ imagePreview ? 'Cambiar Foto' : 'Subir Foto' }}
         </Button>
 
-        <Input placeholder="Cód. Colaborador" class="text-center" />
+        <InputSelectableUnit :units="units" @selectUnit="emit('select-unit', $event)" :unitSelected="unitId" />
 
         <InputSearchSelectable :cafes="cafes" @selectCafe="emit('select-cafe', $event)" :cafeSelected="cafeId" />
+
+        <InputSearchRole @selectRole="emit('select-role', $event)" :roles="roles" :roleSelected="roleId" />
     </div>
 </template>
