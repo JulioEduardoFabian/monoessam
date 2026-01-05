@@ -1,0 +1,1 @@
+import{_ as o}from"./AttachmentsTab.vue_vue_type_script_setup_true_lang-BnXG4NZp.js";import"./index-BuqBjWo0.js";import"./utils-bRKmu4jq.js";import"./index-dkW4UkYo.js";import"./app-Bgf48UYg.js";import"./FileUploadItem.vue_vue_type_script_setup_true_lang-CzbCwC1s.js";import"./Input.vue_vue_type_script_setup_true_lang-CkZtH8FW.js";export{o as default};
