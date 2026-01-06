@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Models\Role;
 
 class Area extends Model
@@ -39,5 +40,10 @@ class Area extends Model
     public function cafe(): BelongsTo
     {
         return $this->belongsTo(Cafe::class);
+    }
+
+    public function staffs(): MorphMany
+    {
+        return $this->morphMany(Staff::class, 'staffable');
     }
 }

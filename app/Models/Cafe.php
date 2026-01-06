@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Cafe extends Model
 {
@@ -51,8 +52,8 @@ class Cafe extends Model
     {
         return $this->hasMany(Period::class);
     }
-    public function staff(): HasMany
+    public function staffs(): MorphMany
     {
-        return $this->hasMany(Staff::class);
+        return $this->morphMany(Staff::class, 'staffable');
     }
 }
