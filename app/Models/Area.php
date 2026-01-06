@@ -16,12 +16,12 @@ class Area extends Model
     use HasFactory;
 
 
-    protected $fillable = ['name', 'headquarter_id', 'cafe_id'];
+    protected $fillable = ['name', 'cafe_id'];
 
 
-    public function headquarter()
+    public function headquarters(): BelongsToMany
     {
-        return $this->belongsTo(Headquarter::class);
+        return $this->belongsToMany(Headquarter::class, 'area_headquarter', 'area_id', 'headquarter_id');
     }
     public function roles(): BelongsToMany
     {
