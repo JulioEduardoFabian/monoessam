@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Staff extends Model
 {
@@ -39,8 +40,8 @@ class Staff extends Model
         return $this->hasMany(Observation::class);
     }
 
-    public function cafe(): BelongsTo
+    public function staffable(): MorphTo
     {
-        return $this->belongsTo(Cafe::class);
+        return $this->morphTo();
     }
 }
