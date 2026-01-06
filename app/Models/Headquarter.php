@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Headquarter extends Model
 {
@@ -15,8 +15,8 @@ class Headquarter extends Model
     {
         return $this->belongsTo(Business::class);
     }
-    public function areas(): HasMany
+    public function areas(): BelongsToMany
     {
-        return $this->hasMany(Area::class);
+        return $this->belongsToMany(Area::class, 'area_headquarter', 'headquarter_id', 'area_id');
     }
 }
