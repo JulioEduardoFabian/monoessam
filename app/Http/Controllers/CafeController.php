@@ -150,4 +150,54 @@ class CafeController extends Controller
             return response()->json(['error' => 'Error al imprimir: ' . $e->getMessage()]);
         }
     }
+
+    public function exportHeadcount($id)
+    {
+        $cafe = Cafe::with(['users', 'guards.assignedRoles.role'])->find($id);
+
+        if (!$cafe) {
+            return response()->json(['message' => 'Café no encontrado'], 404);
+        }
+
+        $assignedRoles = $cafe->guards->flatMap(function ($guard) {
+            return $guard->assignedRoles;
+        });
+
+        $assignedUserIds = $assignedRoles
+            ->filter(fn($role) => $role->user)
+            ->pluck('user.id')
+            ->unique()
+            ->toArray();
+
+        $allUsers = $cafe->staff;
+
+        $assignedUsers = $allUsers->whereIn('id', $assignedUserIds)->values();
+
+        // Generar el archivo Excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Encabezados
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Nombre');
+        $sheet->setCellValue('C1', 'DNI');
+
+        // Datos de usuarios asignados
+        $row = 2;
+        foreach ($assignedUsers as $user) {
+            $sheet->setCellValue("A{$row}", $user->id);
+            $sheet->setCellValue("B{$row}", $user->name);
+            $sheet->setCellValue("C{$row}", $user->dni);
+            $row++;
+        }
+
+        // Configurar la respuesta para descargar el archivo
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $fileName = "headcount_cafe_{$cafe->name}.xlsx";
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"{$fileName}\"");
+        $writer->save('php://output');
+        exit;
+    }
 }

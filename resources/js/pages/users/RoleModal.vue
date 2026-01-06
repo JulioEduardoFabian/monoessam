@@ -22,7 +22,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('roles'), {
+    form.post(route('roles.store'), {
         onSuccess: () => {
             open.value = false;
             form.reset();

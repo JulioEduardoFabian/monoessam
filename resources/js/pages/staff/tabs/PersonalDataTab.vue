@@ -2,6 +2,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Role, Unit } from '@/types';
 import EmergencyContactSection from '../sections/EmergencyContactSection.vue';
 import PhotoUploadSection from '../sections/PhotoUploadSection.vue';
 
@@ -9,12 +10,16 @@ interface Props {
     form: any;
     cafes: any[];
     imagePreview: string | null;
+    units: Unit[];
+    roles: Role[];
 }
 
 interface Emits {
     (e: 'trigger-upload'): void;
     (e: 'remove-image'): void;
     (e: 'select-cafe', cafe: any): void;
+    (e: 'select-unit', unit: Unit): void;
+    (e: 'select-role', role: Role): void;
 }
 
 defineProps<Props>();
@@ -28,10 +33,16 @@ const emit = defineEmits<Emits>();
                 class="md:col-span-1"
                 :image-preview="imagePreview"
                 :cafe-id="form.cafeId"
+                :unit-id="form.unitId"
+                :role-id="form.roleId"
+                :roles="roles"
                 :cafes="cafes"
+                :units="units"
                 @trigger-upload="emit('trigger-upload')"
                 @remove-image="emit('remove-image')"
                 @select-cafe="emit('select-cafe', $event)"
+                @select-unit="emit('select-unit', $event)"
+                @select-role="emit('select-role', $event)"
             />
 
             <div class="space-y-4 md:col-span-3">

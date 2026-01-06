@@ -8,6 +8,7 @@ use App\Models\Staff;
 use App\Models\Staff_clothes;
 use App\Models\Staff_file;
 use App\Models\Staff_financial;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -30,7 +31,8 @@ class StaffController extends Controller
                 'observations.user',
                 'cafe.unit'
             ])->where('status', '!=', 0)->get(),
-            'roles' => Role::all()
+            'roles' => Role::all(),
+            'units' => Unit::with('cafes')->get()
         ]);
     }
 

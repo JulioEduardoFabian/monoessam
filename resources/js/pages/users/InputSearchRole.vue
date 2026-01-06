@@ -118,7 +118,7 @@ const handleKeydown = (event: Event, role?: Role) => {
         <div class="relative">
             <Input
                 ref="searchInputRef"
-                :placeholder="selectedRole ? 'Rol seleccionado' : 'Buscar rol'"
+                :placeholder="selectedRole ? 'Cargo seleccionado' : 'Buscar cargo'"
                 v-model="searchTerm"
                 class="w-full px-2 text-center"
                 :class="selectedRole ? 'border-green-200 bg-green-50' : ''"

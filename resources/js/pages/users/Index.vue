@@ -5,7 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Area, Cafe, Headquarter, Mine, Permission, Role, Unit, User } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
-import { List } from 'lucide-vue-next';
+import { List, Sheet } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import GuardAreaDroppable from './GuardAreaDroppable.vue';
 import GuardModal from './GuardModal.vue';
@@ -129,6 +129,16 @@ const unassignUser = (userId: number) => {
 const changeView = () => {
     changedView.value = !changedView.value;
 };
+
+const exportToExcel = () => {
+    const cafeId = selectedOptions.value.cafe;
+    if (!cafeId) {
+        alert('Por favor seleccione un comedor antes de exportar.');
+        return;
+    }
+
+    window.location.href = `/cafes/${cafeId}/export-headcount`;
+};
 </script>
 <template>
     <Head title="Headcount" />
@@ -139,8 +149,9 @@ const changeView = () => {
             </div>
 
             <p>Seleccione una mina, unidad y comedor para asignar guardias y roles</p>
-            <div class="flex w-full flex-row">
+            <div class="flex w-full flex-row gap-2">
                 <Button title="Ver en lista" class="cursor-pointer" @click="changeView()"><List></List></Button>
+                <Button class="cursor-pointer bg-green-500" title="Exportar Headcount en Excel" @click="exportToExcel()"><Sheet /> </Button>
             </div>
             <div class="flex gap-2">
                 <Select class="w-full" v-model="selectedOptions.mine">

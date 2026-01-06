@@ -48,6 +48,8 @@ const filteredCafes = computed(() => {
         return props.cafes.slice(0, 5);
     }
 
+    console.log(props.cafes);
+
     const lowerCaseSearchTerm = searchTerm.value.toLowerCase();
     const scoredCafes = props.cafes.map((cafe) => {
         const name = cafe.name.toLowerCase();
@@ -144,7 +146,6 @@ const handleKeydown = (event: Event, cafe?: Cafe) => {
                 <X :size="16" />
             </button>
         </div>
-
         <!-- Dropdown de resultados (solo visible si no hay selección) -->
         <div
             v-if="isDropdownVisible && !selectedCafe"

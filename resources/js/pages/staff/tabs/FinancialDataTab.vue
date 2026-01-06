@@ -2,7 +2,6 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import InputSearchRole from '@/pages/users/InputSearchRole.vue';
 import FamilyLoadSection from '../sections/FamilyLoadSection.vue';
 import FinancialInfoSection from '../sections/FinancialInfoSection.vue';
 
@@ -52,10 +51,10 @@ const emit = defineEmits<Emits>();
                     <Label>Nombre de AFP</Label>
                     <Input v-model="form.afp" />
                 </div>
-                <div class="space-y-1">
+                <!-- <div class="space-y-1">
                     <Label>Rol</Label>
                     <InputSearchRole @selectRole="emit('select-role', $event)" :roles="roles" :roleSelected="form.roleId" />
-                </div>
+                </div> -->
                 <div class="space-y-1">
                     <Label>Dirección</Label>
                     <Input v-model="form.address" />
@@ -68,10 +67,10 @@ const emit = defineEmits<Emits>();
                     <Label>Reemplazo</Label>
                     <Input v-model="form.replacement" />
                 </div>
-                <div class="space-y-1">
+                <!--  <div class="space-y-1">
                     <Label>Unidad</Label>
                     <Input v-model="form.unitSelectedText" readonly />
-                </div>
+                </div> -->
                 <div class="space-y-1">
                     <Label>Sueldo</Label>
                     <Input v-model="form.salary" />

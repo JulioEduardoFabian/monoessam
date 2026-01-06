@@ -89,7 +89,7 @@ const submit = () => {
     form.cafe_id = props.cafeId;
 
     // Envío del formulario con Inertia
-    form.post(route('insert-guards'), {
+    form.post(route('guards.store'), {
         onSuccess: (page) => {
             open.value = false;
             emit('assignGuards', page.props.flash.newGuards);

@@ -1,3 +1,4 @@
+import { Unit } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -61,6 +62,8 @@ export function useStaffForm() {
         { label: 'Lentes', talla: '' },
     ]);
 
+    const cafesUnitSelected = ref([]);
+
     const handleSubmit = (onSuccess: () => void, filesReq: any) => {
         // Convertir a array primero (maneja Proxy, Ref, y arrays normales)
         let filesArray;
@@ -119,8 +122,12 @@ export function useStaffForm() {
 
     const selectCafe = (cafe: any) => {
         form.cafeId = cafe.id;
-        form.unitId = cafe.unit_id;
-        form.unitSelectedText = cafe.unit.name;
+    };
+
+    const selectUnit = (unit: Unit) => {
+        form.unitId = unit.id;
+        cafesUnitSelected.value = unit.cafes;
+        form.unitSelectedText = unit.name;
     };
 
     const selectRole = (role: any) => {
@@ -132,8 +139,10 @@ export function useStaffForm() {
         errorsSend,
         showErrors,
         prendasFijas,
+        cafesUnitSelected,
         handleSubmit,
         selectCafe,
         selectRole,
+        selectUnit,
     };
 }
