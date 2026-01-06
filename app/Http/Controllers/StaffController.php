@@ -199,7 +199,7 @@ class StaffController extends Controller
             'status' => $request->status
         ]);
 
-        if ($staff->observation != '') {
+        if ($request->observation != '') {
             $observation = Observation::create([
                 'staff_id' => $request->staff_id,
                 'user_id' => $request->user_id,

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputSearchRole from '@/pages/users/InputSearchRole.vue';
 import InputSearchSelectable from '@/pages/users/InputSearchSelectable.vue';
 import { Role, Unit } from '@/types';
 import { X } from 'lucide-vue-next';
+import { ref } from 'vue';
 import InputSelectableUnit from '../InputSelectableUnit.vue';
 
 interface Props {
@@ -26,6 +28,8 @@ interface Emits {
 
 defineProps<Props>();
 const emit = defineEmits<Emits>();
+
+const workplace = ref(0);
 </script>
 
 <template>
@@ -50,9 +54,29 @@ const emit = defineEmits<Emits>();
             {{ imagePreview ? 'Cambiar Foto' : 'Subir Foto' }}
         </Button>
 
-        <InputSelectableUnit :units="units" @selectUnit="emit('select-unit', $event)" :unitSelected="unitId" />
+        <Select class="w-full" v-model="workplace">
+            <SelectTrigger><SelectValue placeholder="Lugar de trabajo" /></SelectTrigger>
+            <SelectContent>
+                <SelectItem value="1">Oficina</SelectItem>
+                <SelectItem value="2">Unidad</SelectItem>
+            </SelectContent>
+        </Select>
 
-        <InputSearchSelectable :cafes="cafes" @selectCafe="emit('select-cafe', $event)" :cafeSelected="cafeId" />
+        <div v-if="workplace == 1">
+            <Select class="w-full">
+                <SelectTrigger><SelectValue placeholder="Seleccionar sede" /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="1">Lima</SelectItem>
+                    <SelectItem value="2">Huancayo</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+
+        <div v-if="workplace == 2">
+            <InputSelectableUnit :units="units" @selectUnit="emit('select-unit', $event)" :unitSelected="unitId" />
+
+            <InputSearchSelectable :cafes="cafes" @selectCafe="emit('select-cafe', $event)" :cafeSelected="cafeId" />
+        </div>
 
         <InputSearchRole @selectRole="emit('select-role', $event)" :roles="roles" :roleSelected="roleId" />
     </div>

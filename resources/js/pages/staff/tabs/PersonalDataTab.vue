@@ -49,7 +49,7 @@ const emit = defineEmits<Emits>();
                 <h3 class="border-b pb-2 text-lg font-semibold text-zinc-700">Datos Generales</h3>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                     <div class="space-y-1">
-                        <Label for="nombres">Nombre Completo *</Label>
+                        <Label for="nombres">Apellidos y Nombres *</Label>
                         <Input id="nombres" v-model="form.name" />
                     </div>
                     <div class="space-y-1">
@@ -93,6 +93,8 @@ const emit = defineEmits<Emits>();
                             <SelectContent>
                                 <SelectItem value="1">Soltero</SelectItem>
                                 <SelectItem value="2">Casado</SelectItem>
+                                <SelectItem value="3">Viudo</SelectItem>
+                                <SelectItem value="4">Divorciado</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

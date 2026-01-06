@@ -56,7 +56,7 @@ const saveStatusChange = () => {
             emit('save');
             form.reset();
             form.status = props.staff.status;
-            //open.value = false;
+            open.value = false;
         },
     });
 };
