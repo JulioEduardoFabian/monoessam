@@ -97,7 +97,7 @@ class StaffController extends Controller
                 'user_id' => Auth::id()
             ]);
         } else {
-            $staff = $area->staffs()->create([
+            $staff = Staff::create([
                 'name' => $request->name,
                 'dni' => $request->dni,
                 'cell' => $request->cell,
