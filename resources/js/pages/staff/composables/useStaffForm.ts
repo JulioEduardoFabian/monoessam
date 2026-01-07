@@ -96,12 +96,12 @@ export function useStaffForm() {
 
         console.log('Archivos válidos a subir:', validFiles.length, validFiles);
 
-        if (validFiles.length === 0) {
+        /* if (validFiles.length === 0) {
             console.error('No hay archivos válidos para subir');
             showErrors.value = true;
             errorsSend.value = { files: ['No hay archivos seleccionados'] };
             return;
-        }
+        } */
 
         form.prendas = prendasFijas.value;
         form.files = validFiles;
