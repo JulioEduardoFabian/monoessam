@@ -12,6 +12,7 @@ use App\Models\Staff_file;
 use App\Models\Staff_financial;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -73,7 +74,8 @@ class StaffController extends Controller
                 'civilstatus' => $request->civilstatus,
                 'contactname' => $request->contactname,
                 'contactcell' => $request->contactcell,
-                'status' => 1
+                'status' => 1,
+                'user_id' => Auth::id()
             ]);
         } else if ($request->areaId  && !$request->cafeId) {
             $area = Area::find($request->areaId);
@@ -90,7 +92,8 @@ class StaffController extends Controller
                 'civilstatus' => $request->civilstatus,
                 'contactname' => $request->contactname,
                 'contactcell' => $request->contactcell,
-                'status' => 1
+                'status' => 1,
+                'user_id' => Auth::id()
             ]);
         }
 
