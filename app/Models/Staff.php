@@ -27,7 +27,8 @@ class Staff extends Model
         'contactcell',
         'status',
         'cafe_id',
-        'role_id'
+        'role_id',
+        'user_id',
     ];
 
     public function staff_files(): HasMany
