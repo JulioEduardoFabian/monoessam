@@ -31,7 +31,8 @@ class StaffController extends Controller
                 'observations' => function ($query) {
                     $query->orderBy('created_at', 'desc');
                 },
-                'observations.user'
+                'observations.user',
+                'staffable'
             ])->get(),
             'roles' => Role::all(),
             'units' => Unit::with('cafes')->get(),
@@ -55,7 +56,7 @@ class StaffController extends Controller
 
         $validatedData = $request->validate([
             'name' => 'required',
-            'dni' => 'required|unique:staff',
+            'dni' => 'required|unique:staff|max:8',
             'cell' => 'required'
         ]);
 

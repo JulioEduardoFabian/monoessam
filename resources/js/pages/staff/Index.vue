@@ -113,7 +113,7 @@ watch(props, () => {
                                 <th class="p-4 text-left text-sm font-semibold">Nombre</th>
                                 <th class="p-4 text-left text-sm font-semibold">DNI</th>
                                 <th class="p-4 text-left text-sm font-semibold">Celular</th>
-                                <th class="p-4 text-left text-sm font-semibold">Comedor</th>
+                                <th class="p-4 text-left text-sm font-semibold">Comedor/Area</th>
                                 <th class="p-4 text-left text-sm font-semibold">Documentación</th>
                                 <th class="p-4 text-left text-sm font-semibold">Estado</th>
                                 <th class="p-4 text-center text-sm font-semibold">Opciones</th>
@@ -126,7 +126,7 @@ watch(props, () => {
                                 <td class="p-4">{{ staff.dni }}</td>
                                 <td class="p-4">{{ staff.cell }}</td>
                                 <td class="p-4">
-                                    <p>{{ staff.cafe?.name ?? 'Sin asignar' }} - {{ staff.cafe?.unit?.name }}</p>
+                                    <p>{{ staff.staffable?.name ?? 'Sin asignar' }}</p>
                                 </td>
                                 <td class="p-4">
                                     <TooltipProvider v-for="file in staff.staff_files" :key="file.id">

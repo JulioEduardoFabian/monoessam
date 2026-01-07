@@ -87,7 +87,7 @@ const emit = defineEmits<Emits>();
                                 <div class="flex h-5 w-5 items-center justify-center rounded-md bg-indigo-100 text-indigo-600">
                                     <IdCard class="h-3 w-3" />
                                 </div>
-                                DNI / C.E. *
+                                DNI *
                             </label>
                             <Input
                                 id="doc"
