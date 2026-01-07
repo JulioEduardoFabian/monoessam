@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('staff_financials', function (Blueprint $table) {
-            
+            $table->tinyInteger('bank_entity')->nullable();
             $table->tinyInteger('pensioncontribution')->nullable();
             $table->integer('cci')->nullable();
             $table->date('contract_end_date')->nullable(); 
@@ -25,9 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('staff_financials', function (Blueprint $table) {
-            
-            $table->dropColumn('pensioncontribution');
-            $table->dropColumn('account_number');   
+            $table->dropColumn('bank_entity');
+            $table->dropColumn('pensioncontribution'); 
             $table->dropColumn('cci');
             $table->dropColumn('contract_end_date');
         });
