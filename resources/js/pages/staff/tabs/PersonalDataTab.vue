@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Area, Business, Role, Unit } from '@/types';
+import { Area, Business, Role, Staff, Unit } from '@/types';
 import { Cake, Calendar, Globe, Heart, IdCard, Mail, PersonStanding, Phone, User, UserRound } from 'lucide-vue-next';
 import EmergencyContactSection from '../sections/EmergencyContactSection.vue';
 import PhotoUploadSection from '../sections/PhotoUploadSection.vue';
@@ -13,6 +13,7 @@ interface Props {
     units: Unit[];
     roles: Role[];
     businneses: Business[];
+    staff: Staff;
 }
 
 interface Emits {
@@ -32,6 +33,7 @@ const emit = defineEmits<Emits>();
     <div class="space-y-6">
         <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
             <PhotoUploadSection
+                v-if="!staff"
                 class="md:col-span-4"
                 :image-preview="imagePreview"
                 :cafe-id="form.cafeId"
@@ -144,7 +146,6 @@ const emit = defineEmits<Emits>();
                                 readonly
                             />
                         </div>
-
                         <!-- Sexo -->
                         <div class="space-y-2">
                             <label class="flex items-center gap-2 text-sm font-medium text-zinc-700">

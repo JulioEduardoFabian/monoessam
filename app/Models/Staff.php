@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Staff extends Model
@@ -34,6 +35,16 @@ class Staff extends Model
     public function staff_files(): HasMany
     {
         return $this->hasMany(Staff_file::class);
+    }
+
+    public function staff_financial(): HasOne
+    {
+        return $this->hasOne(Staff_financial::class);
+    }
+
+    public function staff_clothes(): HasMany
+    {
+        return $this->hasMany(Staff_clothes::class);
     }
 
     public function observations(): HasMany

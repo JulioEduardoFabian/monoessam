@@ -2,7 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Business, Unit } from '@/types';
+import { Business, Staff, Unit } from '@/types';
+import { Pencil } from 'lucide-vue-next';
 import { ref } from 'vue';
 import AlertErrors from '../users/AlertErrors.vue';
 import { useFileUpload } from './composables/useFileUpload';
@@ -18,6 +19,7 @@ interface Props {
     roles: any[];
     units: Unit[];
     businneses: Business[];
+    staff: Staff;
 }
 
 const props = defineProps<Props>();
@@ -27,6 +29,31 @@ const activeTab = ref('personal');
 
 const { form, errorsSend, showErrors, prendasFijas, cafesUnitSelected, handleSubmit, selectCafe, selectRole, selectUnit, selectArea } =
     useStaffForm();
+
+if (props.staff) {
+    console.log(props.staff);
+
+    form.name = props.staff.name;
+    form.dni = props.staff.dni;
+    form.cell = props.staff.cell;
+    form.birthdate = String(props.staff.birthdate);
+    form.age = props.staff.age;
+    form.sex = String(props.staff.sex);
+    form.email = props.staff.email;
+    form.country = props.staff.country;
+    form.civilstatus = String(props.staff.civilstatus);
+    form.contactname = props.staff.contactname;
+    form.contactcell = props.staff.contactcell;
+
+    form.district = props.staff.staff_financial?.district;
+    form.province = props.staff.staff_financial?.province;
+    form.department = props.staff.staff_financial?.department;
+    form.address = props.staff.staff_financialddress;
+    form.workSystem = props.staff.staff_financial?.system_work;
+    form.replacement = props.staff.staff_financial?.replacement;
+    form.salary = props.staff.staff_financial?.salary;
+    form.observations = props.staff.staff_financial?.observations;
+}
 
 const { fileInput, imagePreview, triggerFileInput, handleImageUpload, removeImage } = useImageUpload();
 
@@ -59,7 +86,10 @@ const onSubmit = () => {
 <template>
     <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="default" class="cursor-pointer bg-blue-600 text-white hover:bg-blue-700"> Nuevo Personal </Button>
+            <Button variant="ghost" size="icon" class="cursor-pointer text-blue-600 hover:text-blue-800" v-if="props.staff">
+                <Pencil />
+            </Button>
+            <Button variant="default" class="cursor-pointer bg-blue-600 text-white hover:bg-blue-700" v-else> Nuevo Personal </Button>
         </DialogTrigger>
 
         <DialogContent class="flex h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-5xl">
@@ -82,6 +112,7 @@ const onSubmit = () => {
 
                     <TabsContent value="personal" class="mt-0">
                         <PersonalDataTab
+                            :staff="staff"
                             :form="form"
                             :cafes="cafesUnitSelected"
                             :units="units"

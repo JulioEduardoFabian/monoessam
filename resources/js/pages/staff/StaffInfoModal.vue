@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Eye } from 'lucide-vue-next';
+import { Pencil } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface StatusHistory {
@@ -114,7 +114,7 @@ const cambiarTab = (tab: string) => {
     <Dialog v-model:open="open">
         <DialogTrigger as-child>
             <Button variant="ghost" size="icon" class="cursor-pointer text-blue-600 hover:text-blue-800">
-                <Eye class="h-4 w-4" />
+                <Pencil class="h-4 w-4" />
             </Button>
         </DialogTrigger>
         <DialogContent class="flex max-h-[90vh] flex-col sm:max-w-[900px]">
@@ -134,9 +134,9 @@ const cambiarTab = (tab: string) => {
                             'cursor-pointer border-b-2 px-1 py-4 text-sm font-medium whitespace-nowrap',
                         ]"
                     >
-                        Información General
+                        Información Personal
                     </button>
-                    <!--  <button
+                    <button
                         @click="cambiarTab('historial')"
                         :class="[
                             tabActivo === 'historial'
@@ -145,8 +145,8 @@ const cambiarTab = (tab: string) => {
                             'cursor-pointer border-b-2 px-1 py-4 text-sm font-medium whitespace-nowrap',
                         ]"
                     >
-                        Historial de Observaciones
-                    </button> -->
+                        Archivos
+                    </button>
                 </nav>
             </div>
 

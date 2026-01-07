@@ -10,7 +10,7 @@ import axios from 'axios';
 import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import ChangeStatusModal from './ChangeStatusModal.vue';
-import StaffInfoModal from './StaffInfoModal.vue';
+
 import StaffRegistrationDialog from './StaffRegistrationDialog.vue';
 
 interface Props {
@@ -160,7 +160,13 @@ watch(props, () => {
                                             <Trash2 class="h-4 w-4" />
                                         </Button>
 
-                                        <StaffInfoModal :staff="staff" />
+                                        <StaffRegistrationDialog
+                                            :cafes="props.cafes"
+                                            :roles="props.roles"
+                                            :units="props.units"
+                                            :businneses="props.businneses"
+                                            :staff="staff"
+                                        />
                                     </div>
                                 </td>
                             </tr>
@@ -232,7 +238,7 @@ watch(props, () => {
                                 <Trash2 class="h-4 w-4" />
                             </Button>
 
-                            <StaffInfoModal :staff="staff" />
+                            <StaffRegistrationDialog :cafes="props.cafes" :roles="props.roles" :units="props.units" :businneses="props.businneses" />
                         </div>
                     </div>
 

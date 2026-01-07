@@ -28,6 +28,8 @@ class StaffController extends Controller
             'cafes' => Cafe::with('unit')->get(),
             'staff' => Staff::with([
                 'staff_files',
+                'staff_financial',
+                'staff_clothes',
                 'observations' => function ($query) {
                     $query->orderBy('created_at', 'desc');
                 },
