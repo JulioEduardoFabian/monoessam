@@ -27,7 +27,7 @@ const props = defineProps<Props>();
 const isOpen = ref(false);
 const activeTab = ref('personal');
 
-const { form, errorsSend, showErrors, prendasFijas, cafesUnitSelected, handleSubmit, selectCafe, selectRole, selectUnit, selectArea } =
+const { form, errorsSend, showErrors, prendasFijas, cafesUnitSelected, handleSubmit, updateStaff, selectCafe, selectRole, selectUnit, selectArea } =
     useStaffForm();
 
 if (props.staff) {
@@ -48,11 +48,25 @@ if (props.staff) {
     form.district = props.staff.staff_financial?.district;
     form.province = props.staff.staff_financial?.province;
     form.department = props.staff.staff_financial?.department;
-    form.address = props.staff.staff_financialddress;
+    form.address = props.staff.staff_financial?.address;
     form.workSystem = props.staff.staff_financial?.system_work;
     form.replacement = props.staff.staff_financial?.replacement;
     form.salary = props.staff.staff_financial?.salary;
     form.observations = props.staff.staff_financial?.observations;
+
+    form.bankEntity = String(props.staff.staff_financial?.bank_entity);
+    form.cc = props.staff.staff_financial?.account_number;
+    form.cci = props.staff.staff_financial?.cci;
+    form.pensioncontribution = String(props.staff.staff_financial?.pensioncontribution);
+    form.startDate = String(props.staff.staff_financial?.start_date);
+    form.contractEndDate = String(props.staff.staff_financial?.contract_end_date);
+
+    form.children = props.staff.staff_financial?.children;
+
+    props.staff.staff_clothes.forEach((clothe) => {
+        const prendaFound = prendasFijas.value.find((prenda) => prenda.label == clothe.clothe_name);
+        prendaFound.talla = clothe.clothing_size;
+    });
 }
 
 const { fileInput, imagePreview, triggerFileInput, handleImageUpload, removeImage } = useImageUpload();
@@ -76,10 +90,17 @@ const prevTab = () => {
 };
 
 const onSubmit = () => {
-    handleSubmit(() => {
-        isOpen.value = false;
-        activeTab.value = 'personal';
-    }, filesRequired);
+    if (props.staff) {
+        updateStaff(() => {
+            isOpen.value = false;
+            activeTab.value = 'personal';
+        }, props.staff.id);
+    } else {
+        handleSubmit(() => {
+            isOpen.value = false;
+            activeTab.value = 'personal';
+        }, filesRequired);
+    }
 };
 </script>
 

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::table('staff_financials', function (Blueprint $table) {
             $table->tinyInteger('bank_entity')->nullable();
             $table->tinyInteger('pensioncontribution')->nullable();
-            $table->integer('cci')->nullable();
-            $table->date('contract_end_date')->nullable(); 
+            $table->string('cci')->nullable();
+            $table->date('contract_end_date')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     {
         Schema::table('staff_financials', function (Blueprint $table) {
             $table->dropColumn('bank_entity');
-            $table->dropColumn('pensioncontribution'); 
+            $table->dropColumn('pensioncontribution');
             $table->dropColumn('cci');
             $table->dropColumn('contract_end_date');
         });

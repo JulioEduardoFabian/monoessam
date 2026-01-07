@@ -19,10 +19,6 @@ export function useStaffForm() {
         files: [],
         tipoContrato: '',
         regimenLaboral: '',
-        fechaIngreso: '',
-        fechaFinContract: '',
-        cc: '',
-        cci: '',
         children: 0,
         prendas: [],
         district: '',
@@ -37,6 +33,12 @@ export function useStaffForm() {
         unitId: 0,
         salary: 0.0,
         observations: '',
+        bankEntity: '',
+        pensioncontribution: '',
+        cc: '',
+        cci: '',
+        startDate: '',
+        contractEndDate: '',
         fondo: 0,
         roleId: null,
         unitSelectedText: '',
@@ -121,6 +123,21 @@ export function useStaffForm() {
         });
     };
 
+    const updateStaff = (onSuccess: () => void, staffId: number) => {
+        form.prendas = prendasFijas.value;
+        form.put(route('staff.update', staffId), {
+            onSuccess: (res) => {
+                form.reset();
+                onSuccess();
+            },
+            onError: (errors) => {
+                showErrors.value = true;
+                errorsSend.value = errors;
+                console.error('Error al subir el archivo:', errors);
+            },
+        });
+    };
+
     const selectCafe = (cafe: any) => {
         form.cafeId = cafe.id;
     };
@@ -146,6 +163,7 @@ export function useStaffForm() {
         prendasFijas,
         cafesUnitSelected,
         handleSubmit,
+        updateStaff,
         selectCafe,
         selectRole,
         selectUnit,

@@ -94,6 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('staff')->name('staff.')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('index');
         Route::post('/', [StaffController::class, 'store'])->name('store');
+        Route::put('{id}', [StaffController::class, 'update'])->name('update');
         Route::delete('{id}', [StaffController::class, 'destroy'])->name('destroy');
         Route::get('ban/{id}', [StaffController::class, 'banStaff'])->name('ban');
         Route::post('/update-status', [StaffController::class, 'updateStatusStaff'])->name('update-status');

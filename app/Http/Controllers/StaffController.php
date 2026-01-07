@@ -189,7 +189,26 @@ class StaffController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $staff = Staff::find($id);
+
+        $staff->update([
+            'name' => $request->name,
+            'dni' => $request->dni,
+            'cell' => $request->cell,
+            'birthdate' =>
+            empty($request->birthdate) || $request->birthdate === 'null'
+                ? null
+                : $request->birthdate,
+            'age' => $request->age,
+            'sex' => $request->sex,
+            'email' => $request->email,
+            'country' => $request->country,
+            'civilstatus' => $request->civilstatus,
+            'contactname' => $request->contactname,
+            'contactcell' => $request->contactcell,
+            'status' => 1,
+            'user_id' => Auth::id()
+        ]);
     }
 
     /**

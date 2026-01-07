@@ -16,7 +16,7 @@ defineProps<Props>();
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div class="space-y-1">
                 <Label>Entidad Bancaria</Label>
-                <Select v-model="form.tipoContrato">
+                <Select v-model="form.bankEntity">
                     <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="1">BBVA</SelectItem>
@@ -34,20 +34,20 @@ defineProps<Props>();
             </div>
             <div class="space-y-1">
                 <Label>Aportación</Label>
-                <Select v-model="form.regimenLaboral">
+                <Select v-model="form.pensioncontribution">
                     <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="G">General</SelectItem>
+                        <SelectItem value="1">General</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
             <div class="space-y-1">
                 <Label>Fecha de ingreso</Label>
-                <Input type="date" v-model="form.fechaIngreso" />
+                <Input type="date" v-model="form.startDate" />
             </div>
             <div class="space-y-1">
                 <Label>Fecha de Fin de Contrato</Label>
-                <Input type="date" v-model="form.fechaFinContract" />
+                <Input type="date" v-model="form.contractEndDate" />
             </div>
         </div>
     </div>
