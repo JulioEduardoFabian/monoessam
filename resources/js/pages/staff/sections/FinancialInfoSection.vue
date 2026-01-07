@@ -12,7 +12,7 @@ defineProps<Props>();
 
 <template>
     <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-        <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Datos financieros</h3>
+        <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Datos financieros y contrato</h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div class="space-y-1">
                 <Label>Entidad Bancaria</Label>

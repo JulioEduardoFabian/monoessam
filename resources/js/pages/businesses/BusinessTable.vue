@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
+import { Headquarter } from '@/types';
+import { Trash } from 'lucide-vue-next';
+import AreaModal from '../users/AreaModal.vue';
 import ServicePopover from './ServicePopover.vue';
 
 const props = defineProps({
@@ -16,8 +20,18 @@ const props = defineProps({
     },
 });
 
+interface Emits {
+    (e: 'selectAreas', headquarter: Headquarter): void;
+}
+
+const emit = defineEmits<Emits>();
+
 const getBusinessHeadquarters = (businessId) => {
     return props.headquarters.filter((h) => h.business.id === businessId);
+};
+
+const selectHeadquarter = (headquarter: Headquarter) => {
+    emit('selectAreas', headquarter);
 };
 </script>
 <template>
@@ -70,6 +84,7 @@ const getBusinessHeadquarters = (businessId) => {
                             v-for="headquarter in getBusinessHeadquarters(business.id)"
                             :key="headquarter.id"
                             class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-700/50"
+                            @click="selectHeadquarter(headquarter)"
                         >
                             <div class="flex items-start justify-between">
                                 <div>
@@ -117,16 +132,16 @@ const getBusinessHeadquarters = (businessId) => {
                                         </span>
                                     </div>
                                 </div>
-                                <button class="text-red-500 hover:text-red-700 dark:hover:text-red-400" title="Eliminar sede">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="1.5"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                        />
-                                    </svg>
-                                </button>
+                                <div class="flex gap-2">
+                                    <AreaModal :headquarters="headquarters" :headquarterId="headquarter.id" />
+
+                                    <Button
+                                        class="flex cursor-pointer items-center justify-center rounded-lg border border-transparent bg-red-50 p-2 text-red-600 transition-all duration-200 ease-in-out hover:scale-105 hover:border-red-200 hover:bg-red-100 hover:text-red-700 hover:shadow-sm dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+                                        title="Eliminar sede"
+                                    >
+                                        <Trash class="h-5 w-5" />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>

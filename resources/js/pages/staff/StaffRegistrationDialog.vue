@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Unit } from '@/types';
+import { Business, Unit } from '@/types';
 import { ref } from 'vue';
 import AlertErrors from '../users/AlertErrors.vue';
 import { useFileUpload } from './composables/useFileUpload';
@@ -17,6 +17,7 @@ interface Props {
     cafes: any[];
     roles: any[];
     units: Unit[];
+    businneses: Business[];
 }
 
 const props = defineProps<Props>();
@@ -24,7 +25,8 @@ const props = defineProps<Props>();
 const isOpen = ref(false);
 const activeTab = ref('personal');
 
-const { form, errorsSend, showErrors, prendasFijas, cafesUnitSelected, handleSubmit, selectCafe, selectRole, selectUnit } = useStaffForm();
+const { form, errorsSend, showErrors, prendasFijas, cafesUnitSelected, handleSubmit, selectCafe, selectRole, selectUnit, selectArea } =
+    useStaffForm();
 
 const { fileInput, imagePreview, triggerFileInput, handleImageUpload, removeImage } = useImageUpload();
 
@@ -84,12 +86,14 @@ const onSubmit = () => {
                             :cafes="cafesUnitSelected"
                             :units="units"
                             :roles="roles"
+                            :businneses="businneses"
                             :image-preview="imagePreview"
                             @trigger-upload="triggerFileInput"
                             @remove-image="removeImage"
                             @select-cafe="selectCafe"
                             @select-unit="selectUnit"
                             @select-role="selectRole"
+                            @select-area="selectArea"
                         />
                     </TabsContent>
 

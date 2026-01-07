@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Area;
+use App\Models\Business;
 use App\Models\Cafe;
 use App\Models\Observation;
 use App\Models\Staff;
@@ -28,11 +30,11 @@ class StaffController extends Controller
                 'observations' => function ($query) {
                     $query->orderBy('created_at', 'desc');
                 },
-                'observations.user',
-                'cafe.unit'
-            ])->where('status', '!=', 0)->get(),
+                'observations.user'
+            ])->get(),
             'roles' => Role::all(),
-            'units' => Unit::with('cafes')->get()
+            'units' => Unit::with('cafes')->get(),
+            'businneses' => Business::with(['headquarters', 'headquarters.areas'])->get(),
         ]);
     }
 
@@ -56,22 +58,42 @@ class StaffController extends Controller
             'cell' => 'required'
         ]);
 
-        $staff = Staff::create([
-            'name' => $request->name,
-            'dni' => $request->dni,
-            'cell' => $request->cell,
-            'birthdate' => $request->birthdate,
-            'age' => $request->age,
-            'sex' => $request->sex,
-            'email' => $request->email,
-            'country' => $request->country,
-            'civilstatus' => $request->civilstatus,
-            'contactname' => $request->contactname,
-            'contactcell' => $request->contactcell,
-            'status' => 1,
-            'cafe_id' => $request->cafeId == 0 ? null : $request->cafeId,
-            'role_id' => $request->roleId == 0 ? null : $request->roleId
-        ]);
+        if ($request->cafeId && !$request->areaId) {
+            $cafe = Cafe::find($request->cafeId);
+
+            $staff = $cafe->staffs()->create([
+                'name' => $request->name,
+                'dni' => $request->dni,
+                'cell' => $request->cell,
+                'birthdate' => $request->birthdate,
+                'age' => $request->age,
+                'sex' => $request->sex,
+                'email' => $request->email,
+                'country' => $request->country,
+                'civilstatus' => $request->civilstatus,
+                'contactname' => $request->contactname,
+                'contactcell' => $request->contactcell,
+                'status' => 1
+            ]);
+        } else if ($request->areaId  && !$request->cafeId) {
+            $area = Area::find($request->areaId);
+
+            $staff = $area->staffs()->create([
+                'name' => $request->name,
+                'dni' => $request->dni,
+                'cell' => $request->cell,
+                'birthdate' => $request->birthdate,
+                'age' => $request->age,
+                'sex' => $request->sex,
+                'email' => $request->email,
+                'country' => $request->country,
+                'civilstatus' => $request->civilstatus,
+                'contactname' => $request->contactname,
+                'contactcell' => $request->contactcell,
+                'status' => 1
+            ]);
+        }
+
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $index => $file) {

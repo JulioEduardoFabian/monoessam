@@ -41,6 +41,7 @@ export function useStaffForm() {
         roleId: null,
         unitSelectedText: '',
         filesData: [],
+        areaId: 0,
     });
 
     const errorsSend = ref([]);
@@ -134,6 +135,10 @@ export function useStaffForm() {
         form.roleId = role.id;
     };
 
+    const selectArea = (areaId: number) => {
+        form.areaId = areaId;
+    };
+
     return {
         form,
         errorsSend,
@@ -144,5 +149,6 @@ export function useStaffForm() {
         selectCafe,
         selectRole,
         selectUnit,
+        selectArea,
     };
 }

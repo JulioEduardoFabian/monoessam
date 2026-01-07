@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Area;
 use App\Http\Requests\StoreAreaRequest;
 use App\Http\Requests\UpdateAreaRequest;
+use App\Models\Headquarter;
 use Illuminate\Http\Request;
 
 class AreaController extends Controller
@@ -32,7 +33,11 @@ class AreaController extends Controller
     {
         $area = Area::create($request->all());
 
-        return to_route('users');
+        $headquarter = Headquarter::find($request->headquarter_id);
+
+        $headquarter->areas()->attach([$area->id]);
+
+        return to_route('businesses.index');
     }
 
     /**

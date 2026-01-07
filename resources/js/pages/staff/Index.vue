@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import Input from '@/components/ui/input/Input.vue';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Cafe, Role, Staff, Unit } from '@/types';
+import { Business, Cafe, Role, Staff, Unit } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Trash2 } from 'lucide-vue-next';
@@ -18,6 +18,7 @@ interface Props {
     staff: Staff[];
     roles: Role[];
     units: Unit[];
+    businneses: Business[];
 }
 
 const props = defineProps<Props>();
@@ -88,7 +89,7 @@ watch(props, () => {
         <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-semibold tracking-tight">Personal</h1>
-                <StaffRegistrationDialog :cafes="props.cafes" :roles="props.roles" :units="props.units" />
+                <StaffRegistrationDialog :cafes="props.cafes" :roles="props.roles" :units="props.units" :businneses="props.businneses" />
             </div>
 
             <div class="flex items-center">

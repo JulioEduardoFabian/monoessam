@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Cafe, Headquarter } from '@/types';
 import { useForm } from '@inertiajs/vue3';
-import { LampDesk } from 'lucide-vue-next';
+import { Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -17,18 +17,20 @@ const props = defineProps({
         type: Array as () => Headquarter[],
         required: true,
     },
+    headquarterId: Number,
 });
 
 const open = ref(false);
 
 const form = useForm({
     name: '',
-    cafe_id: null,
     headquarter_id: null,
 });
 
+form.headquarter_id = props.headquarterId;
+
 const submit = () => {
-    form.post(route('areas'), {
+    form.post(route('areas.store'), {
         onSuccess: () => {
             open.value = false;
             form.reset();
@@ -39,8 +41,12 @@ const submit = () => {
 
 <template>
     <Dialog v-model:open="open">
-        <DialogTrigger
-            ><Button title="Agregar Area" class="h-full w-auto bg-blue-400"><LampDesk /></Button
+        <DialogTrigger>
+            <Button
+                class="flex cursor-pointer items-center justify-center rounded-lg border border-transparent bg-green-50 p-2 text-green-600 transition-all duration-200 ease-in-out hover:scale-105 hover:border-green-200 hover:bg-green-100 hover:text-green-700 hover:shadow-sm dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/40"
+                title="Agregar area"
+            >
+                <Plus class="h-5 w-5" /> </Button
         ></DialogTrigger>
         <DialogContent>
             <DialogHeader>
@@ -48,18 +54,6 @@ const submit = () => {
                 <Input v-model="form.name" type="text" placeholder="Nombre" />
             </DialogHeader>
             <div class="flex flex-row">
-                <Select v-model="form.cafe_id">
-                    <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una cafetería" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Cafeterías</SelectLabel>
-                            <SelectItem v-for="cafe in props.cafes" :value="cafe.id" :key="cafe.id"> {{ cafe.name }} </SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-                <p class="p-2">o</p>
                 <Select v-model="form.headquarter_id">
                     <SelectTrigger>
                         <SelectValue placeholder="Selecciona una sede" />
@@ -68,7 +62,7 @@ const submit = () => {
                         <SelectGroup>
                             <SelectLabel>Sedes</SelectLabel>
                             <SelectItem v-for="headquarter in headquarters" :value="headquarter.id" :key="headquarter.id">
-                                {{ headquarter.name }}
+                                {{ headquarter.business.name }} - {{ headquarter.name }}
                             </SelectItem>
                         </SelectGroup>
                     </SelectContent>

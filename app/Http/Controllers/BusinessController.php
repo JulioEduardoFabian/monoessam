@@ -19,7 +19,7 @@ class BusinessController extends Controller
     {
         return Inertia::render('businesses/Index', [
             'businesses' => Business::with('services')->get(),
-            'headquarters' => Headquarter::with('business')->get(),
+            'headquarters' => Headquarter::with(['business', 'areas'])->get(),
             'services' => Service::all(),
             'dealerships' => Dealership::all(),
             'subdealerships' => Subdealership::with('dealership')->get(),

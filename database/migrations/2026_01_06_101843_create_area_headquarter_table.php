@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('area_headquarter', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('area_id');
-            $table->unsignedBigInteger('headquarter_id');
+            $table->unsignedBigInteger('area_id')->nullable();
+            $table->foreign('area_id')->references('id')->on('areas')->cascadeOnDelete();
+            $table->unsignedBigInteger('headquarter_id')->nullable();
+            $table->foreign('headquarter_id')->references('id')->on('headquarters')->cascadeOnDelete();
             $table->timestamps();
         });
     }
