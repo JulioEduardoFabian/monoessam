@@ -125,10 +125,10 @@ const onSubmit = () => {
             <div class="flex-1 overflow-y-auto bg-gray-50/50 px-6 py-4">
                 <Tabs v-model="activeTab" class="w-full">
                     <TabsList class="mb-6 grid w-full grid-cols-4 bg-zinc-100 p-1">
-                        <TabsTrigger value="personal" class="text-xs md:text-sm">1. Personal</TabsTrigger>
-                        <TabsTrigger value="adjuntos" class="text-xs md:text-sm">2. Adjuntos</TabsTrigger>
-                        <TabsTrigger value="financiero" class="text-xs md:text-sm">3. Financiero</TabsTrigger>
-                        <TabsTrigger value="tallas" class="text-xs md:text-sm">4. Tallas</TabsTrigger>
+                        <TabsTrigger value="personal" class="text-xs md:text-sm">Personal</TabsTrigger>
+                        <TabsTrigger value="adjuntos" class="text-xs md:text-sm" v-if="!staff">Adjuntos</TabsTrigger>
+                        <TabsTrigger value="financiero" class="text-xs md:text-sm">Financiero</TabsTrigger>
+                        <TabsTrigger value="tallas" class="text-xs md:text-sm">Tallas</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="personal" class="mt-0">
@@ -161,7 +161,7 @@ const onSubmit = () => {
                     </TabsContent>
 
                     <TabsContent value="financiero" class="mt-0">
-                        <FinancialDataTab :form="form" :roles="roles" @select-role="selectRole" @upload-file="uploadFile" />
+                        <FinancialDataTab :form="form" :roles="roles" @select-role="selectRole" @upload-file="uploadFile" :staff="staff" />
                     </TabsContent>
 
                     <TabsContent value="tallas" class="mt-0">

@@ -2,12 +2,13 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Staff } from '@/types';
 import FamilyLoadSection from '../sections/FamilyLoadSection.vue';
-import FinancialInfoSection from '../sections/FinancialInfoSection.vue';
 
 interface Props {
     form: any;
     roles: any[];
+    staff: Staff;
 }
 
 interface Emits {
@@ -82,8 +83,46 @@ const emit = defineEmits<Emits>();
             </div>
         </div>
 
-        <!-- Datos financieros -->
-        <FinancialInfoSection :form="form" />
+        <div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
+            <h3 class="border-b pb-2 text-lg font-semibold text-zinc-800">Datos financieros y contrato</h3>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div class="space-y-1">
+                    <Label>Entidad Bancaria</Label>
+                    <Select v-model="form.bankEntity">
+                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">BBVA</SelectItem>
+                            <SelectItem value="2">BCP</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div class="space-y-1">
+                    <Label>Número de Cuenta</Label>
+                    <Input v-model="form.cc" />
+                </div>
+                <div class="space-y-1">
+                    <Label>Número de Cuenta CI</Label>
+                    <Input v-model="form.cci" />
+                </div>
+                <div class="space-y-1">
+                    <Label>Aportación</Label>
+                    <Select v-model="form.pensioncontribution">
+                        <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">General</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div class="space-y-1">
+                    <Label>Fecha de ingreso</Label>
+                    <Input type="date" v-model="form.startDate" />
+                </div>
+                <div class="space-y-1">
+                    <Label>Fecha de Fin de Contrato</Label>
+                    <Input type="date" v-model="form.contractEndDate" />
+                </div>
+            </div>
+        </div>
 
         <!-- Carga familiar -->
         <FamilyLoadSection :form="form" @upload-file="emit('upload-file', $event, $event[1], $event[2])" />

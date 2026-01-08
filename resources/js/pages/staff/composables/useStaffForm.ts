@@ -33,7 +33,7 @@ export function useStaffForm() {
         unitId: 0,
         salary: 0.0,
         observations: '',
-        bankEntity: '',
+        bankEntity: 0,
         pensioncontribution: '',
         cc: '',
         cci: '',
@@ -124,10 +124,11 @@ export function useStaffForm() {
     };
 
     const updateStaff = (onSuccess: () => void, staffId: number) => {
+        console.log(form);
         form.prendas = prendasFijas.value;
         form.put(route('staff.update', staffId), {
             onSuccess: (res) => {
-                form.reset();
+                //form.reset();
                 onSuccess();
             },
             onError: (errors) => {

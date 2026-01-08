@@ -11,6 +11,7 @@ import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import ChangeStatusModal from './ChangeStatusModal.vue';
 
+import FilesModal from './FilesModal.vue';
 import StaffRegistrationDialog from './StaffRegistrationDialog.vue';
 
 interface Props {
@@ -94,14 +95,6 @@ watch(props, () => {
 
             <div class="flex items-center">
                 <Input type="text" placeholder="Buscar personal por dni o nombre" @change="onChangeSearchInput"></Input>
-                <!-- <select
-                    id="status"
-                    class="ms-2 rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                >
-                    <option v-for="(label, value) in statusesStaff" :key="value" :value="value">
-                        {{ label }}
-                    </option>
-                </select> -->
                 <Button variant="default" class="ms-2 cursor-pointer bg-blue-600 text-white hover:bg-blue-700">Buscar</Button>
             </div>
 
@@ -167,6 +160,8 @@ watch(props, () => {
                                             :businneses="props.businneses"
                                             :staff="staff"
                                         />
+
+                                        <FilesModal :staff="staff" />
                                     </div>
                                 </td>
                             </tr>

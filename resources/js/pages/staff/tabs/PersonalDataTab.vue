@@ -143,7 +143,6 @@ const emit = defineEmits<Emits>();
                                 v-model="form.age"
                                 class="h-10 border-zinc-200 bg-white focus:border-indigo-300 focus:ring-indigo-300"
                                 placeholder="Ej: 30"
-                                readonly
                             />
                         </div>
                         <!-- Sexo -->

@@ -141,7 +141,7 @@ class StaffController extends Controller
             'district' => $request->district,
             'province' => $request->province,
             'department' => $request->department,
-            'start_date' => $request->fechaIngreso,
+            'start_date' => $request->startDate,
             'children' => $request->children,
             'afp' => $request->afp,
             'onp' => $request->onp,
@@ -151,7 +151,11 @@ class StaffController extends Controller
             'replacement' => $request->replacement,
             'salary' => $request->salary,
             'observations' => $request->observations,
-            'account_number' => $request->cc
+            'account_number' => $request->cc,
+            'bank_entity' => $request->bankEntity,
+            'pensioncontribution' => $request->pensioncontrbution,
+            'cci' => $request->cci,
+            'contract_end_date' => $request->contractEndDate
         ]);
 
 
@@ -189,7 +193,8 @@ class StaffController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $staff = Staff::find($id);
+
+        $staff = Staff::with(['staff_financial', 'staff_clothes'])->find($id);
 
         $staff->update([
             'name' => $request->name,
@@ -209,6 +214,45 @@ class StaffController extends Controller
             'status' => 1,
             'user_id' => Auth::id()
         ]);
+
+        $staff->staff_financial->update([
+            'district' => $request->district,
+            'province' => $request->province,
+            'department' => $request->department,
+            'start_date' => $request->fechaIngreso,
+            'children' => $request->children,
+            'afp' => $request->afp,
+            'onp' => $request->onp,
+            'address' => $request->address,
+            'account_number' => $request->account_number,
+            'system_work' => $request->workSystem,
+            'replacement' => $request->replacement,
+            'salary' => $request->salary,
+            'observations' => $request->observations,
+            'account_number' => $request->cc,
+            'bank_entity' => empty($request->bankEntity) || $request->bankEntity === 'null'
+                ? null
+                : $request->bankEntity,
+            'pensioncontribution' => $request->pensioncontrbution,
+            'cci' => $request->cci,
+            'contract_end_date' => empty($request->contractEndDate) || $request->contractEndDate === 'null'
+                ? null
+                : $request->contractEndDate
+        ]);
+
+        $staff->staff_clothes->each->delete();
+
+        foreach ($request->prendas as $clothe) {
+            if ($clothe['talla']) {
+                $staff_clothes = Staff_clothes::create([
+                    'staff_id' => $staff->id,
+                    'clothe_name' => $clothe['label'],
+                    'clothing_size' => $clothe['talla']
+                ]);
+            }
+        }
+
+        return redirect()->route('staff.index');
     }
 
     /**
