@@ -200,7 +200,8 @@ const uploadFile = (file: File, fileProps: any, expirationDate?: string) => {
         file: file,
         fileTypeKey: fileProps.fileTypeKey,
         expirationDate: expirationDate,
-        fileId: fileProps.fileFoundId,
+        fileId: fileProps.fileFoundId ?? 0,
+        staffId: props.staff.id,
     });
 
     form.post(route('staff.upload-file'), {
@@ -252,7 +253,7 @@ const downloadFile = (file: StaffFile) => {
 
 // Función para ver archivo
 const viewFile = (file: StaffFile) => {
-    window.open(route('staff.view-file', file.id), '_blank');
+    window.open('/storage/' + file.file_path, '_blank');
 };
 
 // Función para actualizar fecha de expiración
