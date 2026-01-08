@@ -177,6 +177,8 @@ const uploadFileWithDate = () => {
         return;
     }
 
+    console.log(filesRequired.value[showDatePicker.value]);
+
     const fileTypeKey = filesRequired.value[showDatePicker.value].key;
     const fileLabel = filesRequired.value[showDatePicker.value].label;
     const input = document.querySelector(`input[data-file-type="${fileTypeKey}"]`) as HTMLInputElement;
@@ -210,7 +212,7 @@ const uploadFile = (file: File, fileProps: any, expirationDate?: string) => {
 
     const form = useForm({
         file: file,
-        fileTypeKey: fileProps.fileTypeKey,
+        fileTypeKey: fileProps.fileTypeKey || fileProps.fileLabel,
         expirationDate: expirationDate,
         fileId: fileProps.fileFoundId ?? 0,
         staffId: props.staff.id,
