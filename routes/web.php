@@ -99,6 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('ban/{id}', [StaffController::class, 'banStaff'])->name('ban');
         Route::post('/update-status', [StaffController::class, 'updateStatusStaff'])->name('update-status');
         Route::post('/upload-file', [StaffController::class, 'uploadFile'])->name('upload-file');
+        Route::delete('/delete-file/{id}', [StaffController::class, 'deleteFile'])->name('delete-file');
     });
 
     // ========================================================================

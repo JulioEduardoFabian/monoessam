@@ -359,4 +359,11 @@ class StaffController extends Controller
             }
         }
     }
+
+    public function deleteFile($id)
+    {
+        $staff_file = Staff_file::find($id);
+        Storage::disk('public')->delete($staff_file->file_path);
+        $staff_file->delete();
+    }
 }

@@ -4,7 +4,7 @@ import Button from '@/components/ui/button/Button.vue';
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { CalendarIcon, Download, Eye, File, Upload, X } from 'lucide-vue-next';
+import { CalendarIcon, Eye, File, Upload, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface StaffFile {
@@ -178,6 +178,7 @@ const uploadFileWithDate = () => {
     }
 
     const fileTypeKey = filesRequired.value[showDatePicker.value].key;
+    const fileLabel = filesRequired.value[showDatePicker.value].label;
     const input = document.querySelector(`input[data-file-type="${fileTypeKey}"]`) as HTMLInputElement;
 
     if (!input || !input.files || input.files.length === 0) {
@@ -186,8 +187,17 @@ const uploadFileWithDate = () => {
         return;
     }
 
+    const val = selectedExpirationDate.value;
+
+    // Convertimos a string y rellenamos con '0' a la izquierda si es necesario
+    const year = val.year;
+    const month = String(val.month).padStart(2, '0');
+    const day = String(val.day).padStart(2, '0');
+
+    const dateString = `${year}-${month}-${day}`;
+
     const file = input.files[0];
-    uploadFile(file, { fileTypeKey }, selectedExpirationDate.value);
+    uploadFile(file, { fileLabel }, dateString);
 
     // Resetear
     showDatePicker.value = null;
@@ -196,6 +206,8 @@ const uploadFileWithDate = () => {
 };
 
 const uploadFile = (file: File, fileProps: any, expirationDate?: string) => {
+    console.log(expirationDate);
+
     const form = useForm({
         file: file,
         fileTypeKey: fileProps.fileTypeKey,
@@ -222,28 +234,16 @@ const uploadFile = (file: File, fileProps: any, expirationDate?: string) => {
 const deleteFile = (fileId: number) => {
     if (!confirm('¿Está seguro de eliminar este archivo?')) return;
 
-    fetch(route('staff.delete-file', fileId), {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            'Content-Type': 'application/json',
+    form.delete(route('staff.delete-file', fileId), {
+        onSuccess: () => {
+            alert('Archivo eliminado correctamente');
         },
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                emit('update-files');
-                showAlert.value = false;
-            } else {
-                showAlert.value = true;
-                alertMessage.value = data.message || 'Error al eliminar el archivo';
-            }
-        })
-        .catch((error) => {
+        onError: (errors) => {
             showAlert.value = true;
             alertMessage.value = 'Error en la conexión';
-            console.error(error);
-        });
+            console.error(errors);
+        },
+    });
 };
 
 // Función para descargar archivo
@@ -523,7 +523,7 @@ const isExpired = (expirationDate: string | null) => {
                                             >
                                                 <Eye class="h-4 w-4" />
                                             </Button>
-                                            <Button
+                                            <!-- <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 class="h-8 w-8 text-green-600 hover:bg-green-100"
@@ -531,7 +531,7 @@ const isExpired = (expirationDate: string | null) => {
                                                 title="Descargar"
                                             >
                                                 <Download class="h-4 w-4" />
-                                            </Button>
+                                            </Button> -->
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
