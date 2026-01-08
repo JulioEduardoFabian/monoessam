@@ -131,7 +131,7 @@ const handleFileUpload = (event: Event, fileTypeKey: string, fileIndex?: number)
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
-    const fileType = filesRequired.value.find((f) => f.key === fileTypeKey);
+    const fileType = filesRequired.value.find((f) => f.label === fileTypeKey);
 
     if (!fileType) return;
 
@@ -162,8 +162,10 @@ const handleFileUpload = (event: Event, fileTypeKey: string, fileIndex?: number)
         return;
     }
 
+    const fileFoundId = props.staff.staff_files?.find((f) => f.file_type == fileTypeKey)?.id;
+
     // Subir archivo directamente si no necesita fecha
-    uploadFile(file, fileTypeKey);
+    uploadFile(file, { fileTypeKey, fileFoundId });
     input.value = '';
 };
 
@@ -185,7 +187,7 @@ const uploadFileWithDate = () => {
     }
 
     const file = input.files[0];
-    uploadFile(file, fileTypeKey, selectedExpirationDate.value);
+    uploadFile(file, { fileTypeKey }, selectedExpirationDate.value);
 
     // Resetear
     showDatePicker.value = null;
@@ -193,42 +195,26 @@ const uploadFileWithDate = () => {
     input.value = '';
 };
 
-const uploadFile = (file: File, fileTypeKey: string, expirationDate?: string) => {
-    const formData = new FormData();
-    formData.append('staff_id', props.staff.id.toString());
-    formData.append('file_type', fileTypeKey);
-    formData.append('file', file);
-    formData.append('user_id', page.props.auth.user?.id.toString());
+const uploadFile = (file: File, fileProps: any, expirationDate?: string) => {
+    const form = useForm({
+        file: file,
+        fileTypeKey: fileProps.fileTypeKey,
+        expirationDate: expirationDate,
+        fileId: fileProps.fileFoundId,
+    });
 
-    if (expirationDate) {
-        formData.append('expiration_date', expirationDate);
-    }
-
-    fetch(route('staff.upload-file'), {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+    form.post(route('staff.upload-file'), {
+        forceFormData: true,
+        preserveState: true,
+        onSuccess: (res) => {
+            alert('Archivo actualizado correctamente');
         },
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                emit('update-files');
-                showAlert.value = false;
-            } else {
-                showAlert.value = true;
-                alertMessage.value = data.message || 'Error al subir el archivo';
-            }
-        })
-        .catch((error) => {
+        onError: (errors) => {
             showAlert.value = true;
             alertMessage.value = 'Error en la conexión';
             console.error(error);
-        })
-        .finally(() => {
-            uploadingFileType.value = null;
-        });
+        },
+    });
 };
 
 // Función para eliminar archivo
@@ -472,7 +458,7 @@ const isExpired = (expirationDate: string | null) => {
                                         :accept="fileType.accept"
                                         class="hidden"
                                         :data-file-type="fileType.key"
-                                        @change="handleFileUpload($event, fileType.key, index)"
+                                        @change="handleFileUpload($event, fileType.label, index)"
                                         :disabled="uploadingFileType !== null"
                                     />
                                 </label>

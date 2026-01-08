@@ -315,4 +315,27 @@ class StaffController extends Controller
             ]);
         }
     }
+
+    public function uploadFile(Request $request)
+    {
+        $staff_file = Staff_file::find($request->fileId);
+
+        Storage::disk('public')->delete($staff_file->file_path);
+
+        if ($request->hasFile('file')) {
+            $originalName = $request->file->getClientOriginalName();
+            $chunksName = explode("_", $originalName);
+
+            $fileName = time() . '_' . $request->fileTypeKey . '_' . $originalName;
+            $filePath = $request->file->storeAs('files', $fileName, 'public');
+
+            $label = 'default'; // Default or extract from filename
+
+            $staff_file->update([
+                'file_type' => $request->fileTypeKey, // You need to determine this differently
+                'file_path' => $filePath,
+                'expiration_date' => $request->expirationDate
+            ]);
+        }
+    }
 }
