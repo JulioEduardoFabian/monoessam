@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Button from '@/components/ui/button/Button.vue';
-import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { CalendarIcon, Eye, File, Upload, X } from 'lucide-vue-next';
@@ -53,6 +52,7 @@ const filesRequired = ref([
         accept: '.pdf,.jpg,.jpeg,.png',
         maxSize: 10,
         hasExpiration: true,
+        expirationDate: null,
     },
     {
         label: 'Certificado de Estudios',
@@ -71,9 +71,10 @@ const filesRequired = ref([
     {
         label: 'DNI escaneado',
         key: 'dni_escaneado',
-        accept: '.jpg,.jpeg,.png',
+        accept: '.pdf,.jpg,.jpeg,.png',
         maxSize: 5,
         hasExpiration: true,
+        expirationDate: null,
     },
     {
         label: 'Antecedentes Penales y Policiales',
@@ -81,6 +82,7 @@ const filesRequired = ref([
         accept: '.pdf,.jpg,.jpeg,.png',
         maxSize: 10,
         hasExpiration: true,
+        expirationDate: null,
     },
     {
         label: 'Carné de sanidad',
@@ -88,6 +90,7 @@ const filesRequired = ref([
         accept: '.pdf,.jpg,.jpeg,.png',
         maxSize: 10,
         hasExpiration: true,
+        expirationDate: null,
     },
     {
         label: 'Carné de vacunación contra el COVID',
@@ -102,6 +105,7 @@ const filesRequired = ref([
         accept: '.pdf,.jpg,.jpeg,.png',
         maxSize: 10,
         hasExpiration: true,
+        expirationDate: null,
     },
     {
         label: 'SCTR',
@@ -109,6 +113,7 @@ const filesRequired = ref([
         accept: '.pdf',
         maxSize: 10,
         hasExpiration: true,
+        expirationDate: null,
     },
     {
         label: 'Contrato',
@@ -116,6 +121,7 @@ const filesRequired = ref([
         accept: '.pdf',
         maxSize: 10,
         hasExpiration: true,
+        expirationDate: null,
     },
 ]);
 
@@ -156,16 +162,17 @@ const handleFileUpload = (event: Event, fileTypeKey: string, fileIndex?: number)
 
     uploadingFileType.value = fileTypeKey;
 
-    // Si el archivo requiere fecha de expiración, mostrar el date picker
-    if (fileType.hasExpiration && fileIndex !== undefined) {
-        showDatePicker.value = fileIndex;
-        return;
-    }
-
     const fileFoundId = props.staff.staff_files?.find((f) => f.file_type == fileTypeKey)?.id;
 
-    // Subir archivo directamente si no necesita fecha
-    uploadFile(file, { fileTypeKey, fileFoundId });
+    if (fileType.hasExpiration && fileType.expirationDate == null) {
+        alert('Es necesario colocar la fecha de expiración a este archivo');
+        return;
+    } else if (!fileType.hasExpiration && fileType.expirationDate == null) {
+        uploadFile(file, { fileTypeKey, fileFoundId });
+    } else if (fileType.hasExpiration && fileType.expirationDate != null) {
+        uploadFile(file, { fileTypeKey, fileFoundId }, fileType.expirationDate);
+    }
+
     input.value = '';
 };
 
@@ -197,6 +204,8 @@ const uploadFileWithDate = () => {
     const day = String(val.day).padStart(2, '0');
 
     const dateString = `${year}-${month}-${day}`;
+
+    console.log(dateString);
 
     const file = input.files[0];
     uploadFile(file, { fileLabel }, dateString);
@@ -259,30 +268,8 @@ const viewFile = (file: StaffFile) => {
 };
 
 // Función para actualizar fecha de expiración
-const updateExpirationDate = (fileId: number, expirationDate: string) => {
-    fetch(route('staff.update-file-expiration', fileId), {
-        method: 'PUT',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
-        body: JSON.stringify({ expiration_date: expirationDate }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                emit('update-files');
-            } else {
-                showAlert.value = true;
-                alertMessage.value = data.message || 'Error al actualizar la fecha';
-            }
-        })
-        .catch((error) => {
-            showAlert.value = true;
-            alertMessage.value = 'Error en la conexión';
-            console.error(error);
-        });
+const updateExpirationDate = (fileType: object, expirationDate: string) => {
+    console.log(fileType, expirationDate);
 };
 
 // Agrupar archivos por tipo
@@ -391,21 +378,6 @@ const isExpired = (expirationDate: string | null) => {
                     <AlertDescription>{{ alertMessage }}</AlertDescription>
                 </Alert>
 
-                <!-- Date Picker para fecha de expiración -->
-                <div v-if="showDatePicker !== null" class="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <h4 class="mb-3 font-medium text-gray-900">Seleccionar fecha de expiración para {{ filesRequired[showDatePicker].label }}</h4>
-                    <div class="flex items-center space-x-3">
-                        <Calendar v-model="selectedExpirationDate" class="rounded-md border" :min-date="new Date()" />
-                        <div class="space-y-2">
-                            <Button @click="uploadFileWithDate" class="w-full">
-                                <Upload class="mr-2 h-4 w-4" />
-                                Subir con fecha
-                            </Button>
-                            <Button variant="outline" @click="showDatePicker = null" class="w-full"> Cancelar </Button>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Lista de documentos -->
                 <div class="space-y-6">
                     <div v-for="(fileType, index) in filesRequired" :key="index" class="space-y-3">
@@ -422,9 +394,16 @@ const isExpired = (expirationDate: string | null) => {
                                             <span>Formatos: {{ fileType.accept.replace(/\./g, '').toUpperCase() }}</span>
                                             <span>•</span>
                                             <span>Máx: {{ fileType.maxSize }}MB</span>
-                                            <span v-if="fileType.hasExpiration" class="inline-flex items-center text-amber-600">
-                                                <CalendarIcon class="ml-2 h-4 w-4" />
-                                                <span class="ml-1">Requiere fecha</span>
+                                            <span v-if="fileType.hasExpiration" class="inline-flex items-center">
+                                                <CalendarIcon class="ml-2 h-4 w-4 text-amber-600" />
+                                                <span class="ml-1 text-amber-600">Requiere fecha</span>
+                                                <input
+                                                    type="date"
+                                                    v-model="fileType.expirationDate"
+                                                    @change="updateExpirationDate(fileType, ($event.target as HTMLInputElement).value)"
+                                                    class="ms-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                                                    :min="new Date().toISOString().split('T')[0]"
+                                                />
                                             </span>
                                         </div>
                                     </div>
@@ -462,7 +441,6 @@ const isExpired = (expirationDate: string | null) => {
                                         class="hidden"
                                         :data-file-type="fileType.key"
                                         @change="handleFileUpload($event, fileType.label, index)"
-                                        :disabled="uploadingFileType !== null"
                                     />
                                 </label>
                             </div>
