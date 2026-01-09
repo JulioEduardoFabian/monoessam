@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Input from '@/components/ui/input/Input.vue';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Business, Cafe, Role, Staff, Unit } from '@/types';
@@ -79,6 +80,16 @@ const onChangeSearchInput = (event: Event) => {
     staffComplete.value = props.staff.filter((staff) => staff.name.toLowerCase().includes(query) || staff.dni.toLowerCase().includes(query));
 };
 
+const selectedUnit = ref(0);
+
+watch(selectedUnit, (newValue, oldValue) => {
+    staffComplete.value = props.staff;
+
+    if (newValue != 0) {
+        staffComplete.value = props.staff.filter((staff) => staff.staffable && staff.staffable.unit_id && staff.staffable.unit_id == newValue);
+    }
+});
+
 watch(props, () => {
     staffComplete.value = props.staff;
 });
@@ -95,6 +106,17 @@ watch(props, () => {
 
             <div class="flex items-center">
                 <Input type="text" placeholder="Buscar personal por dni o nombre" @change="onChangeSearchInput"></Input>
+                <Select v-model="selectedUnit">
+                    <SelectTrigger class="h-10 border-zinc-200 bg-white hover:bg-zinc-50">
+                        <SelectValue placeholder="Seleccionar unidad" />
+                    </SelectTrigger>
+                    <SelectContent class="border-zinc-200 bg-white shadow-lg">
+                        <SelectItem value="0" class="hover:bg-zinc-50"> Ninguna </SelectItem>
+                        <SelectItem :value="unit.id" class="hover:bg-zinc-50" v-for="unit in units" :key="unit.id">
+                            {{ unit.name }}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
                 <Button variant="default" class="ms-2 cursor-pointer bg-blue-600 text-white hover:bg-blue-700">Buscar</Button>
             </div>
 
