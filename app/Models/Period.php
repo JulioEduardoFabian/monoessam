@@ -12,8 +12,8 @@ class Period extends Model
     use HasFactory;
     protected $fillable = ['cafe_id', 'start_date', 'end_date'];
 
-    public function users(): BelongsToMany
+    public function staffs(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'period_users')->withPivot('status');
+        return $this->belongsToMany(Staff::class, 'period_staffs')->withPivot('status');
     }
 }
