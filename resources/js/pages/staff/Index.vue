@@ -58,16 +58,6 @@ const showColor = (statusId: number) => STATUS_COLORS[statusId] ?? '';
 
 const changeStatus = () => {};
 
-const statusesStaff = {
-    0: 'Lista negra',
-    1: 'En proceso',
-    2: 'Contratado',
-    3: 'Cesado',
-    4: 'Retirado',
-    5: 'Abandono',
-    6: 'Cumplió Contrato',
-};
-
 const onChangeSearchInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase().trim();
@@ -82,7 +72,7 @@ const onChangeSearchInput = (event: Event) => {
 
 const selectedUnit = ref(0);
 
-watch(selectedUnit, (newValue, oldValue) => {
+watch(selectedUnit, (newValue) => {
     staffComplete.value = props.staff;
 
     if (newValue != 0) {

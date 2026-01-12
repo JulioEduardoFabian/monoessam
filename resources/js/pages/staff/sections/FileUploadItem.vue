@@ -95,8 +95,14 @@ const manageFileDate = (event: Event) => {
                     <span class="text-sm font-medium text-amber-700">Sin fecha de expiración</span>
                 </div>
                 <div v-else class="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5">
-                    <i class="ri-calendar-check-line text-emerald-600"></i>
+                    <div class=""></div>
+
                     <span class="text-sm font-semibold text-emerald-700">{{ file.expirationDate }}</span>
+                    <!-- <Input
+                        type="date"
+                        class="w-full rounded-lg border-2 border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-700 transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                        @change="manageFileDate($event)"
+                    /> -->
                 </div>
             </div>
         </div>
