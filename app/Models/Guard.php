@@ -19,7 +19,7 @@ class Guard extends Model
     {
         return $this->BelongsToMany(Role::class, 'guard_roles')
             ->using(Guard_role::class)
-            ->withPivot('id', 'user_id');
+            ->withPivot('id', 'staff_id');
     }
 
     public function assignedRoles(): HasMany

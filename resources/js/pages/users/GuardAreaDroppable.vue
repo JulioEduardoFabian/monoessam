@@ -42,7 +42,7 @@ const asignRoles = (roles: Role[]) => {
 const deleteRole = (role: Role) => {
     if (confirm('Estás seguro de eliminar este rol?')) {
         axios
-            .delete(`/guard-roles/${role.id}`)
+            .delete(`/guards/roles/${role.id}`)
             .then(() => {
                 console.log('Rol eliminado con éxito');
             })
@@ -90,6 +90,7 @@ const deleteGuard = (guardId: number) => {
                         </button>
                     </div>
                 </div>
+
                 <div v-if="guard.assigned_roles?.length > 0" class="roles-section h-[50vh] overflow-y-auto">
                     <h4 class="section-title">Roles Asignados</h4>
                     <div class="grid gap-6 md:grid-cols-4">
@@ -100,7 +101,13 @@ const deleteGuard = (guardId: number) => {
                                     <Trash :size="16" />
                                 </button>
                             </div>
-                            <GuardRolesDropzone :role="role" @roleAssigned="roleAssigned" @unassignUser="unassignUser" :users="unassignedUsers" />
+                            <GuardRolesDropzone
+                                :role="role"
+                                :staff="role.staff"
+                                @roleAssigned="roleAssigned"
+                                @unassignUser="unassignUser"
+                                :users="unassignedUsers"
+                            />
                         </div>
                     </div>
                 </div>

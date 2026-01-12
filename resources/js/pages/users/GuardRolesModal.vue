@@ -151,7 +151,7 @@ const submit = async () => {
     isSubmitting.value = true;
 
     try {
-        await form.post(route('guards.roles.user.store'));
+        await form.post(route('guards.roles.store'));
 
         showSuccess.value = true;
         setTimeout(() => {
@@ -212,8 +212,8 @@ watch(open, (isOpen) => {
         <DialogTrigger>
             <Button class="h-auto bg-green-500 text-white transition-colors duration-200 hover:bg-green-400">
                 <Plus :size="16" class="mr-2" />
-                Agregar roles
-            </Button>
+                Agregar roles</Button
+            >
         </DialogTrigger>
 
         <DialogContent class="max-w-md sm:max-w-lg">

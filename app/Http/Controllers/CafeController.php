@@ -46,37 +46,34 @@ class CafeController extends Controller
      */
     public function show($id)
     {
-        // 1. Cargar el Café y sus relaciones necesarias.
-        // Usamos select(['...']) para obtener solo los campos necesarios de las relaciones anidadas.
         $cafe = Cafe::with([
-            'users', // Todos los usuarios del café
+            'staffs.role',
             'guards.assignedRoles.role',
+            'guards.assignedRoles.staff',
             'periods.users'
         ])->find($id);
 
-        // Si el café no existe, devuelve una respuesta adecuada.
+
         if (!$cafe) {
             return response()->json(['message' => 'Café no encontrado'], 404);
         }
 
-        // --- 2. Extraer IDs de Usuarios Asignados ---
 
-        // Crear una colección plana de todos los AssignedRoles
         $assignedRoles = $cafe->guards->flatMap(function ($guard) {
             return $guard->assignedRoles;
         });
 
         // Obtener una colección de IDs de usuarios que tienen un rol asignado
         $assignedUserIds = $assignedRoles
-            ->filter(fn($role) => $role->user) // Filtra solo los que tienen un usuario
-            ->pluck('user.id') // Obtiene solo el ID del usuario
+            ->filter(fn($role) => $role->staff_id)
+            ->pluck('staff_id')
             ->unique() // Asegura que cada ID aparezca una sola vez
             ->toArray(); // Convierte a array simple de IDs para la comparación
 
         // --- 3. Filtrar Usuarios ---
 
         // Colección de todos los usuarios pertenecientes al café
-        $allUsers = $cafe->staff;
+        $allUsers = $cafe->staffs;
 
         // Usuarios asignados: aquellos cuyos IDs están en la lista $assignedUserIds
         $assignedUsers = $allUsers->whereIn('id', $assignedUserIds)->values();
@@ -93,7 +90,8 @@ class CafeController extends Controller
             ],
             'guards' => $cafe->guards,
             'periods' => $cafe->periods,
-            'staff' => $cafe->staff,
+            'staff' => $cafe->staffs,
+
         ]);
     }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Role } from '@/types';
+import { Role, Staff } from '@/types';
 import { useDroppable } from '@vue-dnd-kit/core';
 import axios from 'axios';
 import { nextTick, ref } from 'vue'; // Importa nextTick
@@ -9,6 +9,7 @@ import Draggable from './Draggable.vue';
 interface Props {
     role: Role;
     users: User[];
+    staff: Staff;
 }
 
 interface User {
@@ -25,14 +26,17 @@ const emit = defineEmits<{
 const props = defineProps<Props>();
 
 // --- Estados Reactivos ---
-const userDropped = ref<User | null>(null);
+const userDropped = ref<Staff | null>(null);
 const isEditing = ref(false);
 const searchText = ref('');
 const searchResults = ref<User[]>([]);
 const inputRef = ref<HTMLInputElement | null>(null); // Referencia al input
 
-if (props.role?.user) {
-    userDropped.value = props.role.user as User;
+console.log(props);
+
+if (props.role?.staff) {
+    console.log(props);
+    userDropped.value = props.staff as Staff;
 }
 
 // --- Métodos de Lógica ---

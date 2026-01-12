@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Guard;
 use App\Http\Requests\StoreGuardRequest;
 use App\Http\Requests\UpdateGuardRequest;
+use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -102,7 +103,8 @@ class GuardController extends Controller
 
     public function insertGuardRolesUser(Request $request)
     {
-        $guardRole =  DB::table('guard_roles')->where('id', $request->guard_role_id)->update(['user_id' => $request->user_id]);
+
+        $guardRole =  DB::table('guard_roles')->where('id', $request->guard_role_id)->update(['staff_id' => $request->user_id]);
 
         if ($guardRole) {
             return response()->json(['message' => 'Rol de guardia actualizado correctamente.'], 200);
@@ -111,6 +113,6 @@ class GuardController extends Controller
 
     public function deleteGuardRolesUser($id)
     {
-        DB::table('guard_roles')->where('user_id', $id)->update(['user_id' => null]);
+        DB::table('guard_roles')->where('staff_id', $id)->update(['staff_id' => null]);
     }
 }

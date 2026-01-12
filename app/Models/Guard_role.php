@@ -12,13 +12,13 @@ class Guard_role extends Pivot
 {
     protected $table = 'guard_roles';
 
-    public function user(): BelongsTo
+    public function staff(): BelongsTo
     {
-        return $this->belongsTo(Staff::class, 'user_id', 'id');
+        return $this->belongsTo(Staff::class, 'staff_id', 'id');
     }
 
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'role_id', 'id');
+        return $this->BelongsTo(Role::class, 'role_id', 'id');
     }
 }

@@ -24,15 +24,8 @@ class UsersController extends Controller
     public function index()
     {
         return Inertia::render('users/Index', [
-            'users' => User::with(['roles'])->get(),
+            'mines' => Mine::with(['units', 'services', 'units.cafes', 'units.cafes.users', 'units.cafes.guards', 'units.cafes.guards.roles', 'units.cafes.staffs'])->get(),
             'roles' => Role::with(['permissions', 'users'])->get(),
-            'permissions' => Permission::all(),
-            'areas' => Area::with(['headquarter', 'cafe', 'cafe.unit', 'roles', 'roles.users', 'areaRoles'])->get(),
-            'cafes' => Cafe::with(['areas', 'areas.cafe', 'areas.headquarter', 'areas.areaRoles', 'areas.users.roles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'unit', 'unit.mine'])->get(),
-            'headquarters' => Headquarter::with(['areas', 'areas.users.roles', 'areas.areaRoles', 'areas.users.roles.permissions', 'areas.roles.permissions', 'business'])->get(),
-            'mines' => Mine::with(['units', 'services', 'units.cafes', 'units.cafes.users', 'units.cafes.guards', 'units.cafes.guards.roles', 'units.cafes.guards.assignedRoles', 'units.cafes.guards.assignedRoles.user', 'units.cafes.guards.assignedRoles.role'])->get(),
-            'units' => Unit::with(['mine', 'mine.services', 'services', 'cafes'])->get(),
-            'cafes' => Cafe::with(['unit', 'unit.mine', 'unit.services', 'services', 'guards'])->get()
         ]);
     }
 

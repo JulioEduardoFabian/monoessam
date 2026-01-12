@@ -184,7 +184,7 @@ const updateUserStatus = (newStatus: string, userId: number, periodId: number) =
                             {{ guard.name }}
                         </TableCell>
 
-                        <TableCell class="font-medium"> {{ role.role.name }} - {{ role.user?.name }} </TableCell>
+                        <TableCell class="font-medium"> {{ role.role.name }} - {{ role.staff?.name }} </TableCell>
                         <TableCell v-for="period in props.periods" :key="period.id" class="p-2 text-center">
                             <Select
                                 :model-value="getCurrentStatusId(role.user, period)"

@@ -69,6 +69,7 @@ const fetchCafeData = async (cafeId: number) => {
         unassignedUsers.value = cafeData.users.unassigned;
         assignedUsers.value = cafeData.users.assigned;
         selectedPeriods.value = cafeData.periods;
+        console.log(assignedUsers);
     } catch (error) {
         console.error('Error fetching cafe data:', error);
     }
@@ -76,7 +77,7 @@ const fetchCafeData = async (cafeId: number) => {
 
 const handleUserAssignment = (userId: number) => {
     unassignedUsers.value = unassignedUsers.value.filter((user: User) => user.id !== userId);
-    fetchCafeData(selectedOptions.value.cafe);
+    //fetchCafeData(selectedOptions.value.cafe);
 };
 
 const assignGuards = (guards: Cafe[]) => {
@@ -117,13 +118,12 @@ const deleteGuard = (guardId: number) => {
 
 const unassignUser = (userId: number) => {
     const cafeSelected = selectedCafes.value.find((cafe) => cafe.id == selectedOptions.value.cafe);
-    /* if (cafeSelected) {
-        console.log(cafeSelected);
-        const user = cafeSelected.staff.find((u) => u.id === userId);
+    if (cafeSelected) {
+        const user = cafeSelected.staffs.find((u) => u.id === userId);
         if (user) {
             unassignedUsers.value.unshift(user);
         }
-    } */
+    }
 };
 
 const changeView = () => {
@@ -148,11 +148,11 @@ const exportToExcel = () => {
                 <h1 class="text-2xl font-bold">Puestos</h1>
             </div>
 
-            <p>Seleccione una mina, unidad y comedor para asignar guardias y roles</p>
             <div class="flex w-full flex-row gap-2">
                 <Button title="Ver en lista" class="cursor-pointer" @click="changeView()"><List></List></Button>
                 <Button class="cursor-pointer bg-green-500" title="Exportar Headcount en Excel" @click="exportToExcel()"><Sheet /> </Button>
             </div>
+            <p>Seleccione una mina, unidad y comedor para asignar guardias y roles</p>
             <div class="flex gap-2">
                 <Select class="w-full" v-model="selectedOptions.mine">
                     <SelectTrigger class="w-full">
@@ -190,8 +190,8 @@ const exportToExcel = () => {
                     </SelectContent>
                 </Select>
                 <GuardModal :cafeId="selectedOptions.cafe" @assignGuards="assignGuards" />
-                <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar roles </Button>
-                <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar puesto </Button>
+                <!-- <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar roles </Button>
+                <Button class="h-full w-auto bg-green-500 text-white hover:bg-green-600"> Agregar puesto </Button> -->
             </div>
 
             <!-- Contenedor principal de tres columnas -->
